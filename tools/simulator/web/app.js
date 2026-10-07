@@ -4,6 +4,7 @@
 "use strict";
 
 let WIDTH = 64; // Columns: 8 per board. The page reads it from the game.
+let rgbDisplay = false; // WS2812B: draw the colours, not the red levels.
 const HEIGHT = 32;
 // Brightness levels 0 (off) to 3 (bright), as red LED shades.
 const COLOURS = ["#1c0707", "#5e1410", "#c42a20", "#ff6a50"];
@@ -30,14 +31,26 @@ function keyButton(event) {
   return Object.prototype.hasOwnProperty.call(KEYS, key) ? KEYS[key] : undefined;
 }
 
-function drawFlat(ctx, levels) {
+// The colour of a cell: the red level of a MAX7219 display, or the RGB colour of a WS2812B one.
+// Dark RGB cells stay faintly visible, like an LED that is off.
+function cellColour(levels, rgb, i) {
+  if (!rgb) {
+    return COLOURS[levels[i]];
+  }
+  const r = rgb[i * 3];
+  const g = rgb[i * 3 + 1];
+  const b = rgb[i * 3 + 2];
+  return r + g + b === 0 ? "#151212" : `rgb(${r},${g},${b})`;
+}
+
+function drawFlat(ctx, levels, rgb) {
   const cw = ctx.canvas.width / WIDTH;
   const ch = ctx.canvas.height / HEIGHT;
   ctx.fillStyle = "#000";
   ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   for (let y = 0; y < HEIGHT; ++y) {
     for (let x = 0; x < WIDTH; ++x) {
-      ctx.fillStyle = COLOURS[levels[y * WIDTH + x]];
+      ctx.fillStyle = cellColour(levels, rgb, y * WIDTH + x);
       ctx.beginPath();
       ctx.arc((x + 0.5) * cw, (y + 0.5) * ch, Math.min(cw, ch) * 0.4, 0, 2 * Math.PI);
       ctx.fill();
@@ -54,7 +67,7 @@ function drawFlat(ctx, levels) {
   }
 }
 
-function drawRing(ctx, levels, angle) {
+function drawRing(ctx, levels, rgb, angle) {
   const w = ctx.canvas.width;
   const h = ctx.canvas.height;
   ctx.fillStyle = "#000";
@@ -78,7 +91,7 @@ function drawRing(ctx, levels, angle) {
       const cellWidth = Math.max(0.6, columnWidth * Math.abs(depth) * 0.8);
       ctx.globalAlpha = front ? 1 : 0.12;
       for (let y = 0; y < HEIGHT; ++y) {
-        ctx.fillStyle = COLOURS[levels[y * WIDTH + x]];
+        ctx.fillStyle = cellColour(levels, rgb, y * WIDTH + x);
         ctx.fillRect(
           sx - cellWidth / 2,
           top + y * rowHeight + rowHeight * 0.1,
@@ -104,6 +117,9 @@ function readSettings(form) {
     cylinder: form.elements.cylinder.checked ? 1 : 0,
     random_percent: n("random_percent"),
     boards: n("boards"),
+    display: n("display"),
+    single_colour: form.elements.single_colour.checked ? 1 : 0,
+    colour: parseInt(form.elements.colour.value.slice(1), 16),
   };
 }
 
@@ -131,6 +147,8 @@ async function main() {
     displayMode: module.cwrap("sim_display_mode", "number", []),
     width: module.cwrap("sim_width", "number", []),
     setBoards: module.cwrap("sim_set_boards", null, ["number", "number"]),
+    setColours: module.cwrap("sim_set_colours", null, ["number", "number"]),
+    renderRgb: module.cwrap("sim_render_rgb", "number", ["number"]),
     listening: module.cwrap("sim_listening", "number", []),
     audioLevel: module.cwrap("sim_audio_level", "number", []),
     bpmEstimate: module.cwrap("sim_bpm_estimate", "number", []),
@@ -159,6 +177,8 @@ async function main() {
     const s = readSettings(form);
     api.setBoards(s.boards, now());
     WIDTH = api.width();
+    api.setColours(s.single_colour, s.colour);
+    rgbDisplay = s.display === 1;
     const seed = (Math.random() * 0xffffffff) >>> 0 || 1;
     api.configure(
       s.step_ms,
@@ -283,7 +303,12 @@ async function main() {
     api.tick(t);
     const pointer = api.render(t);
     const levels = module.HEAPU8.subarray(pointer, pointer + WIDTH * HEIGHT);
-    drawFlat(flat, levels);
+    let rgb = null;
+    if (rgbDisplay) {
+      const rgbPointer = api.renderRgb(t);
+      rgb = module.HEAPU8.subarray(rgbPointer, rgbPointer + WIDTH * HEIGHT * 3);
+    }
+    drawFlat(flat, levels, rgb);
     if (showRing.checked) {
       const mode = api.mode();
       if (mode === 1) {
@@ -295,7 +320,7 @@ async function main() {
       } else {
         angle += 0.004;
       }
-      drawRing(ring, levels, angle);
+      drawRing(ring, levels, rgb, angle);
     }
     status.state.textContent = MODE_NAMES[api.mode()] ?? "-";
     status.preset.textContent = api.presetName();

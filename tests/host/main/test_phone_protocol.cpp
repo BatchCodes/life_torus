@@ -77,6 +77,21 @@ void test_pack_frame() {
     TEST_ASSERT_EQUAL(515, static_cast<int>(size));
 }
 
+void test_pack_rgb_frame() {
+    colour::RgbImage image;
+    image.set(0, 0, colour::Rgb{1, 2, 3});
+    image.set(63, 31, colour::Rgb{250, 251, 252});
+    static uint8_t out[phone_link::kMaxRgbFrameSize];
+    phone_link::pack_rgb_frame(image, out);
+    const size_t size = phone_link::rgb_frame_size();
+    TEST_ASSERT_EQUAL(3 + 64 * 32 * 3, static_cast<int>(size));
+    TEST_ASSERT_EQUAL_HEX8('C', out[0]);
+    TEST_ASSERT_EQUAL(64, out[1]);
+    TEST_ASSERT_EQUAL(1, out[3]);
+    TEST_ASSERT_EQUAL(3, out[5]);
+    TEST_ASSERT_EQUAL(252, out[size - 1]);
+}
+
 void test_url_encode() {
     char out[32];
     TEST_ASSERT_EQUAL(9, static_cast<int>(phone_link::url_encode("a b&c", out, sizeof(out))));
@@ -127,6 +142,7 @@ void run_phone_protocol_tests() {
     RUN_TEST(test_number_commands);
     RUN_TEST(test_text_commands);
     RUN_TEST(test_pack_frame);
+    RUN_TEST(test_pack_rgb_frame);
     RUN_TEST(test_url_encode);
     RUN_TEST(test_sessions);
     RUN_TEST(test_password_and_cookie);

@@ -41,6 +41,7 @@ public:
     bool next_command(Command& command, TickType_t timeout);
     // Sends a display frame or a text message to every logged-in phone.
     void send_frame(const frame::Image& image);
+    void send_rgb_frame(const colour::RgbImage& image);
     void send_text(const char* text);
     int client_count() const { return client_count_; }
 

@@ -124,6 +124,15 @@
         <h2>Settings</h2>
         <form id="settings">
           <label
+            >Display
+            <select name="display">
+              <option value="0">MAX7219 (red)</option>
+              <option value="1">WS2812B (RGB)</option>
+            </select></label
+          >
+          <label><input name="single_colour" type="checkbox" /> WS2812B: single colour</label>
+          <label>Single colour <input name="colour" type="color" value="#ff3c14" /></label>
+          <label
             >Boards (1 to 16, 8 columns each)
             <input name="boards" type="number" min="1" max="16" value="8"
           /></label>

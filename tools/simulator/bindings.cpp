@@ -8,6 +8,7 @@
 #include <cstdint>
 
 #include "beat/beat_detector.hpp"
+#include "colour/colour.hpp"
 #include "display_modes/mode_manager.hpp"
 #include "frame/image.hpp"
 #include "game/game.hpp"
@@ -21,6 +22,9 @@ game::Game g_game{game::GameConfig{}};
 display_modes::ModeManager g_modes{g_game, 12345};
 frame::Image g_image;
 uint8_t g_levels[life::kMaxWidth * life::kHeight];
+colour::RgbImage g_rgb;
+uint8_t g_rgb_bytes[life::kMaxWidth * life::kHeight * 3];
+colour::ColourConfig g_colours;
 
 // Beat sync with the computer or phone microphone (Web Audio).
 constexpr int kAudioBuffer = 8192;
@@ -178,6 +182,30 @@ EMSCRIPTEN_KEEPALIVE int sim_preset_count() {
 EMSCRIPTEN_KEEPALIVE const char* sim_preset_name_at(int index) {
     const auto all = patterns::presets();
     return index >= 0 && index < static_cast<int>(all.size()) ? all[index].name : "";
+}
+
+// The colours of a WS2812B display: the scheme (0 colours, 1 single) and the single colour.
+EMSCRIPTEN_KEEPALIVE void sim_set_colours(int single, uint32_t rgb) {
+    g_colours.scheme = single != 0 ? colour::Scheme::kSingle : colour::Scheme::kColours;
+    g_colours.single = colour::Rgb{static_cast<uint8_t>(rgb >> 16), static_cast<uint8_t>(rgb >> 8),
+                                   static_cast<uint8_t>(rgb)};
+    g_colours.brightness_percent = 100;
+}
+
+// Renders the display as RGB, 3 bytes per cell, row by row. Call it after sim_render().
+EMSCRIPTEN_KEEPALIVE const uint8_t* sim_render_rgb(uint32_t now_ms) {
+    colour::colourise(g_image, static_cast<colour::Source>(g_modes.mode()), now_ms, g_colours,
+                      g_rgb);
+    int n = 0;
+    for (int y = 0; y < life::kHeight; ++y) {
+        for (int x = 0; x < life::width(); ++x) {
+            const colour::Rgb c = g_rgb.get(x, y);
+            g_rgb_bytes[n++] = c.r;
+            g_rgb_bytes[n++] = c.g;
+            g_rgb_bytes[n++] = c.b;
+        }
+    }
+    return g_rgb_bytes;
 }
 
 EMSCRIPTEN_KEEPALIVE int sim_width() {

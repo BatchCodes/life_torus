@@ -193,6 +193,25 @@ void pack_frame(const frame::Image& image, uint8_t* out) {
     }
 }
 
+size_t rgb_frame_size() {
+    return 3 + static_cast<size_t>(life::width() * life::kHeight * 3);
+}
+
+void pack_rgb_frame(const colour::RgbImage& image, uint8_t* out) {
+    out[0] = 'C';
+    out[1] = static_cast<uint8_t>(life::width());
+    out[2] = static_cast<uint8_t>(life::kHeight);
+    size_t n = 3;
+    for (int y = 0; y < life::kHeight; ++y) {
+        for (int x = 0; x < life::width(); ++x) {
+            const colour::Rgb c = image.get(x, y);
+            out[n++] = c.r;
+            out[n++] = c.g;
+            out[n++] = c.b;
+        }
+    }
+}
+
 size_t url_encode(const char* in, char* out, size_t size) {
     size_t n = 0;
     for (const char* p = in; *p != '\0'; ++p) {

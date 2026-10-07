@@ -21,6 +21,8 @@ const MODES = [
 const GAME_STATES = ["run", "pause", "new preset", "effect"];
 const SETTING_NUMBERS = [
   "boards",
+  "brightness",
+  "led_current_ma",
   "step_ms",
   "settled_limit",
   "no_input_limit",
@@ -31,6 +33,7 @@ const SETTING_NUMBERS = [
   "beat_sensitivity",
 ];
 const SETTING_FLAGS = [
+  "single_colour",
   "brightness_levels",
   "beat_sync",
   "cylinder",
@@ -140,6 +143,8 @@ class SimulatorTransport {
       tapCell: c("sim_tap_cell", null, ["number", "number", "number"]),
       width: c("sim_width", "number", []),
       setBoards: c("sim_set_boards", null, ["number", "number"]),
+      setColours: c("sim_set_colours", null, ["number", "number"]),
+      renderRgb: c("sim_render_rgb", "number", ["number"]),
       bpm: c("sim_bpm", "number", []),
       bpmEstimate: c("sim_bpm_estimate", "number", []),
       beatSource: c("sim_beat_source", "number", []),
@@ -157,6 +162,11 @@ class SimulatorTransport {
       repeat_limit: 300,
       pause_timeout_ms: 30000,
       random_percent: 30,
+      ws2812: 0,
+      single_colour: 0,
+      colour: 0xff3c14,
+      brightness: 25,
+      led_current_ma: 4500,
       boards: 8,
       intensity: 4,
       brightness_levels: 1,
@@ -187,7 +197,17 @@ class SimulatorTransport {
       const t = this.now();
       this.api.tick(t);
       const pointer = this.api.render(t);
-      onFrame(packFrame(this.module.HEAPU8.subarray(pointer, pointer + WIDTH * HEIGHT)));
+      if (this.settings.ws2812) {
+        const rgbPointer = this.api.renderRgb(t);
+        const frame = new Uint8Array(3 + WIDTH * HEIGHT * 3);
+        frame[0] = 67; // 'C'
+        frame[1] = WIDTH;
+        frame[2] = HEIGHT;
+        frame.set(this.module.HEAPU8.subarray(rgbPointer, rgbPointer + WIDTH * HEIGHT * 3), 3);
+        onFrame(frame);
+      } else {
+        onFrame(packFrame(this.module.HEAPU8.subarray(pointer, pointer + WIDTH * HEIGHT)));
+      }
       onText("status " + this.status());
     }, 50);
   }
@@ -266,6 +286,7 @@ class SimulatorTransport {
         }
         this.applySettings();
         this.api.setBeat(this.settings.beat_sync, this.settings.beat_sensitivity);
+        this.api.setColours(this.settings.single_colour, this.settings.colour);
         if (this.api.width() !== this.settings.boards * 8) {
           this.api.setBoards(this.settings.boards, t);
           WIDTH = this.api.width();
@@ -301,7 +322,8 @@ function main() {
   MODES.forEach((name, i) => modeSelect.add(new Option(name, String(i))));
 
   function drawFrame(data) {
-    if (data[0] !== 70) {
+    // 'F': brightness levels (MAX7219). 'C': RGB colours (WS2812B).
+    if (data[0] !== 70 && data[0] !== 67) {
       return;
     }
     // The frame gives the width, which follows the number of boards.
@@ -314,8 +336,14 @@ function main() {
     ctx.fillStyle = "#000";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     for (let i = 0; i < WIDTH * HEIGHT; ++i) {
-      const level = (data[3 + (i >> 2)] >> ((i & 3) * 2)) & 3;
-      ctx.fillStyle = COLOURS[level];
+      if (data[0] === 67) {
+        const r = data[3 + i * 3];
+        const g = data[4 + i * 3];
+        const b = data[5 + i * 3];
+        ctx.fillStyle = r + g + b === 0 ? "#151212" : `rgb(${r},${g},${b})`;
+      } else {
+        ctx.fillStyle = COLOURS[(data[3 + (i >> 2)] >> ((i & 3) * 2)) & 3];
+      }
       ctx.fillRect((i % WIDTH) * cw + 1, Math.floor(i / WIDTH) * ch + 1, cw - 2, ch - 2);
     }
   }
@@ -389,6 +417,13 @@ function main() {
           settingsForm.elements[key].checked = s.get(key) === "1";
         }
       }
+      if (s.has("ws2812")) {
+        settingsForm.elements.ws2812.value = s.get("ws2812");
+      }
+      if (s.has("colour")) {
+        settingsForm.elements.colour.value =
+          "#" + Number(s.get("colour")).toString(16).padStart(6, "0");
+      }
     }
   }
 
@@ -459,6 +494,8 @@ function main() {
     for (const key of SETTING_FLAGS) {
       values.set(key, settingsForm.elements[key].checked ? "1" : "0");
     }
+    values.set("ws2812", settingsForm.elements.ws2812.value);
+    values.set("colour", String(parseInt(settingsForm.elements.colour.value.slice(1), 16)));
     const password = settingsForm.elements.password.value;
     if (password !== "") {
       values.set("password", password);

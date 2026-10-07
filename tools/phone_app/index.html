@@ -84,6 +84,25 @@
         <summary>Settings</summary>
         <form id="settings">
           <label
+            >Display (the display restarts)
+            <select name="ws2812">
+              <option value="0">MAX7219 boards (red)</option>
+              <option value="1">WS2812B panels (RGB)</option>
+            </select></label
+          >
+          <fieldset>
+            <legend>WS2812B colours and power</legend>
+            <label><input name="single_colour" type="checkbox" /> Single colour</label>
+            <label>Colour <input name="colour" type="color" value="#ff3c14" /></label>
+            <label
+              >Brightness (%) <input name="brightness" type="number" min="1" max="100"
+            /></label>
+            <label
+              >LED current limit (mA)
+              <input name="led_current_ma" type="number" min="500" max="20000"
+            /></label>
+          </fieldset>
+          <label
             >Boards (1 to 16, the display restarts)
             <input name="boards" type="number" min="1" max="16"
           /></label>

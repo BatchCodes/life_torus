@@ -310,6 +310,19 @@ void PhoneLink::send_frame(const frame::Image& image) {
     send_all(HTTPD_WS_TYPE_BINARY, data, frame_size());
 }
 
+void PhoneLink::send_rgb_frame(const colour::RgbImage& image) {
+    if (client_count_ == 0) {
+        return;
+    }
+    auto* data = static_cast<uint8_t*>(std::malloc(kMaxRgbFrameSize));
+    if (data == nullptr) {
+        return;
+    }
+    pack_rgb_frame(image, data);
+    send_all(HTTPD_WS_TYPE_BINARY, data, rgb_frame_size());
+    std::free(data);
+}
+
 void PhoneLink::send_text(const char* text) {
     send_all(HTTPD_WS_TYPE_TEXT, reinterpret_cast<const uint8_t*>(text), std::strlen(text));
 }

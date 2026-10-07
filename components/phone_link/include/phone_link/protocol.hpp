@@ -5,6 +5,7 @@
 #include <cstddef>
 #include <cstdint>
 
+#include "colour/colour.hpp"
 #include "frame/image.hpp"
 #include "game/buttons.hpp"
 
@@ -53,6 +54,12 @@ constexpr size_t kMaxFrameSize = 3 + life::kMaxWidth * life::kHeight / 4;
 size_t frame_size();
 // Writes frame_size() bytes.
 void pack_frame(const frame::Image& image, uint8_t* out);
+
+// A colour frame for an RGB display: 'C', the width and the height, then 3 bytes (red, green,
+// blue) per cell, row by row.
+constexpr size_t kMaxRgbFrameSize = 3 + life::kMaxWidth * life::kHeight * 3;
+size_t rgb_frame_size();
+void pack_rgb_frame(const colour::RgbImage& image, uint8_t* out);
 
 // Percent decoding ("a%20b" to "a b"). Returns false if the text is not valid or does not fit.
 bool url_decode(const char* in, size_t length, char* out, size_t size);

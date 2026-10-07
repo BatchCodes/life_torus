@@ -148,6 +148,7 @@ void run_game(Board& board, settings::Settings& s) {
 #endif
 
     frame::Image image;
+    static colour::RgbImage phone_rgb;  // 12 KB: static, not on the task stack.
     uint32_t last_render = 0;
     uint32_t last_phone_frame = 0;
     int last_preset = game.preset_index();
@@ -260,7 +261,21 @@ void run_game(Board& board, settings::Settings& s) {
             }
             if (now - last_phone_frame >= kPhoneFrameMs) {
                 last_phone_frame = now;
-                phone.send_frame(image);
+                if (s.ws2812) {
+                    // The phone shows the colours at full brightness, for a clear view.
+                    colour::ColourConfig preview;
+                    preview.scheme =
+                        s.single_colour ? colour::Scheme::kSingle : colour::Scheme::kColours;
+                    preview.single = colour::Rgb{static_cast<uint8_t>(s.colour >> 16),
+                                                 static_cast<uint8_t>(s.colour >> 8),
+                                                 static_cast<uint8_t>(s.colour)};
+                    preview.brightness_percent = 100;
+                    colour::colourise(image, static_cast<colour::Source>(modes.mode()), now,
+                                      preview, phone_rgb);
+                    phone.send_rgb_frame(phone_rgb);
+                } else {
+                    phone.send_frame(image);
+                }
                 send_status(phone, game, modes, mic.present(), mic.bpm(), mic.bpm_estimate(),
                             mic.source());
             }

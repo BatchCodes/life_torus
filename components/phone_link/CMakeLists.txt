@@ -5,12 +5,12 @@ if(IDF_TARGET STREQUAL "linux")
     idf_component_register(
         SRCS "src/protocol.cpp"
         INCLUDE_DIRS "include"
-        REQUIRES game frame
+        REQUIRES game frame colour
     )
 else()
     idf_component_register(
         SRCS "src/protocol.cpp" "src/phone_link.cpp" "src/dns.cpp"
         INCLUDE_DIRS "include"
-        REQUIRES game frame esp_wifi esp_netif esp_event esp_http_server lwip log esp_hw_support
+        REQUIRES game frame colour esp_wifi esp_netif esp_event esp_http_server lwip log esp_hw_support
     )
 endif()
