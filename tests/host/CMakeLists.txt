@@ -11,6 +11,7 @@ set(EXTRA_COMPONENT_DIRS
     "${CMAKE_CURRENT_LIST_DIR}/../../components/gamepad_input"
     "${CMAKE_CURRENT_LIST_DIR}/../../components/display_modes"
     "${CMAKE_CURRENT_LIST_DIR}/../../components/settings"
+    "${CMAKE_CURRENT_LIST_DIR}/../../components/phone_link"
 )
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)

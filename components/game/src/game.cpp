@@ -183,6 +183,37 @@ void Game::press(Button button, uint32_t now_ms) {
     handle_pause_button(button, now_ms);
 }
 
+void Game::tap_cell(int x, int y, uint32_t now_ms) {
+    if (mode_ == Mode::kKoCode || x < 0 || x >= life::kWidth || y < 0 || y >= life::kHeight) {
+        return;
+    }
+    last_input_ms_ = now_ms;
+    generations_since_input_ = 0;
+    if (mode_ != Mode::kPause) {
+        mode_ = Mode::kPause;
+    }
+    cursor_x_ = x;
+    cursor_y_ = y;
+    cursor_moved_ms_ = now_ms;
+    life::Grid grid = simulation_.current();
+    grid.toggle(x, y);
+    simulation_.edit(grid);
+    settled_generations_ = 0;
+    history_ = 0;
+}
+
+void Game::select_preset(int index, uint32_t now_ms) {
+    if (mode_ == Mode::kKoCode || index < 0 ||
+        index >= static_cast<int>(patterns::presets().size())) {
+        return;
+    }
+    last_input_ms_ = now_ms;
+    generations_since_input_ = 0;
+    mode_ = Mode::kPause;
+    cursor_moved_ms_ = now_ms;
+    load_preset(index);
+}
+
 void Game::release(Button button, uint32_t /*now_ms*/) {
     if (dpad_held_ && button == held_button_) {
         dpad_held_ = false;

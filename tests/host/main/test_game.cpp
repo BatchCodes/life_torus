@@ -334,9 +334,36 @@ void test_ko_code_after_extra_first_button() {
     TEST_ASSERT_EQUAL(static_cast<int>(Mode::kKoCode), static_cast<int>(game.mode()));
 }
 
+void test_tap_cell_pauses_and_toggles() {
+    Game game{GameConfig{}};
+    start_paused_at(game, "Empty board");
+    tap(game, Button::kStart);
+    game.tap_cell(5, 6, g_now);
+    TEST_ASSERT_EQUAL(static_cast<int>(Mode::kPause), static_cast<int>(game.mode()));
+    TEST_ASSERT_TRUE(game.simulation().current().get(5, 6));
+    TEST_ASSERT_EQUAL(5, game.cursor_x());
+    game.tap_cell(5, 6, g_now);
+    TEST_ASSERT_FALSE(game.simulation().current().get(5, 6));
+    game.tap_cell(64, 0, g_now);  // Outside the grid: no effect.
+    TEST_ASSERT_TRUE(game.simulation().current().empty());
+}
+
+void test_select_preset_by_index() {
+    Game game{GameConfig{}};
+    start_paused_at(game, "Empty board");
+    tap(game, Button::kStart);
+    game.select_preset(preset_named("Acorn"), g_now);
+    TEST_ASSERT_EQUAL(preset_named("Acorn"), game.preset_index());
+    TEST_ASSERT_EQUAL(static_cast<int>(Mode::kPause), static_cast<int>(game.mode()));
+    game.select_preset(99, g_now);
+    TEST_ASSERT_EQUAL(preset_named("Acorn"), game.preset_index());
+}
+
 }  // namespace
 
 void run_game_tests() {
+    RUN_TEST(test_tap_cell_pauses_and_toggles);
+    RUN_TEST(test_select_preset_by_index);
     RUN_TEST(test_start_wipes_into_run);
     RUN_TEST(test_run_steps_at_step_time);
     RUN_TEST(test_any_button_pauses_with_no_other_effect);

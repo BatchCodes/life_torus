@@ -31,6 +31,10 @@ public:
     void start(uint32_t now_ms);
     void press(Button button, uint32_t now_ms);
     void release(Button button, uint32_t now_ms);
+    // Phone app: toggles one cell. In run, it changes to pause first.
+    void tap_cell(int x, int y, uint32_t now_ms);
+    // Phone app: loads a preset by its index in patterns::presets(), and pauses.
+    void select_preset(int index, uint32_t now_ms);
     // Call often, for example every 10 ms.
     void tick(uint32_t now_ms);
     void render(frame::Image& image, uint32_t now_ms) const;

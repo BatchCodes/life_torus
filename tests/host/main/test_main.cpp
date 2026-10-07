@@ -15,5 +15,6 @@ int main() {
     run_gamepad_report_tests();
     run_display_modes_tests();
     run_settings_tests();
+    run_phone_protocol_tests();
     return UNITY_END();
 }
