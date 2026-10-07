@@ -1,0 +1,31 @@
+{
+  "version": "0.2",
+  "language": "en-GB",
+  "ignorePaths": [
+    "build/**",
+    "managed_components/**",
+    "LICENSE",
+    "sdkconfig*",
+    "*.rle",
+    ".claude/**"
+  ],
+  "words": [
+    "AHCT",
+    "clangd",
+    "devcontainer",
+    "dialout",
+    "Emscripten",
+    "emsdk",
+    "Espressif",
+    "idf",
+    "Kconfig",
+    "menuconfig",
+    "Otronic",
+    "PSRAM",
+    "sdkconfig",
+    "SNES",
+    "SRCS",
+    "UART",
+    "WROOM"
+  ]
+}
