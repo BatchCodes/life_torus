@@ -8,7 +8,7 @@ This repository contains everything that you need to build one: the firmware, a 
 
 The source code is at [github.com/BatchCodes/life_torus](https://github.com/BatchCodes/life_torus). Report problems and ideas as GitHub issues.
 
-> **Status: early development.** The firmware and the browser simulator are complete. The firmware is not yet tested on a real display. The wiring and assembly documents are not complete yet.
+> **Status: early development.** The firmware and the browser simulator are complete. The firmware is not yet tested on a real display, and the wiring and assembly documents are not yet checked on a real build.
 
 ## How It Works
 
@@ -137,6 +137,7 @@ Life Torus is free software under the GNU General Public License, version 3 or l
 
 - [Bill of Materials](docs/hardware/bill-of-materials.md): parts, suppliers and prices.
 - [Browser Simulator](tools/simulator/README.md): try the game in a browser.
+- [Assembly Guide](docs/assembly/README.md): build the ring step by step.
 - [Power and Wiring](docs/hardware/power-and-wiring.md): signal chain, power distribution and mains safety.
 - [Display Bring-Up](docs/hardware/bring-up.md): test patterns and checks for a new display.
 - [Firmware Configuration](docs/software/configuration.md): all options and defaults.
