@@ -104,25 +104,32 @@ size_t to_text(const Settings& s, char* out, size_t size, bool include_password)
     out[0] = '\0';
     size_t used = 0;
     const panel_map::PanelConfig& p = s.panel;
-    const bool ok = append_number(out, size, &used, "step_ms", s.step_ms) &&
-                    append_number(out, size, &used, "settled_limit", s.settled_limit) &&
-                    append_number(out, size, &used, "no_input_limit", s.no_input_limit) &&
-                    append_number(out, size, &used, "repeat_limit", s.repeat_limit) &&
-                    append_number(out, size, &used, "pause_timeout_ms", s.pause_timeout_ms) &&
-                    append_number(out, size, &used, "random_percent", s.random_percent) &&
-                    append_number(out, size, &used, "cylinder", s.cylinder) &&
-                    append_number(out, size, &used, "boards", s.boards) &&
-                    append_number(out, size, &used, "intensity", s.intensity) &&
-                    append_number(out, size, &used, "brightness_levels", s.brightness_levels) &&
-                    append_number(out, size, &used, "reverse_ring", p.reverse_ring) &&
-                    append_number(out, size, &used, "flip_boards", p.flip_boards) &&
-                    append_number(out, size, &used, "zigzag", p.zigzag) &&
-                    append_number(out, size, &used, "block_transpose", p.block_transpose) &&
-                    append_number(out, size, &used, "block_flip_x", p.block_flip_x) &&
-                    append_number(out, size, &used, "block_flip_y", p.block_flip_y) &&
-                    append_number(out, size, &used, "beat_sync", s.beat_sync) &&
-                    append_number(out, size, &used, "beat_sensitivity", s.beat_sensitivity) &&
-                    (!include_password || append_encoded(out, size, &used, "password", s.password));
+    const bool ok =
+        append_number(out, size, &used, "step_ms", s.step_ms) &&
+        append_number(out, size, &used, "settled_limit", s.settled_limit) &&
+        append_number(out, size, &used, "no_input_limit", s.no_input_limit) &&
+        append_number(out, size, &used, "repeat_limit", s.repeat_limit) &&
+        append_number(out, size, &used, "pause_timeout_ms", s.pause_timeout_ms) &&
+        append_number(out, size, &used, "random_percent", s.random_percent) &&
+        append_number(out, size, &used, "cylinder", s.cylinder) &&
+        append_number(out, size, &used, "ws2812", s.ws2812) &&
+        append_number(out, size, &used, "boards", s.boards) &&
+        append_number(out, size, &used, "intensity", s.intensity) &&
+        append_number(out, size, &used, "brightness_levels", s.brightness_levels) &&
+        append_number(out, size, &used, "reverse_ring", p.reverse_ring) &&
+        append_number(out, size, &used, "flip_boards", p.flip_boards) &&
+        append_number(out, size, &used, "zigzag", p.zigzag) &&
+        append_number(out, size, &used, "block_transpose", p.block_transpose) &&
+        append_number(out, size, &used, "block_flip_x", p.block_flip_x) &&
+        append_number(out, size, &used, "block_flip_y", p.block_flip_y) &&
+        append_number(out, size, &used, "pixel_start", static_cast<uint32_t>(s.pixels.start)) &&
+        append_number(out, size, &used, "pixel_rows", s.pixels.rows) &&
+        append_number(out, size, &used, "pixel_serpentine", s.pixels.serpentine) &&
+        append_number(out, size, &used, "pixel_zigzag", s.pixels.zigzag) &&
+        append_number(out, size, &used, "pixel_reverse_ring", s.pixels.reverse_ring) &&
+        append_number(out, size, &used, "beat_sync", s.beat_sync) &&
+        append_number(out, size, &used, "beat_sensitivity", s.beat_sensitivity) &&
+        (!include_password || append_encoded(out, size, &used, "password", s.password));
     return ok ? used : 0;
 }
 
@@ -191,6 +198,20 @@ bool from_text(const char* text, Settings& s) {
             ok = parse_number(value, result.random_percent);
         } else if (std::strcmp(key, "cylinder") == 0) {
             ok = parse_bool(value, result.cylinder);
+        } else if (std::strcmp(key, "ws2812") == 0) {
+            ok = parse_bool(value, result.ws2812);
+        } else if (std::strcmp(key, "pixel_start") == 0) {
+            uint32_t start = 0;
+            ok = parse_number(value, start) && start <= 3;
+            result.pixels.start = static_cast<pixel_map::Start>(start);
+        } else if (std::strcmp(key, "pixel_rows") == 0) {
+            ok = parse_bool(value, result.pixels.rows);
+        } else if (std::strcmp(key, "pixel_serpentine") == 0) {
+            ok = parse_bool(value, result.pixels.serpentine);
+        } else if (std::strcmp(key, "pixel_zigzag") == 0) {
+            ok = parse_bool(value, result.pixels.zigzag);
+        } else if (std::strcmp(key, "pixel_reverse_ring") == 0) {
+            ok = parse_bool(value, result.pixels.reverse_ring);
         } else if (std::strcmp(key, "boards") == 0) {
             ok = parse_number(value, result.boards);
         } else if (std::strcmp(key, "intensity") == 0) {

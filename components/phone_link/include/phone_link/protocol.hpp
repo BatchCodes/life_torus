@@ -32,7 +32,7 @@ enum class CommandType : uint8_t {
     kGetSettings,
 };
 
-constexpr size_t kMaxCommandText = 600;
+constexpr size_t kMaxCommandText = 800;
 
 struct Command {
     CommandType type;

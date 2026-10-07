@@ -6,11 +6,12 @@
 
 #include "game/config.hpp"
 #include "panel_map/panel_map.hpp"
+#include "pixel_map/pixel_map.hpp"
 
 namespace settings {
 
 constexpr size_t kMaxPassword = 32;
-constexpr size_t kMaxText = 600;  // Longest settings text.
+constexpr size_t kMaxText = 800;  // Longest settings text.
 
 // The options that a person can change at run time, from the phone app. The firmware fills the
 // defaults from Kconfig, then applies the saved settings from NVS.
@@ -24,10 +25,12 @@ struct Settings {
     uint32_t random_percent = 30;
     bool cylinder = false;  // Edges of the empty and random presets.
     // Display.
+    bool ws2812 = false;  // The display type: false MAX7219 boards, true WS2812B panels.
     uint32_t boards = 8;  // 1 to 16 boards of 32 × 8. A change applies after a restart.
     uint32_t intensity = 4;
     bool brightness_levels = true;
-    panel_map::PanelConfig panel;
+    panel_map::PanelConfig panel;   // MAX7219 layout.
+    pixel_map::PixelConfig pixels;  // WS2812B layout. The data lines come from Kconfig.
     // Beat sync of the display modes, with a microphone.
     bool beat_sync = true;
     uint32_t beat_sensitivity = 5;  // 1 to 10.

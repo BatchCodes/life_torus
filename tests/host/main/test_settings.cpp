@@ -14,6 +14,10 @@ void test_round_trip() {
     a.step_ms = 250;
     a.intensity = 7;
     a.boards = 12;
+    a.ws2812 = true;
+    a.pixels.start = pixel_map::Start::kTopRight;
+    a.pixels.rows = false;
+    a.pixels.zigzag = true;
     a.brightness_levels = false;
     a.cylinder = true;
     a.panel.zigzag = true;
@@ -30,6 +34,11 @@ void test_round_trip() {
     TEST_ASSERT_EQUAL_UINT32(250, b.step_ms);
     TEST_ASSERT_EQUAL_UINT32(7, b.intensity);
     TEST_ASSERT_EQUAL_UINT32(12, b.boards);
+    TEST_ASSERT_TRUE(b.ws2812);
+    TEST_ASSERT_EQUAL(static_cast<int>(pixel_map::Start::kTopRight),
+                      static_cast<int>(b.pixels.start));
+    TEST_ASSERT_FALSE(b.pixels.rows);
+    TEST_ASSERT_TRUE(b.pixels.zigzag);
     TEST_ASSERT_FALSE(b.brightness_levels);
     TEST_ASSERT_TRUE(b.cylinder);
     TEST_ASSERT_TRUE(b.panel.zigzag);

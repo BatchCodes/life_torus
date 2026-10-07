@@ -4,12 +4,12 @@ if(IDF_TARGET STREQUAL "linux")
     idf_component_register(
         SRCS "src/settings.cpp"
         INCLUDE_DIRS "include"
-        REQUIRES game panel_map
+        REQUIRES game panel_map pixel_map
     )
 else()
     idf_component_register(
         SRCS "src/settings.cpp" "src/nvs_store.cpp"
         INCLUDE_DIRS "include"
-        REQUIRES game panel_map nvs_flash log
+        REQUIRES game panel_map pixel_map nvs_flash log
     )
 endif()

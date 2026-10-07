@@ -15,6 +15,7 @@ set(EXTRA_COMPONENT_DIRS
     "${CMAKE_CURRENT_LIST_DIR}/../../components/beat"
     "${CMAKE_CURRENT_LIST_DIR}/../../components/mode_button"
     "${CMAKE_CURRENT_LIST_DIR}/../../components/spectrum"
+    "${CMAKE_CURRENT_LIST_DIR}/../../components/pixel_map"
 )
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)

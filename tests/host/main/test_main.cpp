@@ -20,5 +20,6 @@ int main() {
     run_debouncer_tests();
     run_spectrum_tests();
     run_width_tests();
+    run_pixel_map_tests();
     return UNITY_END();
 }
