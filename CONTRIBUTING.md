@@ -81,6 +81,14 @@ To build the same images locally, in `dist/`:
 
 The [Pages workflow](.github/workflows/pages.yml) runs on each push to `main`. It builds the browser simulator and the firmware images, and [build_site.sh](scripts/build_site.sh) puts them together in `site/`: the simulator as the main page, and the web flasher page from [tools/site](tools/site/flash.html). The site is at [batchcodes.github.io/life_torus](https://batchcodes.github.io/life_torus/).
 
+## Wiring Diagrams
+
+The wiring diagrams in `docs/hardware/wiring/` come from [generate.py](tools/wiring_diagrams/generate.py). Do not edit the SVG files. Change the script and run it again:
+
+```bash
+python3 tools/wiring_diagrams/generate.py
+```
+
 ## Code Style
 
 - Format C and C++ code with `clang-format`. The project file is [.clang-format](.clang-format).

@@ -29,7 +29,7 @@ The default build has 8 boards: 64 columns around and 32 rows. You can use 1 to 
 | Main 5 V bus wire      | 2 m      | 1.0 mm² (18 AWG) stranded, one red and one black, from the USB-C inputs to the distribution       | € 3           |
 | Branch wire            | 4 m      | 0.5 mm² (20 AWG) stranded, red and black, from the distribution to each pair of boards            | € 3           |
 | Lever connectors       | 2        | 5-way lever connectors, for example WAGO 221-415, one for 5 V and one for GND                     | € 4           |
-| Bulk capacitor         | 4        | 1000 µF, 10 V or higher, electrolytic, one at each power injection point                          | € 2           |
+| Bulk capacitor         | 4        | 1000 µF, 10 V or higher, electrolytic, one at each power injection point (N / 2, rounded up)      | € 2           |
 
 The USB-C input must have the two 5.1 kΩ resistors on the CC pins. Without them, a USB-C power bank or charger does not turn on its output. Do not use a USB-C "PD trigger" board that asks for 9 V, 12 V or 20 V: the LED boards and the ESP32-S3 board take 5 V only.
 

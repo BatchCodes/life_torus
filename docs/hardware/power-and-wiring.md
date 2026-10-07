@@ -1,14 +1,26 @@
 # Power and Wiring
 
-This document tells you how to connect the parts of a Life Torus: the signal chain from the ESP32-S3 to the eight LED boards, the USB controller, the USB-C power inputs and the 5 V power distribution. It also tells you how much current the display uses, and which power bank or charger is enough. The [Bill of Materials](bill-of-materials.md) lists the parts. The [Assembly Guide](../assembly/README.md) tells you in which order to build the ring.
+This document tells you how to connect the parts of a Life Torus: the signal chain from the ESP32-S3 to the LED boards, the USB controller, the USB-C power inputs and the 5 V power distribution. It also tells you how much current the display uses, and which power bank or charger is enough. The [Bill of Materials](bill-of-materials.md) lists the parts. The [Assembly Guide](../assembly/README.md) tells you in which order to build the ring.
 
-![Wiring diagram: two USB-C inputs with diodes, lever connectors, eight boards, ESP32-S3, 74AHCT125 and USB controller](wiring.svg)
+The diagrams work for any number of boards, N, from 1 to 16. The default is 8. Set N in the firmware options or in the phone app. Refer to [Firmware Configuration](../software/configuration.md).
 
-Fig 1. Signal chain, controller and USB-C power.
+![Overview: USB-C power, the 5 V bus, N LED boards, the ESP32-S3, the 74AHCT125, the controller, the microphone and the mode button](wiring/overview.svg)
+
+Fig 1. Overview. The other figures show each part in detail.
+
+## ESP32-S3 Connections
+
+All connections to the ESP32-S3-DevKitC-1 are on its left header (J1): the level shifter, the microphone, the mode button and the 5 V feed. The controller uses the "USB" port at the bottom of the board.
+
+![ESP32-S3-DevKitC-1 header J1 with the 74AHCT125, the INMP441 microphone, the mode button and the 5 V feed through a 1N5819](wiring/esp32-connections.svg)
+
+Fig 2. ESP32-S3 connections. Grey pins are not used.
+
+The next three sections list the same connections as tables.
 
 ## Signal Chain
 
-The 32 MAX7219 chips of the eight boards are one daisy chain. The ESP32-S3 sends the data into board 1. Each board passes the data to the next board through its output header. The ESP32-S3 uses 3.3 V logic. The MAX7219 needs a 5 V logic level, so a 74AHCT125 buffer changes the signals to 5 V.
+The MAX7219 chips of all boards (4 on each board) are one daisy chain. The ESP32-S3 sends the data into board 1. Each board passes the data to the next board through its output header. The ESP32-S3 uses 3.3 V logic. The MAX7219 needs a 5 V logic level, so a 74AHCT125 buffer changes the signals to 5 V.
 
 | ESP32-S3 pin | 74AHCT125 input | 74AHCT125 output | Board 1 IN header |
 | ------------ | --------------- | ---------------- | ----------------- |
@@ -47,12 +59,18 @@ The mode button is optional. It moves to the next display mode at each press: Ga
 
 ## Board to Board
 
+![N boards in a chain: the OUT header of each board to the IN header of the next, VCC and GND jumpers inside each pair, and a power branch to each odd board](wiring/board-chain.svg)
+
+Fig 3. Board chain for N boards.
+
 Each board stands upright in the ring, with its IN header at the bottom and its OUT header at the top. Connect the OUT header of each board to the IN header of the next board with female-to-female jumper wires:
 
 - `DOUT` to `DIN`
 - `CLK` to `CLK`
 - `CS` to `CS`
-- `VCC` to `VCC` and `GND` to `GND`, only from board 1 to 2, 3 to 4, 5 to 6 and 7 to 8
+- `VCC` to `VCC` and `GND` to `GND`, only inside each pair of boards: 1 to 2, 3 to 4, 5 to 6, and so on
+
+With an odd number of boards, the last board has no pair. It gets its own power branch. The OUT header of the last board stays free.
 
 The jumper from the top of one board to the bottom of the next board is approximately 15 cm long. If you mount every second board upside down, the jumpers are much shorter. Then set the zigzag option in the firmware. The bring-up firmware finds the correct layout options. Refer to [Display Bring-Up](bring-up.md).
 
@@ -95,9 +113,13 @@ Some power banks turn off by themselves when nothing draws current. After a long
 
 ## Power Distribution
 
-The USB-C inputs feed two lever connectors: one for 5 V and one for GND. Use 1.0 mm² wire from the inputs to the lever connectors. From the lever connectors, four branches of 0.5 mm² wire go to the IN headers of boards 1, 3, 5 and 7. The jumper wires carry the power on to boards 2, 4, 6 and 8. Put a 1000 µF capacitor across 5 V and GND at each of the four injection points, with the correct polarity.
+![Two USB-C inputs through SB560 diodes and the optional power switch to the 5 V lever connector, and one branch to each odd board](wiring/power.svg)
 
-Do not feed all eight boards through the board-to-board jumpers. The jumpers and the header pins are not made for the current of the full display.
+Fig 4. 5 V power distribution for N boards.
+
+The USB-C inputs feed two lever connectors: one for 5 V and one for GND. Use 1.0 mm² wire from the inputs to the lever connectors. From the lever connectors, one branch of 0.5 mm² wire goes to the IN header of each odd board: 1, 3, 5, and so on. That is N / 2 branches, rounded up: 4 branches for 8 boards. The jumper wires carry the power on to the even boards. Put a 1000 µF capacitor across 5 V and GND at each injection point, with the correct polarity. A 5-way lever connector has room for the input and 4 branches. For more boards, use a second lever connector of each kind, or a terminal strip.
+
+Do not feed all the boards through the board-to-board jumpers. The jumpers and the header pins are not made for the current of the full display.
 
 Connect the `5V` pin of the ESP32-S3 board to the 5 V bus through a 1N5819 Schottky diode (stripe towards the board), and a `G` pin to the GND bus. The diode stops the USB supply of your computer from feeding the display when you connect the "UART" port. The board docs say that you must not power the board from two sources at the same time.
 
