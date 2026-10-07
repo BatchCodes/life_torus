@@ -24,6 +24,24 @@ USB game controller --USB--> ESP32-S3 --3.3 V SPI--> 74AHCT125 --5 V SPI--> boar
 - A 5 V power supply feeds the boards at several points. The ESP32-S3 uses the same supply.
 - The game controller connects to the USB port of the ESP32-S3.
 
+## Controls
+
+The display has two states: run and pause. It starts in run.
+
+| State | Button | Function                                               |
+| ----- | ------ | ------------------------------------------------------ |
+| run   | any    | pause                                                  |
+| pause | Start  | run                                                    |
+| pause | D-pad  | move the cursor                                        |
+| pause | A      | stamp the cursor shape (single cell: toggle)           |
+| pause | B      | erase the cells under the cursor shape                 |
+| pause | L / R  | previous / next cursor shape                           |
+| pause | X      | turn the cursor shape by 90°                           |
+| pause | Y      | mirror the cursor shape                                |
+| pause | Select | load the next [preset board](docs/software/presets.md) |
+
+When nobody uses it, the display looks after itself. It loads a new preset when the board is empty, when the board only repeats, or after a long time with no button press. After 30 s in pause with no button press, it starts to run again.
+
 ## Supported Hardware
 
 | Part                                                 | Status | Notes                                                    |
@@ -95,4 +113,5 @@ Life Torus is free software under the GNU General Public License, version 3 or l
 ## See Also
 
 - [Bill of Materials](docs/hardware/bill-of-materials.md): parts, suppliers and prices.
+- [Preset Boards](docs/software/presets.md): the preset list and how long each preset runs.
 - [CONTRIBUTING.md](CONTRIBUTING.md): repository layout, build, test and code style.

@@ -2,3 +2,4 @@
 #pragma once
 
 void run_life_tests();
+void run_patterns_tests();
