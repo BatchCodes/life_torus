@@ -12,6 +12,7 @@
 #include "freertos/FreeRTOS.h"
 #include "game/game.hpp"
 #include "gamepad_input/usb_gamepad.hpp"
+#include "microphone/microphone.hpp"
 #include "modes.hpp"
 #include "patterns/library.hpp"
 #include "patterns/presets.hpp"
@@ -55,13 +56,15 @@ void append_value(char* out, size_t size, const char* key, const char* value) {
 }
 
 void send_status(phone_link::PhoneLink& phone, const game::Game& game,
-                 const display_modes::ModeManager& modes) {
+                 const display_modes::ModeManager& modes, bool mic, float bpm) {
     char message[800];
     std::snprintf(message, sizeof(message),
-                  "status game=%s&display_mode=%d&generation=%lu&population=%d&preset=%d&speed=%d",
+                  "status game=%s&display_mode=%d&generation=%lu&population=%d&preset=%d&speed=%d"
+                  "&mic=%d&bpm=%d",
                   kGameStates[static_cast<int>(game.mode())], static_cast<int>(modes.mode()),
                   static_cast<unsigned long>(game.simulation().generation()),
-                  game.simulation().current().population(), game.preset_index(), modes.speed());
+                  game.simulation().current().population(), game.preset_index(), modes.speed(),
+                  mic ? 1 : 0, static_cast<int>(bpm + 0.5f));
     append_value(message, sizeof(message), "preset_name", game.preset_name());
     append_value(message, sizeof(message), "shape", game.shape_name());
     append_value(message, sizeof(message), "text", modes.text());
@@ -105,6 +108,17 @@ void run_game(Board& board, settings::Settings& s) {
     display_modes::ModeManager modes(game, esp_random());
     game.start(now_ms());
     ESP_LOGI(kTag, "started with preset \"%s\"", game.preset_name());
+
+    microphone::Microphone mic;
+#if CONFIG_LIFE_MIC
+    microphone::MicConfig mic_config;
+    mic_config.sck_gpio = CONFIG_LIFE_PIN_MIC_SCK;
+    mic_config.ws_gpio = CONFIG_LIFE_PIN_MIC_WS;
+    mic_config.sd_gpio = CONFIG_LIFE_PIN_MIC_SD;
+    if (mic.start(mic_config) == ESP_OK) {
+        mic.set_sensitivity(static_cast<int>(s.beat_sensitivity));
+    }
+#endif
 
     phone_link::PhoneLink phone;
     bool phone_on = false;
@@ -179,6 +193,7 @@ void run_game(Board& board, settings::Settings& s) {
                     s = changed;
                     board.apply(s);
                     game.set_config(game_config(s));
+                    mic.set_sensitivity(static_cast<int>(s.beat_sensitivity));
                     if (new_password) {
                         phone.set_password(s.password);
                     }
@@ -195,6 +210,10 @@ void run_game(Board& board, settings::Settings& s) {
         }
 
         const uint32_t now = now_ms();
+        // The microphone beat goes to the display modes. Game of Life ignores it.
+        if (mic.take_beat(now) && s.beat_sync) {
+            modes.beat(now);
+        }
         modes.tick(now);
         if (game.preset_index() != last_preset) {
             last_preset = game.preset_index();
@@ -213,7 +232,7 @@ void run_game(Board& board, settings::Settings& s) {
             if (now - last_phone_frame >= kPhoneFrameMs) {
                 last_phone_frame = now;
                 phone.send_frame(image);
-                send_status(phone, game, modes);
+                send_status(phone, game, modes, mic.present(), mic.bpm());
             }
         }
         last_clients = phone_on ? phone.client_count() : 0;

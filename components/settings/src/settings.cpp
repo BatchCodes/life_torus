@@ -92,6 +92,7 @@ void clamp(Settings& s) {
     s.pause_timeout_ms = limit(s.pause_timeout_ms, 1000, 3600000);
     s.random_percent = limit(s.random_percent, 1, 99);
     s.intensity = limit(s.intensity, 0, 15);
+    s.beat_sensitivity = limit(s.beat_sensitivity, 1, 10);
     s.password[kMaxPassword] = '\0';
 }
 
@@ -117,6 +118,8 @@ size_t to_text(const Settings& s, char* out, size_t size, bool include_password)
                     append_number(out, size, &used, "block_transpose", p.block_transpose) &&
                     append_number(out, size, &used, "block_flip_x", p.block_flip_x) &&
                     append_number(out, size, &used, "block_flip_y", p.block_flip_y) &&
+                    append_number(out, size, &used, "beat_sync", s.beat_sync) &&
+                    append_number(out, size, &used, "beat_sensitivity", s.beat_sensitivity) &&
                     (!include_password || append_encoded(out, size, &used, "password", s.password));
     return ok ? used : 0;
 }
@@ -202,6 +205,10 @@ bool from_text(const char* text, Settings& s) {
             ok = parse_bool(value, panel.block_flip_x);
         } else if (std::strcmp(key, "block_flip_y") == 0) {
             ok = parse_bool(value, panel.block_flip_y);
+        } else if (std::strcmp(key, "beat_sync") == 0) {
+            ok = parse_bool(value, result.beat_sync);
+        } else if (std::strcmp(key, "beat_sensitivity") == 0) {
+            ok = parse_number(value, result.beat_sensitivity);
         } else if (std::strcmp(key, "password") == 0) {
             ok = value[0] != '\0';
             if (ok) {

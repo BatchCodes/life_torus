@@ -233,6 +233,36 @@ menu "Life Torus"
 
     endmenu
 
+    menu "Microphone (beat sync)"
+
+        config LIFE_MIC
+            bool "Look for an INMP441 microphone"
+            default y
+            help
+                At start-up, the firmware checks for an INMP441 I2S microphone. With a
+                microphone, the display modes (not Game of Life) sync to the beat of music.
+                With no microphone, nothing changes.
+
+        config LIFE_PIN_MIC_SCK
+            int "Microphone SCK GPIO"
+            range 0 48
+            default 4
+            depends on LIFE_MIC
+
+        config LIFE_PIN_MIC_WS
+            int "Microphone WS GPIO"
+            range 0 48
+            default 5
+            depends on LIFE_MIC
+
+        config LIFE_PIN_MIC_SD
+            int "Microphone SD GPIO"
+            range 0 48
+            default 6
+            depends on LIFE_MIC
+
+    endmenu
+
     menu "Bring-up"
         visible if LIFE_MODE_BRINGUP
 

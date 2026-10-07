@@ -19,9 +19,11 @@ const SETTING_NUMBERS = [
   "pause_timeout_ms",
   "random_percent",
   "intensity",
+  "beat_sensitivity",
 ];
 const SETTING_FLAGS = [
   "brightness_levels",
+  "beat_sync",
   "cylinder",
   "reverse_ring",
   "flip_boards",
@@ -138,6 +140,8 @@ class SimulatorTransport {
       random_percent: 30,
       intensity: 4,
       brightness_levels: 1,
+      beat_sync: 1,
+      beat_sensitivity: 5,
       cylinder: 0,
       reverse_ring: 0,
       flip_boards: 0,
@@ -282,6 +286,14 @@ function main() {
     }
   }
 
+  function beatText(s) {
+    if (s.get("mic") !== "1") {
+      return "";
+    }
+    const bpm = Number(s.get("bpm"));
+    return bpm > 0 ? ` · ${bpm} BPM` : " · listening";
+  }
+
   function onText(message) {
     const space = message.indexOf(" ");
     const kind = space < 0 ? message : message.slice(0, space);
@@ -305,7 +317,7 @@ function main() {
         mode === 0
           ? `${s.get("game")} · ${s.get("preset_name")} · generation ${s.get("generation")} · ` +
             `${s.get("population")} cells · cursor: ${s.get("shape")}`
-          : `${MODES[mode]}${state === "simulator" ? " · simulator" : ""}`;
+          : `${MODES[mode]}${state === "simulator" ? " · simulator" : ""}${beatText(s)}`;
     } else if (kind === "presets") {
       presetSelect.innerHTML = "";
       body

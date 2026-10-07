@@ -27,6 +27,9 @@ struct Settings {
     uint32_t intensity = 4;
     bool brightness_levels = true;
     panel_map::PanelConfig panel;
+    // Beat sync of the display modes, with a microphone.
+    bool beat_sync = true;
+    uint32_t beat_sensitivity = 5;  // 1 to 10.
     // Phone app login.
     char password[kMaxPassword + 1] = "life";
 };

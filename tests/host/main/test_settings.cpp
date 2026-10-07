@@ -17,6 +17,8 @@ void test_round_trip() {
     a.cylinder = true;
     a.panel.zigzag = true;
     a.panel.block_flip_y = true;
+    a.beat_sync = false;
+    a.beat_sensitivity = 8;
     std::strcpy(a.password, "pa ss&word=1");
     char text[settings::kMaxText];
     TEST_ASSERT_TRUE(settings::to_text(a, text, sizeof(text), true) > 0);
@@ -31,6 +33,8 @@ void test_round_trip() {
     TEST_ASSERT_TRUE(b.panel.zigzag);
     TEST_ASSERT_TRUE(b.panel.block_flip_y);
     TEST_ASSERT_FALSE(b.panel.reverse_ring);
+    TEST_ASSERT_FALSE(b.beat_sync);
+    TEST_ASSERT_EQUAL_UINT32(8, b.beat_sensitivity);
     TEST_ASSERT_EQUAL_STRING("pa ss&word=1", b.password);
 }
 
@@ -50,7 +54,9 @@ void test_partial_and_unknown_keys() {
 
 void test_values_are_clamped() {
     Settings s;
-    TEST_ASSERT_TRUE(settings::from_text("intensity=99&step_ms=1&random_percent=0", s));
+    TEST_ASSERT_TRUE(
+        settings::from_text("intensity=99&step_ms=1&random_percent=0&beat_sensitivity=0", s));
+    TEST_ASSERT_EQUAL_UINT32(1, s.beat_sensitivity);
     TEST_ASSERT_EQUAL_UINT32(15, s.intensity);
     TEST_ASSERT_EQUAL_UINT32(20, s.step_ms);
     TEST_ASSERT_EQUAL_UINT32(1, s.random_percent);
