@@ -5,7 +5,7 @@
 // try the app with no hardware. Messages: components/phone_link/include/phone_link/protocol.hpp.
 "use strict";
 
-const WIDTH = 64;
+let WIDTH = 64; // Columns: 8 per board. The display frames give the real width.
 const HEIGHT = 32;
 const COLOURS = ["#1c0707", "#5e1410", "#c42a20", "#ff6a50"];
 const BUTTONS = ["up", "down", "left", "right", "a", "b", "x", "y", "l", "r", "select", "start"];
@@ -20,6 +20,7 @@ const MODES = [
 ];
 const GAME_STATES = ["run", "pause", "new preset", "effect"];
 const SETTING_NUMBERS = [
+  "boards",
   "step_ms",
   "settled_limit",
   "no_input_limit",
@@ -43,14 +44,16 @@ const SETTING_FLAGS = [
 
 // Packs 64 × 32 levels the same way as phone_link::pack_frame().
 function packFrame(levels) {
-  const out = new Uint8Array(1 + (WIDTH * HEIGHT) / 4);
+  const out = new Uint8Array(3 + (WIDTH * HEIGHT) / 4);
   out[0] = 70; // 'F'
+  out[1] = WIDTH;
+  out[2] = HEIGHT;
   for (let i = 0; i < (WIDTH * HEIGHT) / 4; ++i) {
     let byte = 0;
     for (let k = 0; k < 4; ++k) {
       byte |= levels[i * 4 + k] << (k * 2);
     }
-    out[1 + i] = byte;
+    out[3 + i] = byte;
   }
   return out;
 }
@@ -135,6 +138,8 @@ class SimulatorTransport {
       setText: c("sim_set_text", null, ["string"]),
       setSpeed: c("sim_set_speed", null, ["number"]),
       tapCell: c("sim_tap_cell", null, ["number", "number", "number"]),
+      width: c("sim_width", "number", []),
+      setBoards: c("sim_set_boards", null, ["number", "number"]),
       bpm: c("sim_bpm", "number", []),
       bpmEstimate: c("sim_bpm_estimate", "number", []),
       beatSource: c("sim_beat_source", "number", []),
@@ -152,6 +157,7 @@ class SimulatorTransport {
       repeat_limit: 300,
       pause_timeout_ms: 30000,
       random_percent: 30,
+      boards: 8,
       intensity: 4,
       brightness_levels: 1,
       beat_sync: 1,
@@ -260,6 +266,10 @@ class SimulatorTransport {
         }
         this.applySettings();
         this.api.setBeat(this.settings.beat_sync, this.settings.beat_sensitivity);
+        if (this.api.width() !== this.settings.boards * 8) {
+          this.api.setBoards(this.settings.boards, t);
+          WIDTH = this.api.width();
+        }
         this.onText("settings " + new URLSearchParams(this.settings).toString());
         break;
       case "get_settings":
@@ -294,12 +304,17 @@ function main() {
     if (data[0] !== 70) {
       return;
     }
+    // The frame gives the width, which follows the number of boards.
+    WIDTH = data[1];
+    if (canvas.width !== WIDTH * 10) {
+      canvas.width = WIDTH * 10;
+    }
     const cw = canvas.width / WIDTH;
     const ch = canvas.height / HEIGHT;
     ctx.fillStyle = "#000";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     for (let i = 0; i < WIDTH * HEIGHT; ++i) {
-      const level = (data[1 + (i >> 2)] >> ((i & 3) * 2)) & 3;
+      const level = (data[3 + (i >> 2)] >> ((i & 3) * 2)) & 3;
       ctx.fillStyle = COLOURS[level];
       ctx.fillRect((i % WIDTH) * cw + 1, Math.floor(i / WIDTH) * ch + 1, cw - 2, ch - 2);
     }

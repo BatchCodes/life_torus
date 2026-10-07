@@ -24,6 +24,7 @@ struct Settings {
     uint32_t random_percent = 30;
     bool cylinder = false;  // Edges of the empty and random presets.
     // Display.
+    uint32_t boards = 8;  // 1 to 16 boards of 32 × 8. A change applies after a restart.
     uint32_t intensity = 4;
     bool brightness_levels = true;
     panel_map::PanelConfig panel;

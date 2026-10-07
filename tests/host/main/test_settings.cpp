@@ -13,6 +13,7 @@ void test_round_trip() {
     Settings a;
     a.step_ms = 250;
     a.intensity = 7;
+    a.boards = 12;
     a.brightness_levels = false;
     a.cylinder = true;
     a.panel.zigzag = true;
@@ -28,6 +29,7 @@ void test_round_trip() {
     TEST_ASSERT_TRUE(settings::from_text(text, b));
     TEST_ASSERT_EQUAL_UINT32(250, b.step_ms);
     TEST_ASSERT_EQUAL_UINT32(7, b.intensity);
+    TEST_ASSERT_EQUAL_UINT32(12, b.boards);
     TEST_ASSERT_FALSE(b.brightness_levels);
     TEST_ASSERT_TRUE(b.cylinder);
     TEST_ASSERT_TRUE(b.panel.zigzag);
@@ -57,6 +59,8 @@ void test_values_are_clamped() {
     TEST_ASSERT_TRUE(
         settings::from_text("intensity=99&step_ms=1&random_percent=0&beat_sensitivity=0", s));
     TEST_ASSERT_EQUAL_UINT32(1, s.beat_sensitivity);
+    TEST_ASSERT_TRUE(settings::from_text("boards=40", s));
+    TEST_ASSERT_EQUAL_UINT32(16, s.boards);
     TEST_ASSERT_EQUAL_UINT32(15, s.intensity);
     TEST_ASSERT_EQUAL_UINT32(20, s.step_ms);
     TEST_ASSERT_EQUAL_UINT32(1, s.random_percent);

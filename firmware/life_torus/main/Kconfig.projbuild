@@ -19,6 +19,14 @@ menu "Life Torus"
 
     menu "Display hardware"
 
+        config LIFE_BOARDS
+            int "Number of 32x8 boards"
+            range 1 16
+            default 8
+            help
+                The number of LED boards in the ring. Each board adds 8 columns, so 8 boards
+                make 64 columns. The phone app can change it later, then the display restarts.
+
         config LIFE_PIN_DIN
             int "DIN GPIO"
             range 0 48

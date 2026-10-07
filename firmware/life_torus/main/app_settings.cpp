@@ -17,6 +17,7 @@ settings::Settings settings_from_kconfig() {
 #if CONFIG_LIFE_EDGE_CYLINDER
     s.cylinder = true;
 #endif
+    s.boards = CONFIG_LIFE_BOARDS;
     s.intensity = CONFIG_LIFE_INTENSITY;
 #if CONFIG_LIFE_BRIGHTNESS_LEVELS
     s.brightness_levels = true;

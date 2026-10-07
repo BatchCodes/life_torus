@@ -34,6 +34,8 @@ const char* Game::preset_name() const {
 
 void Game::start(uint32_t now_ms) {
     last_input_ms_ = now_ms;
+    cursor_x_ = life::width() / 2;
+    cursor_y_ = life::kHeight / 2;
     transition_from_.fill(frame::Level::kOff);
     auto_load(now_ms);
 }

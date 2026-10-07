@@ -3,7 +3,7 @@
 // Draws the Life Torus display and sends the keyboard to the game code (compiled to WebAssembly).
 "use strict";
 
-const WIDTH = 64;
+let WIDTH = 64; // Columns: 8 per board. The page reads it from the game.
 const HEIGHT = 32;
 // Brightness levels 0 (off) to 3 (bright), as red LED shades.
 const COLOURS = ["#1c0707", "#5e1410", "#c42a20", "#ff6a50"];
@@ -59,9 +59,9 @@ function drawRing(ctx, levels, angle) {
   const h = ctx.canvas.height;
   ctx.fillStyle = "#000";
   ctx.fillRect(0, 0, w, h);
-  // The real ring is 130 mm high and approximately 82 mm across (258 mm around).
+  // The real ring is 130 mm high, and each board is 32.3 mm wide.
   const ringHeight = h * 0.9;
-  const radius = Math.min(w * 0.42, (ringHeight * 258) / 130 / (2 * Math.PI));
+  const radius = Math.min(w * 0.42, (ringHeight * ((WIDTH / 8) * 32.3)) / 130 / (2 * Math.PI));
   const cx = w / 2;
   const top = (h - ringHeight) / 2;
   const rowHeight = ringHeight / HEIGHT;
@@ -103,6 +103,7 @@ function readSettings(form) {
     ko_effect_ms: n("ko_effect_ms"),
     cylinder: form.elements.cylinder.checked ? 1 : 0,
     random_percent: n("random_percent"),
+    boards: n("boards"),
   };
 }
 
@@ -128,6 +129,8 @@ async function main() {
     bpm: module.cwrap("sim_bpm", "number", []),
     nextMode: module.cwrap("sim_next_mode", null, ["number"]),
     displayMode: module.cwrap("sim_display_mode", "number", []),
+    width: module.cwrap("sim_width", "number", []),
+    setBoards: module.cwrap("sim_set_boards", null, ["number", "number"]),
     listening: module.cwrap("sim_listening", "number", []),
     audioLevel: module.cwrap("sim_audio_level", "number", []),
     bpmEstimate: module.cwrap("sim_bpm_estimate", "number", []),
@@ -154,6 +157,8 @@ async function main() {
 
   function restart() {
     const s = readSettings(form);
+    api.setBoards(s.boards, now());
+    WIDTH = api.width();
     const seed = (Math.random() * 0xffffffff) >>> 0 || 1;
     api.configure(
       s.step_ms,

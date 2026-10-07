@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/BatchCodes/life_torus/actions/workflows/ci.yml/badge.svg)](https://github.com/BatchCodes/life_torus/actions/workflows/ci.yml)
 
-Life Torus is a physical display for Conway's Game of Life. Eight red LED matrix boards stand in a ring and make a grid of 64 cells around and 32 cells high. An ESP32-S3 runs the simulation and drives the boards. A USB game controller moves a cursor, so you can draw cells and patterns on the ring. The grid wraps around the ring and from the top to the bottom, so the game runs on a torus.
+Life Torus is a physical display for Conway's Game of Life. Eight red LED matrix boards stand in a ring and make a grid of 64 cells around and 32 cells high. You can use 1 to 16 boards: each board adds 8 columns. An ESP32-S3 runs the simulation and drives the boards. A USB game controller moves a cursor, so you can draw cells and patterns on the ring. The grid wraps around the ring and from the top to the bottom, so the game runs on a torus.
 
 This repository contains everything that you need to build one: the firmware, a bill of materials, the wiring and assembly documents, and three ways to flash the ESP32-S3. A [browser simulator](tools/simulator/README.md) lets you try the game before you buy the parts.
 

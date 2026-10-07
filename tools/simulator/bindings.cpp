@@ -180,6 +180,18 @@ EMSCRIPTEN_KEEPALIVE const char* sim_preset_name_at(int index) {
     return index >= 0 && index < static_cast<int>(all.size()) ? all[index].name : "";
 }
 
+EMSCRIPTEN_KEEPALIVE int sim_width() {
+    return life::width();
+}
+
+// Changes the number of boards (1 to 16) and starts the game again at the new width.
+EMSCRIPTEN_KEEPALIVE void sim_set_boards(int boards, uint32_t now_ms) {
+    if (life::set_width(boards * 8)) {
+        g_modes.set_mode(display_modes::ModeId::kGameOfLife, now_ms);
+        g_game.start(now_ms);
+    }
+}
+
 EMSCRIPTEN_KEEPALIVE int sim_display_mode() {
     return static_cast<int>(g_modes.mode());
 }

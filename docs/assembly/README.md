@@ -2,7 +2,7 @@
 
 This guide tells you how to build a Life Torus from the parts in the [Bill of Materials](../hardware/bill-of-materials.md): eight LED boards in a ring, the controller electronics and the power supply. Do the steps in this order. Test the electronics on the bench before you close the ring. [Power and Wiring](../hardware/power-and-wiring.md) has the full wiring details.
 
-The finished ring is approximately 130 mm high and 78 mm across the flat sides. It has 64 cells around and 32 cells from the top to the bottom.
+The finished ring of 8 boards is approximately 130 mm high and 78 mm across the flat sides. It has 64 cells around and 32 cells from the top to the bottom. You can build a ring of 3 to 16 boards (1 or 2 boards make a flat display). Each board is 32.3 mm wide, so the ring is approximately 32.3 mm × the number of boards around. Set the number of boards in the firmware before the first test.
 
 ## Tools
 
@@ -57,7 +57,7 @@ Do not continue until the checklist passes. A wiring fault is much easier to fin
 
 The boards make an octagonal prism. A simple frame is enough:
 
-- Cut two octagons from 3 mm plywood, acrylic or card, approximately 78 mm across the flat sides. Each side is 32.3 mm long, the width of one board.
+- Cut two regular polygons from 3 mm plywood, acrylic or card, with one side for each board (an octagon for 8 boards). Each side is 32.3 mm long, the width of one board.
 - Cut a centre hole in the bottom octagon for the jumper wires and the power branches.
 - Glue the boards to the edges of the two octagons with hot glue or foam tape, LEDs out. Keep board 1 to board 8 in chain order around the ring. Look from the outside: the chain goes left to right.
 - Put the USB-C sockets, and the optional power switch and mode button, in the wall of the base, so a person can reach them from the outside. Connect the mode button from `GPIO7` to `G`.

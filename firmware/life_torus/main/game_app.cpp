@@ -8,6 +8,7 @@
 #include "display_modes/mode_manager.hpp"
 #include "esp_log.h"
 #include "esp_random.h"
+#include "esp_system.h"
 #include "esp_timer.h"
 #include "freertos/FreeRTOS.h"
 #include "game/game.hpp"
@@ -203,6 +204,7 @@ void run_game(Board& board, settings::Settings& s) {
                         break;
                     }
                     const bool new_password = std::strcmp(changed.password, s.password) != 0;
+                    const bool new_boards = changed.boards != s.boards;
                     s = changed;
                     board.apply(s);
                     game.set_config(game_config(s));
@@ -214,6 +216,13 @@ void run_game(Board& board, settings::Settings& s) {
                         ESP_LOGI(kTag, "settings saved");
                     }
                     send_settings(phone, s);
+                    if (new_boards) {
+                        // The grid width is fixed at start-up, so restart with the new count.
+                        ESP_LOGI(kTag, "board count changed to %lu: restarting",
+                                 static_cast<unsigned long>(s.boards));
+                        vTaskDelay(pdMS_TO_TICKS(500));
+                        esp_restart();
+                    }
                     break;
                 }
                 case phone_link::CommandType::kGetSettings:

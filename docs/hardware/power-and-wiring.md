@@ -103,6 +103,8 @@ Connect the `5V` pin of the ESP32-S3 board to the 5 V bus through a 1N5819 Schot
 
 ## Power Sizing
 
+The values are for 8 boards. The current of the LEDs scales with the number of boards: for 4 boards, half the values; for 16 boards, two times the values. With more than 8 boards, use two USB-C inputs, and add one power branch for each extra pair of boards.
+
 Each MAX7219 multiplexes its 64 LEDs: only one row of 8 LEDs is on at a time. The current depends on the number of lit LEDs and on the intensity setting. These values are estimates from the MAX7219 datasheet, with the typical segment current of these boards (approximately 40 mA):
 
 | Display state                   | Intensity 4 (default) | Intensity 8         | Intensity 15 (maximum) |

@@ -27,7 +27,7 @@ The "Display mode" panel chooses what the display shows, the same as the phone a
 
 ## Settings
 
-The settings panel changes the same values as the firmware configuration, for example the step time and the unattended-play limits. Set a short limit, for example a no-input limit of 50 generations, to see a rule work in a few seconds. "Apply and restart" starts the game again with the new values and a new random seed.
+The "Boards" field sets the number of boards, 1 to 16, like the firmware option. "Apply and restart" starts again with the new width. The settings panel changes the same values as the firmware configuration, for example the step time and the unattended-play limits. Set a short limit, for example a no-input limit of 50 generations, to see a rule work in a few seconds. "Apply and restart" starts the game again with the new values and a new random seed.
 
 ## Build with Docker
 

@@ -92,6 +92,7 @@ void clamp(Settings& s) {
     s.pause_timeout_ms = limit(s.pause_timeout_ms, 1000, 3600000);
     s.random_percent = limit(s.random_percent, 1, 99);
     s.intensity = limit(s.intensity, 0, 15);
+    s.boards = limit(s.boards, 1, 16);
     s.beat_sensitivity = limit(s.beat_sensitivity, 1, 10);
     s.password[kMaxPassword] = '\0';
 }
@@ -110,6 +111,7 @@ size_t to_text(const Settings& s, char* out, size_t size, bool include_password)
                     append_number(out, size, &used, "pause_timeout_ms", s.pause_timeout_ms) &&
                     append_number(out, size, &used, "random_percent", s.random_percent) &&
                     append_number(out, size, &used, "cylinder", s.cylinder) &&
+                    append_number(out, size, &used, "boards", s.boards) &&
                     append_number(out, size, &used, "intensity", s.intensity) &&
                     append_number(out, size, &used, "brightness_levels", s.brightness_levels) &&
                     append_number(out, size, &used, "reverse_ring", p.reverse_ring) &&
@@ -189,6 +191,8 @@ bool from_text(const char* text, Settings& s) {
             ok = parse_number(value, result.random_percent);
         } else if (std::strcmp(key, "cylinder") == 0) {
             ok = parse_bool(value, result.cylinder);
+        } else if (std::strcmp(key, "boards") == 0) {
+            ok = parse_number(value, result.boards);
         } else if (std::strcmp(key, "intensity") == 0) {
             ok = parse_number(value, result.intensity);
         } else if (std::strcmp(key, "brightness_levels") == 0) {

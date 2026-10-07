@@ -25,22 +25,23 @@ idf.py build
 
 ## Display Hardware
 
-| Option                              | Default | Effect                                                                                        |
-| ----------------------------------- | ------- | --------------------------------------------------------------------------------------------- |
-| `CONFIG_LIFE_PIN_DIN`               | 11      | GPIO for the data line of the first board.                                                    |
-| `CONFIG_LIFE_PIN_CLK`               | 12      | GPIO for the clock line of all boards.                                                        |
-| `CONFIG_LIFE_PIN_CS`                | 10      | GPIO for the CS (LOAD) line of all boards.                                                    |
-| `CONFIG_LIFE_SPI_CLOCK_KHZ`         | 2000    | SPI clock. Reduce it if cells flicker at random.                                              |
-| `CONFIG_LIFE_INTENSITY`             | 4       | Brightness of all LEDs, 0 to 15. With one 3 A USB-C input, keep it at 4 or less.              |
-| `CONFIG_LIFE_BRIGHTNESS_LEVELS`     | y       | Born cells bright, surviving cells normal, dying cells dim. Turn off if the display flickers. |
-| `CONFIG_LIFE_SUBFRAME_MS`           | 3       | Time of each of the 3 sub-frames for the brightness levels.                                   |
-| `CONFIG_LIFE_REINIT_MS`             | 5000    | Period for a rewrite of the display start-up registers. 0: never.                             |
-| `CONFIG_LIFE_PANEL_REVERSE_RING`    | n       | Panel layout: the chain goes right to left around the ring.                                   |
-| `CONFIG_LIFE_PANEL_FLIP_BOARDS`     | n       | Panel layout: all boards upside down.                                                         |
-| `CONFIG_LIFE_PANEL_ZIGZAG`          | n       | Panel layout: every second board turned by 180°.                                              |
-| `CONFIG_LIFE_PANEL_BLOCK_TRANSPOSE` | n       | Panel layout: swap rows and columns in each 8 × 8 block.                                      |
-| `CONFIG_LIFE_PANEL_BLOCK_FLIP_X`    | n       | Panel layout: mirror each block left to right.                                                |
-| `CONFIG_LIFE_PANEL_BLOCK_FLIP_Y`    | n       | Panel layout: mirror each block top to bottom.                                                |
+| Option                              | Default | Effect                                                                                                                           |
+| ----------------------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `CONFIG_LIFE_BOARDS`                | 8       | Number of 32 × 8 boards in the ring, 1 to 16. Each board adds 8 columns. The phone app can change it, then the display restarts. |
+| `CONFIG_LIFE_PIN_DIN`               | 11      | GPIO for the data line of the first board.                                                                                       |
+| `CONFIG_LIFE_PIN_CLK`               | 12      | GPIO for the clock line of all boards.                                                                                           |
+| `CONFIG_LIFE_PIN_CS`                | 10      | GPIO for the CS (LOAD) line of all boards.                                                                                       |
+| `CONFIG_LIFE_SPI_CLOCK_KHZ`         | 2000    | SPI clock. Reduce it if cells flicker at random.                                                                                 |
+| `CONFIG_LIFE_INTENSITY`             | 4       | Brightness of all LEDs, 0 to 15. With one 3 A USB-C input, keep it at 4 or less.                                                 |
+| `CONFIG_LIFE_BRIGHTNESS_LEVELS`     | y       | Born cells bright, surviving cells normal, dying cells dim. Turn off if the display flickers.                                    |
+| `CONFIG_LIFE_SUBFRAME_MS`           | 3       | Time of each of the 3 sub-frames for the brightness levels.                                                                      |
+| `CONFIG_LIFE_REINIT_MS`             | 5000    | Period for a rewrite of the display start-up registers. 0: never.                                                                |
+| `CONFIG_LIFE_PANEL_REVERSE_RING`    | n       | Panel layout: the chain goes right to left around the ring.                                                                      |
+| `CONFIG_LIFE_PANEL_FLIP_BOARDS`     | n       | Panel layout: all boards upside down.                                                                                            |
+| `CONFIG_LIFE_PANEL_ZIGZAG`          | n       | Panel layout: every second board turned by 180°.                                                                                 |
+| `CONFIG_LIFE_PANEL_BLOCK_TRANSPOSE` | n       | Panel layout: swap rows and columns in each 8 × 8 block.                                                                         |
+| `CONFIG_LIFE_PANEL_BLOCK_FLIP_X`    | n       | Panel layout: mirror each block left to right.                                                                                   |
+| `CONFIG_LIFE_PANEL_BLOCK_FLIP_Y`    | n       | Panel layout: mirror each block top to bottom.                                                                                   |
 
 The bring-up firmware finds the panel layout options for your boards.
 
@@ -75,7 +76,7 @@ The bring-up firmware finds the panel layout options for your boards.
 
 ## Settings from the Phone App
 
-The phone app can change these options at run time: the step time, the settled, no-input and repeat limits, the pause timeout, the random preset fill, the edges of the empty and random presets, the intensity, the brightness levels, the panel layout, beat sync on or off, the beat sensitivity and the password. The display saves them in NVS. A saved value replaces the Kconfig default. The bring-up firmware saves the panel layout and the intensity in the same place. To go back to the Kconfig defaults, erase the board and flash it again.
+The phone app can change these options at run time: the number of boards (the display restarts), the step time, the settled, no-input and repeat limits, the pause timeout, the random preset fill, the edges of the empty and random presets, the intensity, the brightness levels, the panel layout, beat sync on or off, the beat sensitivity and the password. The display saves them in NVS. A saved value replaces the Kconfig default. The bring-up firmware saves the panel layout and the intensity in the same place. To go back to the Kconfig defaults, erase the board and flash it again.
 
 ## Unattended Play
 
