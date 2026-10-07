@@ -471,12 +471,126 @@ def esp32_connections():
     )
 
 
+def resistor(x, y, color):
+    """A small resistor on a horizontal wire, from x to x + 30."""
+    return f'  <rect x="{x}" y="{y - 6}" width="30" height="12" fill="#fff" stroke="{color}" stroke-width="2"/>\n'
+
+
+def ws2812_lines():
+    b = text(
+        480,
+        30,
+        "Fig 5. WS2812B data lines (example: 10 panels on 4 lines)",
+        15,
+        bold=True,
+    )
+    b += box(20, 70, 150, 330, "#e0ecfb", SIGNAL)
+    b += text(95, 390, "ESP32-S3", bold=True)
+    b += box(240, 70, 170, 330, "#e3f0e3", LOGIC)
+    b += text(325, 390, "74AHCT125", bold=True)
+    lines = [
+        ("GPIO11", "2  1A", "3  1Y", ["1", "2", "3"], "#c62828"),
+        ("GPIO12", "5  2A", "6  2Y", ["4", "5", "6"], "#2e7d32"),
+        ("GPIO10", "9  3A", "8  3Y", ["7", "8"], "#1565c0"),
+        ("GPIO13", "12  4A", "11  4Y", ["9", "10"], "#555"),
+    ]
+    for k, (gpio, pin_in, pin_out, panels, color) in enumerate(lines):
+        y = 105 + k * 72
+        b += text(160, y + 4, gpio, 11, anchor="end", bold=True)
+        b += line([(170, y), (240, y)], LOGIC)
+        b += text(248, y + 4, pin_in, 11, anchor="start")
+        b += text(402, y + 4, pin_out, 11, anchor="end")
+        b += line([(410, y), (440, y)], SIGNAL) + resistor(440, y, SIGNAL)
+        b += text(455, y - 12, "330 Ω", 10)
+        b += line([(470, y), (510, y)], SIGNAL, arrow=True)
+        b += text(490, y + 22, f"line {k + 1}", 10, fill=color)
+        for i, name in enumerate(panels):
+            x = 510 + i * 140
+            b += box(x, y - 24, 100, 48, "#fbeaf0", color)
+            b += text(x + 50, y - 3, "Panel " + name, 12, bold=True)
+            b += text(x + 50, y + 13, "8 × 32", 10, fill="#555")
+            if i + 1 < len(panels):
+                b += line([(x + 100, y), (x + 140, y)], SIGNAL, arrow=True)
+                b += text(x + 120, y - 10, "DOUT", 8, fill="#555")
+                b += text(x + 120, y + 20, "DIN", 8, fill="#555")
+    notes = [
+        "Pin 14 (VCC) to the 5 V bus, pin 7 and pins 1, 4, 10, 13 (OE) to GND, 100 nF from 14 to 7.",
+        "Each panel: DIN on the input connector, DOUT on the output connector. The last DOUT of a line stays free.",
+        "N panels split in ring order: N / 4 on each line, and the first lines get one more. 1 to 3 lines also work.",
+        "Connect the GND of each panel to the GND bus (Fig 6). The data lines need a common GND.",
+    ]
+    for k, note in enumerate(notes):
+        b += text(20, 430 + k * 17, note, 11, anchor="start", fill="#555")
+    return svg(960, 505, "WS2812B data lines", b)
+
+
+def ws2812_power():
+    b = text(
+        480,
+        30,
+        "Fig 6. WS2812B power: 1 to 3 USB-C inputs, a branch to each panel",
+        15,
+        bold=True,
+    )
+    for k in range(3):
+        y = 60 + k * 70
+        b += box(
+            20, y, 170, 50, "#fff4d6" if k == 0 else "#fffaea", "#9a6b00", dash=k > 0
+        )
+        b += text(105, y + 22, f"USB-C input {k + 1}", bold=True)
+        b += text(105, y + 39, "5.1 kΩ on CC1 and CC2" if k == 0 else "optional", 10)
+        b += line([(190, y + 18), (240, y + 18)], POWER, 3) + diode(240, y + 18, POWER)
+        b += text(251, y + 4, "SB560", 10)
+        b += line([(262, y + 18), (300, y + 18)], POWER, 3) + dot(300, y + 18, POWER)
+        b += line([(190, y + 38), (210, y + 38)], GND, 3) + dot(210, y + 38, GND)
+    b += line([(300, 78), (300, 218)], POWER, 3)
+    b += (
+        line([(300, 148), (330, 148)], POWER, 3)
+        + dot(330, 148, POWER)
+        + dot(372, 148, POWER)
+    )
+    b += f'  <line x1="330" y1="148" x2="368" y2="131" stroke="{POWER}" stroke-width="3"/>\n'
+    b += text(351, 121, "power switch", 10) + text(
+        351, 168, "optional", 10, fill="#666"
+    )
+    b += line([(372, 148), (420, 148)], POWER, 3)
+    b += box(420, 128, 150, 40, "#ffe7cc", POWER) + text(
+        495, 153, "5 V lever connector", 11, bold=True
+    )
+    b += line([(210, 98), (210, 290), (420, 290)], GND, 3)
+    b += box(420, 270, 150, 40, "#e6e6e6", GND) + text(
+        495, 295, "GND lever connector", 11, bold=True
+    )
+    for x, label in [(650, "panel 1"), (760, "panel 2"), (900, "panel N")]:
+        b += line([(570, 148), (x, 148), (x, 360)], POWER, arrow=True)
+        b += line([(570, 290), (x - 20, 290), (x - 20, 360)], GND, arrow=True)
+        b += f'  <rect x="{x - 32}" y="320" width="24" height="16" fill="#fff" stroke="#555"/>\n'
+        b += text(x - 10, 378, label, 11)
+    b += text(830, 175, "…", 28, fill=POWER) + text(
+        710, 345, "1000 µF", 10, fill="#555"
+    )
+    b += line([(495, 168), (495, 210), (350, 210), (350, 350)], POWER, 2, arrow=True)
+    b += text(250, 368, 'ESP32-S3 "5V" pin', 11, anchor="start")
+    b += text(250, 384, "through a 1N5819 (Fig 2)", 10, anchor="start", fill="#555")
+    notes = [
+        "One 0.5 mm² branch (5 V and GND) to the power wires of each panel, with a 1000 µF capacitor at the panel.",
+        "Do not feed the power from one panel to the next through the 3-pin data connectors.",
+        "1.0 mm² from the inputs to the lever connectors (1.5 mm² with 3 inputs). Use more lever connectors for more panels.",
+        "The firmware limits the LED current (default 4,500 mA). Two 3 A inputs for 10 panels. Refer to Power and Wiring.",
+    ]
+    for k, note in enumerate(notes):
+        b += text(20, 420 + k * 17, note, 11, anchor="start", fill="#555")
+    return svg(960, 495, "WS2812B power distribution", b)
+
+
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "overview.svg").write_text(overview())
     (OUT / "board-chain.svg").write_text(board_chain())
     (OUT / "power.svg").write_text(power())
     (OUT / "esp32-connections.svg").write_text(esp32_connections())
+    (OUT / "ws2812-lines.svg").write_text(ws2812_lines())
+    (OUT / "ws2812-power.svg").write_text(ws2812_power())
 
 
 if __name__ == "__main__":

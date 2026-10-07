@@ -8,7 +8,7 @@ The app has:
 - the controller buttons, which work like the USB controller
 - the display modes: Game of Life, scrolling text, rain, barber pole, ripples, sparkle and the music visualiser, with the message and the speed
 - the preset list
-- the settings: game limits, intensity, brightness levels, panel layout and the password
+- the settings: display type, number of boards, WS2812B colours, brightness and current limit, game limits, intensity, brightness levels, panel layout and the password
 
 ## Files
 

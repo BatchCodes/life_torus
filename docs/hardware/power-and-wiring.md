@@ -141,6 +141,77 @@ A Life board is rarely more than 30 % lit, so one 3 A input is enough at the def
 
 At 5 V 1 A, a 10,000 mAh power bank (approximately 37 Wh) runs the display for approximately 6 hours. The bring-up checklist measures the real current. Its results replace these estimates.
 
+## WS2812B Panels
+
+This section is for the WS2812B build: flexible RGB panels of 8 × 32 pixels, upright in a ring. The ESP32-S3 connections for the controller, the microphone and the mode button do not change. Set the display type to WS2812B in the firmware options or in the phone app. Refer to [Firmware Configuration](../software/configuration.md).
+
+### WS2812B Data Lines
+
+![The ESP32-S3 drives 4 data lines through the 74AHCT125 and a 330 Ω resistor each. Each line is a chain of panels](wiring/ws2812-lines.svg)
+
+Fig 5. WS2812B data lines, with 10 panels on 4 lines.
+
+A WS2812B panel has a data input (`DIN`) and a data output (`DOUT`). The firmware drives up to 4 data lines at the same time. Each data line is a chain of panels: `DOUT` of one panel goes to `DIN` of the next panel on the same line. A frame takes approximately 30 µs per LED on each line, so 4 lines give 4 times the frame rate of 1 line.
+
+The firmware splits the panels over the lines in ring order. Each line gets N / 4 panels, and the first lines get one more. For 10 panels: panels 1 to 3 on line 1, 4 to 6 on line 2, 7 and 8 on line 3, 9 and 10 on line 4.
+
+| ESP32-S3 pin | 74AHCT125 input | 74AHCT125 output | Through | To            |
+| ------------ | --------------- | ---------------- | ------- | ------------- |
+| `GPIO11`     | 1A (pin 2)      | 1Y (pin 3)       | 330 Ω   | line 1, `DIN` |
+| `GPIO12`     | 2A (pin 5)      | 2Y (pin 6)       | 330 Ω   | line 2, `DIN` |
+| `GPIO10`     | 3A (pin 9)      | 3Y (pin 8)       | 330 Ω   | line 3, `DIN` |
+| `GPIO13`     | 4A (pin 12)     | 4Y (pin 11)      | 330 Ω   | line 4, `DIN` |
+
+The 74AHCT125 has the same power and output-enable connections as in the default build. Pin 12 (4A) now connects to `GPIO13`, not to GND. The WS2812B needs a logic high of at least 0.7 × its supply, approximately 3.2 V at 4.6 V. The 3.3 V of the ESP32-S3 is too near this limit, so the buffer is necessary. Put the 330 Ω resistor near the 74AHCT125. It stops reflections on a long data wire.
+
+The panels have a 3-pin connector at each end: 5 V, data and GND. Find the input end from the arrow on the panel or from the `DIN` label. Connect the GND of the data wire to the GND bus too. You can use fewer data lines. Then set the number of lines in the firmware options.
+
+### WS2812B Power
+
+![1 to 3 USB-C inputs through SB560 diodes and the optional power switch to the lever connectors, and one branch to each panel](wiring/ws2812-power.svg)
+
+Fig 6. WS2812B power distribution for N panels.
+
+The power wiring is the same as in the default build, with these differences:
+
+- Use 2 or 3 USB-C inputs, each with its own SB560 diode. Use 1.0 mm² wire from the inputs to the lever connectors, or 1.5 mm² with 3 inputs.
+- Run one branch of 0.5 mm² wire from the lever connectors to the separate power wires (red and black) of each panel. Put a 1000 µF capacitor across 5 V and GND at each panel, with the correct polarity.
+- Do not feed the power from one panel to the next through the 3-pin data connectors. The thin wires of the connectors are not made for the current of a panel.
+
+The diodes drop the bus to approximately 4.6 V. The WS2812B works from 3.5 V to 5.3 V. The colours are a little darker at 4.6 V than at 5 V.
+
+### WS2812B Current and the Limiter
+
+A WS2812B uses current also when it is dark: approximately 0.6 mA to 1 mA for each LED. A panel of 256 LEDs uses approximately 0.2 A when it is dark. Each lit colour channel adds up to 20 mA at full brightness.
+
+The firmware limits the current in two steps:
+
+1. The brightness setting (default 25 %) scales all colours.
+2. The current limit (default 4,500 mA) applies to each frame. The firmware estimates the current of the frame from the colours, with 0.8 mA for each dark LED. If the estimate is above the limit, the firmware makes the frame darker until it is below the limit.
+
+These values are estimates for 10 panels (2,560 LEDs) at 25 % brightness:
+
+| Display state                          | Current with no limit | Current with the 4,500 mA limit |
+| -------------------------------------- | --------------------- | ------------------------------- |
+| all LEDs dark                          | approximately 2 A     | approximately 2 A               |
+| a typical Life board (15 % lit)        | approximately 4 A     | approximately 4 A               |
+| a busy Life board (25 % lit)           | approximately 5 A     | 4.5 A                           |
+| all LEDs white (the bring-up "all on") | approximately 40 A    | 4.5 A                           |
+
+The ESP32-S3 and the Wi-Fi add approximately 0.3 A to each value. The bring-up firmware logs the estimate of each frame. The bring-up checklist measures the real current.
+
+### WS2812B Power Sizing
+
+Set the current limit to suit the USB-C inputs. Keep it approximately 1.5 A below the total of the inputs, for the ESP32-S3 and the diodes.
+
+| Inputs connected | Current available | `led_current_ma` | Use                                 |
+| ---------------- | ----------------- | ---------------- | ----------------------------------- |
+| one, 5 V 3 A     | approximately 3 A | 2500             | up to approximately 6 panels        |
+| two, 5 V 3 A     | approximately 6 A | 4500 (default)   | up to 10 panels                     |
+| three, 5 V 3 A   | approximately 9 A | 7500             | up to 16 panels, or more brightness |
+
+With 10 panels, the display uses approximately 4 A at 5 V, which is 20 W. A 20,000 mAh power bank (approximately 74 Wh) supplies approximately 60 Wh at 5 V, so it runs the display for approximately 3 hours. The limit is a setting in the phone app. Refer to [Phone Control](../software/phone-control.md).
+
 ## Safety
 
 Everything in the build is at 5 V, so there is no mains voltage to touch. The current can still be high:
@@ -148,6 +219,7 @@ Everything in the build is at 5 V, so there is no mains voltage to touch. The cu
 - Use wire of the size in this document. A thin wire can get hot.
 - Make sure that the 5 V and GND wires cannot touch each other. A short circuit can make a power bank or a wire very hot. Most USB-C sources turn off at a short circuit, but do not trust this.
 - Check the polarity of the diodes and the bulk capacitors before you connect power. A reversed electrolytic capacitor can burst.
+- WS2812B build: do not set the current limit above the current that your USB-C inputs can supply. Do not remove the limit to make the display brighter. With all LEDs white, 10 panels can use approximately 40 A.
 
 ## See Also
 

@@ -45,6 +45,26 @@ idf.py build
 
 The bring-up firmware finds the panel layout options for your boards.
 
+## WS2812B Display
+
+These options are for the WS2812B build. `CONFIG_LIFE_BOARDS` sets the number of panels. Refer to [Power and Wiring](../hardware/power-and-wiring.md#ws2812b-panels).
+
+| Option                        | Default | Effect                                                                                                              |
+| ----------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------- |
+| `CONFIG_LIFE_DISPLAY_MAX7219` | y       | Display type: MAX7219 boards. The phone app can change the display type, then the display restarts.                 |
+| `CONFIG_LIFE_DISPLAY_WS2812B` | n       | Display type: WS2812B RGB panels, 8 × 32 pixels each, upright.                                                      |
+| `CONFIG_LIFE_WS2812_LINES`    | 4       | Data lines, 1 to 4. The panels split over the lines in ring order. More lines give a faster refresh.                |
+| `CONFIG_LIFE_PIN_WS_LINE1`    | 11      | GPIO for data line 1.                                                                                               |
+| `CONFIG_LIFE_PIN_WS_LINE2`    | 12      | GPIO for data line 2.                                                                                               |
+| `CONFIG_LIFE_PIN_WS_LINE3`    | 10      | GPIO for data line 3.                                                                                               |
+| `CONFIG_LIFE_PIN_WS_LINE4`    | 13      | GPIO for data line 4.                                                                                               |
+| `CONFIG_LIFE_WS_BRIGHTNESS`   | 25      | Brightness of all colours, 1 % to 100 %.                                                                            |
+| `CONFIG_LIFE_WS_CURRENT_MA`   | 4500    | LED current limit in mA, 500 to 20000. The firmware makes each frame darker to stay under it. Two 3 A inputs: 4500. |
+
+The WS2812B layout (start corner, rows or columns, serpentine order, every second panel turned, ring direction) has no Kconfig option. The bring-up firmware finds it and saves it on the board.
+
+Game of Life cells have three colours: born cells green, surviving cells blue, and cells that die in the next generation red. The cursor and the ko code effect are white. Each display mode has its own colours. The "single colour" setting in the phone app shows everything in one colour, at the three brightness levels.
+
 ## Game
 
 | Option                                | Default    | Effect                                                                                                 |
@@ -76,7 +96,7 @@ The bring-up firmware finds the panel layout options for your boards.
 
 ## Settings from the Phone App
 
-The phone app can change these options at run time: the number of boards (the display restarts), the step time, the settled, no-input and repeat limits, the pause timeout, the random preset fill, the edges of the empty and random presets, the intensity, the brightness levels, the panel layout, beat sync on or off, the beat sensitivity and the password. The display saves them in NVS. A saved value replaces the Kconfig default. The bring-up firmware saves the panel layout and the intensity in the same place. To go back to the Kconfig defaults, erase the board and flash it again.
+The phone app can change these options at run time: the display type and the number of boards (the display restarts), the WS2812B colours (colours or a single colour), brightness and LED current limit, the step time, the settled, no-input and repeat limits, the pause timeout, the random preset fill, the edges of the empty and random presets, the intensity, the brightness levels, the panel layout, beat sync on or off, the beat sensitivity and the password. The display saves them in NVS. A saved value replaces the Kconfig default. The bring-up firmware saves the panel layout and the intensity in the same place. To go back to the Kconfig defaults, erase the board and flash it again.
 
 ## Unattended Play
 

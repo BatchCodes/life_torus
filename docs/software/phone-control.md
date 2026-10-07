@@ -15,11 +15,11 @@ Up to four phones can connect at the same time. Each phone sees the live display
 
 ## What the App Can Do
 
-- **Live display.** A copy of the 64 × 32 display, approximately 10 frames per second. Tap a cell to toggle it. In run, a tap pauses the game first.
+- **Live display.** A copy of the display (8 columns for each board or panel, 32 rows), approximately 10 frames per second. With WS2812B panels, the copy shows the colours. Tap a cell to toggle it. In run, a tap pauses the game first.
 - **Controller.** The same buttons as the USB controller.
 - **Display modes.** Game of Life, scrolling text, rain, barber pole, ripples, sparkle and the music visualiser. Type the message in "Message to scroll" and press "Show message" or Enter, and set the speed of all modes. A mode stays on until you change it in the app, or until the power goes off. At power on, the display always starts with Game of Life. While another mode is on, the USB controller does nothing, except the ko code.
 - **Presets.** Load any preset board directly.
-- **Settings.** The step time, the unattended-play limits, the intensity, the brightness levels, the panel layout, beat sync and the app password. The display saves them in NVS, so they stay after a power cycle.
+- **Settings.** The display type, the number of boards, the WS2812B colours, brightness and current limit, the step time, the unattended-play limits, the intensity, the brightness levels, the panel layout, beat sync and the app password. The display saves them in NVS, so they stay after a power cycle.
 
 ## Beat Sync
 

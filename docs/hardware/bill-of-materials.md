@@ -8,17 +8,17 @@ The suppliers and prices are examples from October 2026, in euros, with VAT. Equ
 
 The default build has 8 boards: 64 columns around and 32 rows. You can use 1 to 16 boards. Each board adds 8 columns. Set the number of boards in the firmware options or in the phone app. Refer to [Firmware Configuration](../software/configuration.md). The lists below are for 8 boards.
 
-| Part                    | Quantity    | Specification                                                                                                  | Example supplier                                                                                         | Approx. price |
-| ----------------------- | ----------- | -------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | ------------- |
-| LED matrix board        | 8 (1 to 16) | Otronic LED Matrix 32x8 with MAX7219 (OT3522), red, 130 × 32.3 mm, 5 V                                         | [Otronic](https://www.otronic.nl/nl/led-matrix-32x8-met-max7219-module)                                  | € 6.25 each   |
-| Controller board        | 1           | Espressif ESP32-S3-DevKitC-1-N8R8 (8 MB flash, 8 MB PSRAM)                                                     | [DigiKey](https://www.digikey.com/en/products/detail/espressif-systems/ESP32-S3-DEVKITC-1-N8R8/15295894) [eBay](https://www.ebay.de/itm/165622319974?_ul=DE&rb_itemId=165622319974)| € 16          |
-| Level shifter           | 1           | 74AHCT125N (or 74HCT125N), quad buffer, DIP-14, with a DIP-14 socket                                           | any electronics supplier, for example Reichelt                                                           | € 1           |
-| Power source            | 1 or 2      | USB-C power bank or USB-C wall charger, 5 V 3 A (15 W) or more per port, with a USB-C to USB-C cable rated 3 A | any electronics supplier                                                                                 | € 15 to € 30  |
-| Game controller         | 1           | Rii USB classic controller (SNES layout, wired USB). Sold as a pack of 2.                                      | Amazon                                                                                                   | € 15 per pack |
-| Microphone (optional)   | 1           | INMP441 I2S MEMS microphone breakout, 3.3 V, for beat sync of the display modes                                | any electronics supplier                                                                                 | € 3           |
-| USB OTG adapter         | 1           | USB-A socket to the connector of your ESP32-S3 board's "USB" port (micro-B or USB-C)                           | any electronics supplier                                                                                 | € 3           |
-| Mode button (optional)  | 1           | Momentary push button, normally open, 12 mm or 16 mm panel mount, for the display modes                        | any electronics supplier                                                                                 | € 1           |
-| Power switch (optional) | 1           | Panel rocker or toggle switch, 1 pole, rated 10 A or more, in the 5 V bus                                      | any electronics supplier                                                                                 | € 2           |
+| Part                    | Quantity    | Specification                                                                                                  | Example supplier                                                                                                                                                                    | Approx. price |
+| ----------------------- | ----------- | -------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- |
+| LED matrix board        | 8 (1 to 16) | Otronic LED Matrix 32x8 with MAX7219 (OT3522), red, 130 × 32.3 mm, 5 V                                         | [Otronic](https://www.otronic.nl/nl/led-matrix-32x8-met-max7219-module)                                                                                                             | € 6.25 each   |
+| Controller board        | 1           | Espressif ESP32-S3-DevKitC-1-N8R8 (8 MB flash, 8 MB PSRAM)                                                     | [DigiKey](https://www.digikey.com/en/products/detail/espressif-systems/ESP32-S3-DEVKITC-1-N8R8/15295894) [eBay](https://www.ebay.de/itm/165622319974?_ul=DE&rb_itemId=165622319974) | € 16          |
+| Level shifter           | 1           | 74AHCT125N (or 74HCT125N), quad buffer, DIP-14, with a DIP-14 socket                                           | any electronics supplier, for example Reichelt                                                                                                                                      | € 1           |
+| Power source            | 1 or 2      | USB-C power bank or USB-C wall charger, 5 V 3 A (15 W) or more per port, with a USB-C to USB-C cable rated 3 A | any electronics supplier                                                                                                                                                            | € 15 to € 30  |
+| Game controller         | 1           | Rii USB classic controller (SNES layout, wired USB). Sold as a pack of 2.                                      | Amazon                                                                                                                                                                              | € 15 per pack |
+| Microphone (optional)   | 1           | INMP441 I2S MEMS microphone breakout, 3.3 V, for beat sync of the display modes                                | any electronics supplier                                                                                                                                                            | € 3           |
+| USB OTG adapter         | 1           | USB-A socket to the connector of your ESP32-S3 board's "USB" port (micro-B or USB-C)                           | any electronics supplier                                                                                                                                                            | € 3           |
+| Mode button (optional)  | 1           | Momentary push button, normally open, 12 mm or 16 mm panel mount, for the display modes                        | any electronics supplier                                                                                                                                                            | € 1           |
+| Power switch (optional) | 1           | Panel rocker or toggle switch, 1 pole, rated 10 A or more, in the 5 V bus                                      | any electronics supplier                                                                                                                                                            | € 2           |
 
 ## Power Wiring
 
@@ -63,6 +63,28 @@ Then order the wire, the lever connectors, the bulk capacitors, the prototype bo
 - The total current of the eight boards depends on the brightness. The firmware limits the brightness by default, so one 3 A USB-C input is enough. Refer to [Power and Wiring](power-and-wiring.md).
 - The ESP32-S3-DevKitC-1 does not always supply 5 V to a device on its "USB" port. If the controller does not start, connect it through a powered USB OTG adapter or a USB OTG Y-cable from the 5 V bus. The hardware tests confirm which method works.
 - You do not need the "UART" port of the ESP32-S3 board for normal use. Use it to flash the firmware and to read the log.
+
+## WS2812B Build
+
+A Life Torus can use flexible WS2812B RGB panels instead of the MAX7219 boards. The panels show the cell states in colour, and they bend, so the display is a round cylinder and not a polygon. The same firmware drives both display types. Refer to [Power and Wiring](power-and-wiring.md#ws2812b-panels) and the [Assembly Guide](../assembly/README.md#ws2812b-build).
+
+The WS2812B build uses the same ESP32-S3 board, 74AHCT125, controller, microphone, mode button and power switch as the default build. It does not use the MAX7219 boards or the Dupont jumper wires. It needs these parts in addition. The quantities are for 10 panels: 80 columns around, 32 rows, approximately 255 mm across and 320 mm high.
+
+| Part                     | Quantity           | Specification                                                                                                                         | Approx. price     |
+| ------------------------ | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------- | ----------------- |
+| WS2812B panel            | 10 (1 to 16)       | Flexible WS2812B RGB matrix, 8 × 32 pixels, 10 mm pitch, approximately 80 × 320 mm, 5 V, with 3-pin input and output connectors       | € 10 to € 20 each |
+| USB-C power input        | 2 or 3             | The same breakout as the default build, with 5.1 kΩ resistors on CC1 and CC2                                                          | € 2 each          |
+| Schottky diode (power)   | 2 or 3             | SB560, one for each USB-C input                                                                                                       | € 0.40 each       |
+| Data resistor            | 4                  | 330 Ω, 0.25 W, one in each data line after the 74AHCT125                                                                              | € 0.40            |
+| Bulk capacitor           | 1 for each panel   | 1000 µF, 10 V or higher, electrolytic, at the power wires of each panel                                                               | € 0.50 each       |
+| Branch wire              | 1 m for each panel | 0.5 mm² (20 AWG) stranded, red and black, from the lever connectors to each panel                                                     | € 1 each          |
+| Data wire                | 2 m                | 3-core cable or 3 jumper wires, for the data line to the first panel of each line                                                     | € 2               |
+| 3-pin connector pigtails | 1 for each panel   | Mating cables for the panel connectors (usually JST SM 3-pin), if the panels do not include them                                      | € 0.50 each       |
+| Support tube             | 1                  | A tube approximately 251 mm across and 320 mm high for 10 panels. Refer to the [Assembly Guide](../assembly/README.md#ws2812b-build). | € 5 to € 15       |
+
+The total cost of a 10-panel build, with the controller and without the power source, is approximately € 200.
+
+The power source must supply 5 V 3 A on two ports at the same time. Many power banks share one current limit between their ports. Two power banks, or a power bank and a wall charger, also work. Refer to [Power and Wiring](power-and-wiring.md#ws2812b-power-sizing).
 
 ## See Also
 

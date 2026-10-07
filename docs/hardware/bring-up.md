@@ -61,6 +61,53 @@ Do these checks in this order. Write down the results. They go into the document
 8. **Mode button and power switch.** Press the mode button. The log must show `mode button pressed` once for each press. Turn the power switch off and on. The display must go dark, then start again with the chip walk.
 9. **Microphone.** Flash the game firmware. The log must show `microphone found`. Play music with a clear beat near the display, and open the phone app. After a few seconds, the status shows the tempo in BPM, and the display modes (for example ripples) move with the beat.
 
+## WS2812B Panels
+
+The bring-up firmware also works with WS2812B panels. Build it with the WS2812B display type, and set the number of panels with `CONFIG_LIFE_BOARDS` (`sdkconfig.ci.ws2812` sets 10):
+
+```bash
+. ~/esp/esp-idf/export.sh
+cd firmware/life_torus
+idf.py -B build_bringup_ws -D SDKCONFIG=build_bringup_ws/sdkconfig -D SDKCONFIG_DEFAULTS="sdkconfig.defaults;sdkconfig.ci.bringup;sdkconfig.ci.ws2812" build
+idf.py -B build_bringup_ws -p /dev/ttyUSB0 flash monitor
+```
+
+A display type saved in the phone app replaces the firmware option.
+
+### WS2812B Controls
+
+| Button | Function                                                        |
+| ------ | --------------------------------------------------------------- |
+| Start  | next test pattern                                               |
+| Select | previous test pattern                                           |
+| L / R  | lower / higher brightness, in steps of 5 %                      |
+| X      | layout: the LEDs run along the rows or along the columns        |
+| Y      | layout: serpentine order (every second row runs back) on or off |
+| A      | layout: the next start corner (the corner with the first LED)   |
+| B      | layout: every second panel turned by 180°                       |
+| Up     | layout: the panel order goes right to left around the ring      |
+
+After each change, the log shows the layout and the estimated current of the last frame. The firmware saves the layout and the brightness on the board.
+
+### WS2812B Test Patterns
+
+| Pattern       | What you see when everything is correct                                                                                                      |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| LED walk      | One lit LED moves along the LED order of each panel, on all panels at the same time. Line 1 is red, line 2 green, line 3 blue, line 4 white. |
+| panel numbers | Each panel shows its number at the top, from 00, upright and readable. The bottom-left LED of each panel is white.                           |
+| column sweep  | One full column moves to the right around the ring.                                                                                          |
+| row sweep     | One full row moves down, at the same height on all panels.                                                                                   |
+| all on        | All LEDs are white, at the current limit. Use it to measure the current.                                                                     |
+| levels        | Three bands of rainbow colours: bright at the top, normal in the middle, dim at the bottom.                                                  |
+
+### WS2812B Checklist
+
+1. **Data lines.** In the LED walk, each panel must show one moving LED in the colour of its data line. If a panel stays dark, check its `DIN` wire and the `DOUT` wire of the previous panel. If a panel shows the wrong colour, it is on the wrong line.
+2. **LED order.** Look at the start of the LED walk. Press A until the white corner LED of the panel numbers is at the bottom left. Press X and Y until the column sweep and the row sweep are straight lines.
+3. **Panel order.** Show the panel numbers. They must increase from left to right around the ring. If they decrease, press Up. If every second panel is upside down, press B.
+4. **Current.** Connect two USB-C inputs. Show all on. Measure the current in the 5 V wire from each input, and add the two values. The total must be near the current limit plus approximately 0.3 A. Press L and R and look at the logged estimate.
+5. **Power bank.** Run the game firmware from your power source for 10 minutes. The display must not flicker, and the ESP32-S3 must not restart.
+
 ## Results
 
 Record the results of your display here, and open an issue or a pull request with them.
@@ -75,6 +122,8 @@ Record the results of your display here, and open an issue or a pull request wit
 | controller report layout           | not yet tested |
 | mode button and power switch       | not yet tested |
 | microphone and beat sync           | not yet tested |
+| WS2812B layout options             | not yet tested |
+| WS2812B current at the limit       | not yet tested |
 
 ## See Also
 

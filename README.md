@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/BatchCodes/life_torus/actions/workflows/ci.yml/badge.svg)](https://github.com/BatchCodes/life_torus/actions/workflows/ci.yml)
 
-Life Torus is a physical display for Conway's Game of Life. Eight red LED matrix boards stand in a ring and make a grid of 64 cells around and 32 cells high. You can use 1 to 16 boards: each board adds 8 columns. An ESP32-S3 runs the simulation and drives the boards. A USB game controller moves a cursor, so you can draw cells and patterns on the ring. The grid wraps around the ring and from the top to the bottom, so the game runs on a torus.
+Life Torus is a physical display for Conway's Game of Life. Eight red LED matrix boards stand in a ring and make a grid of 64 cells around and 32 cells high. You can use 1 to 16 boards: each board adds 8 columns. Flexible WS2812B RGB panels also work: they show the cells in colour and make a round cylinder. An ESP32-S3 runs the simulation and drives the boards. A USB game controller moves a cursor, so you can draw cells and patterns on the ring. The grid wraps around the ring and from the top to the bottom, so the game runs on a torus.
 
 This repository contains everything that you need to build one: the firmware, a bill of materials, the wiring and assembly documents, and three ways to flash the ESP32-S3. A [browser simulator](tools/simulator/README.md) lets you try the game before you buy the parts.
 
@@ -25,6 +25,7 @@ USB game controller --USB--> ESP32-S3 --3.3 V SPI--> 74AHCT125 --5 V SPI--> boar
 - The ESP32-S3 sends the image over three wires (`DIN`, `CLK` and `CS`). A 74AHCT125 buffer changes the 3.3 V signals to 5 V.
 - A USB-C power bank or a USB-C wall charger at 5 V feeds the boards at several points. A second USB-C input is optional, for more brightness. The ESP32-S3 uses the same 5 V bus.
 - The game controller connects to the USB port of the ESP32-S3. It is optional.
+- Instead of the MAX7219 boards, the ESP32-S3 can drive flexible WS2812B RGB panels on up to 4 data lines. The firmware gives the cells and the display modes colours, and limits the LED current for a USB-C power bank. Refer to the [WS2812B build](docs/hardware/bill-of-materials.md#ws2812b-build).
 - An optional INMP441 microphone lets the display modes move with the beat of music, and drives the music visualiser.
 - The ESP32-S3 makes an open Wi-Fi network. A phone joins it and opens the [phone app](docs/software/phone-control.md): a live copy of the display, the controls, display modes (scrolling text, rain, barber pole, ripples, sparkle, music visualiser) and the settings.
 
@@ -55,6 +56,7 @@ When nobody uses it, the display looks after itself. It loads a new preset when 
 | Otronic LED Matrix 32x8 with MAX7219 (OT3522), 8 off | Target | The display boards.                                      |
 | Espressif ESP32-S3-DevKitC-1-N8R8                    | Target | The controller board. It has a USB host port.            |
 | Rii USB classic controller (SNES layout)             | Target | Other generic USB SNES controllers can work. Not tested. |
+| Flexible WS2812B RGB panel, 8 × 32 pixels, 10 off    | Target | The RGB display, instead of the MAX7219 boards.          |
 
 Refer to the [Bill of Materials](docs/hardware/bill-of-materials.md) for the full parts list, suppliers and prices.
 
