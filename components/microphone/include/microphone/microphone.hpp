@@ -34,6 +34,8 @@ public:
     float bpm();
     // The running tempo estimate, also before the beat is stable, or 0.
     float bpm_estimate();
+    // Where the stable beat comes from: bass, full range, or none.
+    beat::Source source();
     // Copies the spectrum when a new one is ready and there is sound. Returns false otherwise.
     bool spectrum(float* levels);
 

@@ -19,6 +19,7 @@ struct Song {
     float bpm;
     float kick = 0.5f;
     float hat = 0.0f;
+    float high = 0.0f;  // A high drum (noise above the bass) on each beat.
     float noise = 0.001f;
     float start_s = 0;  // Beat phase: the first kick.
 };
@@ -45,6 +46,7 @@ public:
             const float hat_noise = white - previous_white_;  // A difference removes the bass.
             previous_white_ = white;
             x += song.hat * static_cast<float>(std::exp(-half / 0.03)) * hat_noise;
+            x += song.high * static_cast<float>(std::exp(-since / 0.05)) * hat_noise;
             x += song.noise * white;
             out.push_back(x);
         }
@@ -101,6 +103,37 @@ void check_tempo(float bpm, float hat) {
 
 void test_120_bpm() {
     check_tempo(120.0f, 0.0f);
+}
+
+void test_no_bass_uses_full_range() {
+    // Music from a phone speaker: no bass, only a high drum on each beat.
+    BeatDetector d(kRate);
+    Generator g(17);
+    std::vector<float> audio;
+    std::vector<double> kicks;
+    Song song{105.0f};
+    song.kick = 0;
+    song.high = 0.4f;
+    song.start_s = 0.21f;
+    g.add(song, 14.0f, audio, kicks);
+    const std::vector<double> beats = run(d, audio, 10000);
+    TEST_ASSERT_TRUE(d.stable());
+    TEST_ASSERT_EQUAL(static_cast<int>(beat::Source::kFullRange), static_cast<int>(d.source()));
+    TEST_ASSERT_FLOAT_WITHIN(105.0f * 0.02f, 105.0f, d.bpm());
+    TEST_ASSERT_TRUE(beats.size() >= 6);
+    TEST_ASSERT_TRUE(worst_offset(beats, kicks) < 40.0);
+}
+
+void test_bass_is_preferred() {
+    BeatDetector d(kRate);
+    Generator g(19);
+    std::vector<float> audio;
+    std::vector<double> kicks;
+    Song song{120.0f};
+    song.hat = 1.0f;
+    g.add(song, 12.0f, audio, kicks);
+    run(d, audio, 0);
+    TEST_ASSERT_EQUAL(static_cast<int>(beat::Source::kBass), static_cast<int>(d.source()));
 }
 
 void test_90_bpm() {
@@ -180,6 +213,8 @@ void test_sensitivity_for_quiet_music() {
 
 void run_beat_tests() {
     RUN_TEST(test_120_bpm);
+    RUN_TEST(test_no_bass_uses_full_range);
+    RUN_TEST(test_bass_is_preferred);
     RUN_TEST(test_90_bpm);
     RUN_TEST(test_follows_bass_not_hi_hat);
     RUN_TEST(test_tempo_change);

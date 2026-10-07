@@ -60,15 +60,19 @@ void append_value(char* out, size_t size, const char* key, const char* value) {
 }
 
 void send_status(phone_link::PhoneLink& phone, const game::Game& game,
-                 const display_modes::ModeManager& modes, bool mic, float bpm, float bpm_estimate) {
+                 const display_modes::ModeManager& modes, bool mic, float bpm, float bpm_estimate,
+                 beat::Source source) {
     char message[800];
     std::snprintf(message, sizeof(message),
                   "status game=%s&display_mode=%d&generation=%lu&population=%d&preset=%d&speed=%d"
-                  "&mic=%d&bpm=%d&bpm_estimate=%d",
+                  "&mic=%d&bpm=%d&bpm_estimate=%d&source=%s",
                   kGameStates[static_cast<int>(game.mode())], static_cast<int>(modes.mode()),
                   static_cast<unsigned long>(game.simulation().generation()),
                   game.simulation().current().population(), game.preset_index(), modes.speed(),
-                  mic ? 1 : 0, static_cast<int>(bpm + 0.5f), static_cast<int>(bpm_estimate + 0.5f));
+                  mic ? 1 : 0, static_cast<int>(bpm + 0.5f), static_cast<int>(bpm_estimate + 0.5f),
+                  source == beat::Source::kBass        ? "bass"
+                  : source == beat::Source::kFullRange ? "full"
+                                                       : "none");
     append_value(message, sizeof(message), "preset_name", game.preset_name());
     append_value(message, sizeof(message), "shape", game.shape_name());
     append_value(message, sizeof(message), "text", modes.text());
@@ -249,7 +253,8 @@ void run_game(Board& board, settings::Settings& s) {
             if (now - last_phone_frame >= kPhoneFrameMs) {
                 last_phone_frame = now;
                 phone.send_frame(image);
-                send_status(phone, game, modes, mic.present(), mic.bpm(), mic.bpm_estimate());
+                send_status(phone, game, modes, mic.present(), mic.bpm(), mic.bpm_estimate(),
+                            mic.source());
             }
         }
         last_clients = phone_on ? phone.client_count() : 0;

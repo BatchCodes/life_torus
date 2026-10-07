@@ -134,6 +134,16 @@ float Microphone::bpm_estimate() {
     return value;
 }
 
+beat::Source Microphone::source() {
+    if (!present_) {
+        return beat::Source::kNone;
+    }
+    xSemaphoreTake(lock_, portMAX_DELAY);
+    const beat::Source value = detector_.source();
+    xSemaphoreGive(lock_);
+    return value;
+}
+
 bool Microphone::spectrum(float* levels) {
     if (!present_) {
         return false;

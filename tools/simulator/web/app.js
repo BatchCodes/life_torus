@@ -131,6 +131,7 @@ async function main() {
     listening: module.cwrap("sim_listening", "number", []),
     audioLevel: module.cwrap("sim_audio_level", "number", []),
     bpmEstimate: module.cwrap("sim_bpm_estimate", "number", []),
+    beatSource: module.cwrap("sim_beat_source", "number", []),
   };
 
   const flat = document.getElementById("flat").getContext("2d");
@@ -304,7 +305,7 @@ async function main() {
       const estimate = api.bpmEstimate();
       status.tempo.textContent =
         bpm > 0
-          ? `${bpm} BPM (locked)`
+          ? `${bpm} BPM (locked, ${api.beatSource() === 1 ? "bass" : "full range"})`
           : estimate > 0
             ? `about ${estimate} BPM (estimating)`
             : "no beat yet";

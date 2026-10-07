@@ -137,6 +137,7 @@ class SimulatorTransport {
       tapCell: c("sim_tap_cell", null, ["number", "number", "number"]),
       bpm: c("sim_bpm", "number", []),
       bpmEstimate: c("sim_bpm_estimate", "number", []),
+      beatSource: c("sim_beat_source", "number", []),
       listening: c("sim_listening", "number", []),
       audioLevel: c("sim_audio_level", "number", []),
       setBeat: c("sim_set_beat", null, ["number", "number"]),
@@ -219,6 +220,7 @@ class SimulatorTransport {
       mic: this.api.listening(),
       bpm: this.api.bpm(),
       bpm_estimate: this.api.bpmEstimate(),
+      source: ["none", "bass", "full"][this.api.beatSource()],
     }).toString();
   }
 
@@ -315,7 +317,7 @@ function main() {
     tempoLine.textContent =
       "Tempo: " +
       (bpm > 0
-        ? `${bpm} BPM (locked)`
+        ? `${bpm} BPM (locked, ${s.get("source") === "bass" ? "bass" : "full range"})`
         : estimate > 0
           ? `about ${estimate} BPM (estimating)`
           : "no beat yet");
