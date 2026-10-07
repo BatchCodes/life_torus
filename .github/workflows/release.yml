@@ -10,12 +10,9 @@ on:
     tags:
       - "v*"
 
-permissions:
-  contents: write
-
 jobs:
-  release:
-    name: Build and publish release
+  build:
+    name: Build release images
     runs-on: ubuntu-latest
     container: espressif/idf:v6.1
     steps:
@@ -25,19 +22,44 @@ jobs:
         run: |
           git config --global --add safe.directory "${GITHUB_WORKSPACE}"
           scripts/ci.sh release "${GITHUB_REF_NAME}"
-      - uses: softprops/action-gh-release@v2
+      - uses: actions/upload-artifact@v4
         with:
-          name: Life Torus ${{ github.ref_name }}
-          # 0.x versions are not yet tested on a real display.
-          prerelease: ${{ startsWith(github.ref_name, 'v0.') }}
-          generate_release_notes: true
-          body: |
-            Merged firmware images for the ESP32-S3-DevKitC-1-N8R8. Flash each image at offset 0x0.
-
-            - `life_torus-${{ github.ref_name }}.bin`: the game.
-            - `life_torus-bringup-${{ github.ref_name }}.bin`: test patterns for a new display.
-
-            Refer to docs/software/flashing.md for the web flasher, esptool and Docker.
-          files: |
+          name: release-images
+          path: |
             dist/*.bin
             dist/SHA256SUMS-*.txt
+
+  publish:
+    name: Publish release
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-images
+          path: dist
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          # 0.x versions are not yet tested on a real display.
+          prerelease=""
+          if [[ "${TAG}" == v0.* ]]; then
+            prerelease="--prerelease"
+          fi
+          cat >notes.md <<NOTES
+          Merged firmware images for the ESP32-S3-DevKitC-1-N8R8. Flash each image at offset 0x0.
+          A merged image also erases the saved settings.
+
+          - \`life_torus-${TAG}.bin\`: the game, with the phone app.
+          - \`life_torus-bringup-${TAG}.bin\`: test patterns for a new display.
+
+          The web flasher at https://batchcodes.github.io/life_torus/flash.html keeps the saved
+          settings. Refer to docs/software/flashing.md.
+          NOTES
+          gh release create "${TAG}" dist/*.bin dist/SHA256SUMS-*.txt \
+            --repo "${GITHUB_REPOSITORY}" --title "Life Torus ${TAG}" --notes-file notes.md \
+            --generate-notes ${prerelease}
