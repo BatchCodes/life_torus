@@ -1,0 +1,41 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# On a version tag (for example v0.1.0), build the game and the bring-up firmware and attach
+# one merged image of each to a GitHub release. Keep the image tag in sync with
+# scripts/esp_idf_version.txt.
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build and publish release
+    runs-on: ubuntu-latest
+    container: espressif/idf:v6.1
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build release images
+        shell: bash
+        run: |
+          git config --global --add safe.directory "${GITHUB_WORKSPACE}"
+          scripts/ci.sh release "${GITHUB_REF_NAME}"
+      - uses: softprops/action-gh-release@v2
+        with:
+          name: Life Torus ${{ github.ref_name }}
+          generate_release_notes: true
+          body: |
+            Merged firmware images for the ESP32-S3-DevKitC-1-N8R8. Flash each image at offset 0x0.
+
+            - `life_torus-${{ github.ref_name }}.bin`: the game.
+            - `life_torus-bringup-${{ github.ref_name }}.bin`: test patterns for a new display.
+
+            Refer to docs/software/flashing.md for the web flasher, esptool and Docker.
+          files: |
+            dist/*.bin
+            dist/SHA256SUMS-*.txt

@@ -2,6 +2,9 @@
 build/
 build_ci_*/
 build_bringup/
+
+# Release images
+dist/
 sdkconfig
 sdkconfig.old
 managed_components/

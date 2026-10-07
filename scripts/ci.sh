@@ -18,6 +18,8 @@ Commands:
   build APP [VARIANT]       Build firmware/APP. VARIANT selects firmware/APP/sdkconfig.ci.VARIANT.
   simulator                 Build the browser simulator in tools/simulator/web. Needs Emscripten
                             (emcmake) on the PATH, for example in the emscripten/emsdk image.
+  release VERSION           Build the game and the bring-up firmware and write one merged image
+                            of each (flash offset 0x0) to dist/.
   all                       Run the host tests and build every app and variant.
 USAGE
 }
@@ -107,6 +109,29 @@ build_simulator() {
   printf 'Simulator built: %s/web/index.html\n' "${source_dir}"
 }
 
+merge_app() {
+  local app="$1"
+  local variant="$2"
+  local output="$3"
+  local build_dir="${REPO_DIR}/firmware/${app}/build_ci_${variant:-default}"
+
+  idf.py -C "${REPO_DIR}/firmware/${app}" -B "${build_dir}" -D SDKCONFIG="${build_dir}/sdkconfig" \
+    merge-bin -o "${output}"
+}
+
+build_release() {
+  local version="$1"
+  local dist_dir="${REPO_DIR}/dist"
+
+  mkdir -p "${dist_dir}"
+  build_app life_torus
+  build_app life_torus bringup
+  merge_app life_torus "" "${dist_dir}/life_torus-${version}.bin"
+  merge_app life_torus bringup "${dist_dir}/life_torus-bringup-${version}.bin"
+  (cd "${dist_dir}" && sha256sum ./*.bin >"SHA256SUMS-${version}.txt")
+  printf 'Release images in %s\n' "${dist_dir}"
+}
+
 run_all() {
   run_host_tests
   build_app life_torus
@@ -126,6 +151,13 @@ main() {
         return 1
       fi
       build_app "$2" "${3:-}"
+      ;;
+    release)
+      if [[ $# -lt 2 ]]; then
+        usage >&2
+        return 1
+      fi
+      build_release "$2"
       ;;
     simulator)
       build_simulator

@@ -62,6 +62,21 @@ The `simulator` command needs Emscripten, so `all` does not run it. CI builds th
 
 The container runs as `root`, so the build directories it makes belong to `root`. Delete them with `sudo`, or run the checks on a copy of the repository. `scripts/ci.sh` builds in `build_ci_*` directories, not in `build/`, so a CI run does not change the settings of your own `idf.py build`. CI does not read `sdkconfig.local`.
 
+## Release
+
+Push a version tag to make a release. The [release workflow](.github/workflows/release.yml) builds the game and the bring-up firmware, merges each into one image with `idf.py merge-bin`, and attaches the images and their SHA-256 checksums to a GitHub release:
+
+```bash
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+To build the same images locally, in `dist/`:
+
+```bash
+./scripts/ci.sh release v0.1.0
+```
+
 ## Code Style
 
 - Format C and C++ code with `clang-format`. The project file is [.clang-format](.clang-format).
