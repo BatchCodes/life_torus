@@ -6,6 +6,7 @@
 
 #include <cstdint>
 
+#include "beat/beat_detector.hpp"
 #include "display_modes/mode_manager.hpp"
 #include "frame/image.hpp"
 #include "game/game.hpp"
@@ -18,6 +19,14 @@ game::Game g_game{game::GameConfig{}};
 display_modes::ModeManager g_modes{g_game, 12345};
 frame::Image g_image;
 uint8_t g_levels[life::kWidth * life::kHeight];
+
+// Beat sync with the computer or phone microphone (Web Audio).
+constexpr int kAudioBuffer = 8192;
+float g_audio[kAudioBuffer];
+beat::BeatDetector g_beat{48000};
+bool g_listening = false;
+bool g_beat_sync = true;
+uint32_t g_last_audio_ms = 0;
 
 }  // namespace
 
@@ -55,7 +64,44 @@ EMSCRIPTEN_KEEPALIVE void sim_release(int button, uint32_t now_ms) {
 }
 
 EMSCRIPTEN_KEEPALIVE void sim_tick(uint32_t now_ms) {
+    if (g_listening && g_beat_sync) {
+        // Map the page clock to the audio time of the detector.
+        const uint32_t audio_ms = g_beat.time_ms() + (now_ms - g_last_audio_ms);
+        if (g_beat.take_beat(audio_ms)) {
+            g_modes.beat(now_ms);
+        }
+    }
     g_modes.tick(now_ms);
+}
+
+// Starts beat detection at the sample rate of the page's audio input.
+EMSCRIPTEN_KEEPALIVE void sim_listen(int sample_rate) {
+    g_beat = beat::BeatDetector(sample_rate);
+    g_listening = true;
+}
+
+EMSCRIPTEN_KEEPALIVE float* sim_audio_buffer() {
+    return g_audio;
+}
+
+EMSCRIPTEN_KEEPALIVE void sim_audio_process(int count, uint32_t now_ms) {
+    if (count > 0 && count <= kAudioBuffer) {
+        g_beat.process(g_audio, static_cast<size_t>(count));
+        g_last_audio_ms = now_ms;
+    }
+}
+
+EMSCRIPTEN_KEEPALIVE void sim_set_beat(int beat_sync, int sensitivity) {
+    g_beat_sync = beat_sync != 0;
+    g_beat.set_sensitivity(sensitivity);
+}
+
+EMSCRIPTEN_KEEPALIVE int sim_bpm() {
+    return g_listening && g_beat.stable() ? static_cast<int>(g_beat.bpm() + 0.5f) : 0;
+}
+
+EMSCRIPTEN_KEEPALIVE int sim_listening() {
+    return g_listening ? 1 : 0;
 }
 
 EMSCRIPTEN_KEEPALIVE void sim_set_mode(int mode, uint32_t now_ms) {

@@ -22,7 +22,7 @@ When the app does not run on a Life Torus (for example on GitHub Pages, or with 
 ./scripts/simulator_docker.sh --serve
 ```
 
-Then open `http://localhost:8000/phone/?sim`. The online version is at [batchcodes.github.io/life_torus/phone/](https://batchcodes.github.io/life_torus/phone/).
+Then open `http://localhost:8000/phone/?sim`. In the simulator, "Listen for a beat" uses the phone or computer microphone for beat sync, the same as a microphone on a real Life Torus. The online version is at [batchcodes.github.io/life_torus/phone/](https://batchcodes.github.io/life_torus/phone/).
 
 ## See Also
 

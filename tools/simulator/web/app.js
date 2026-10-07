@@ -125,6 +125,8 @@ async function main() {
     setMode: module.cwrap("sim_set_mode", null, ["number", "number"]),
     setText: module.cwrap("sim_set_text", null, ["string"]),
     setSpeed: module.cwrap("sim_set_speed", null, ["number"]),
+    bpm: module.cwrap("sim_bpm", "number", []),
+    listening: module.cwrap("sim_listening", "number", []),
   };
 
   const flat = document.getElementById("flat").getContext("2d");
@@ -171,6 +173,16 @@ async function main() {
     api.setSpeed(Number(modes.elements.speed.value)),
   );
   modes.addEventListener("submit", (event) => event.preventDefault());
+  const beatLine = document.getElementById("beat");
+  document.getElementById("listen").addEventListener("click", async (event) => {
+    event.target.disabled = true;
+    try {
+      await startListening(module);
+    } catch (error) {
+      beatLine.textContent = "Beat sync: no microphone (" + error.message + ").";
+      event.target.disabled = false;
+    }
+  });
 
   form.addEventListener("submit", (event) => {
     event.preventDefault();
@@ -238,6 +250,11 @@ async function main() {
     status.generation.textContent = String(api.generation());
     status.population.textContent = String(api.population());
     status.shape.textContent = api.shapeName();
+    if (api.listening()) {
+      const bpm = api.bpm();
+      beatLine.textContent =
+        bpm > 0 ? `Beat sync: ${bpm} BPM.` : "Beat sync: listening, no steady beat yet.";
+    }
     requestAnimationFrame(frame);
   }
 

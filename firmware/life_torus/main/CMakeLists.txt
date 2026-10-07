@@ -6,5 +6,5 @@ idf_component_register(
                   esp_hw_support esp_system log freertos
     # The phone app, served by phone_link.
     EMBED_FILES "../../../tools/phone_app/index.html" "../../../tools/phone_app/app.js"
-                "../../../tools/phone_app/style.css"
+                "../../../tools/phone_app/style.css" "../../../tools/phone_app/listen.js"
 )

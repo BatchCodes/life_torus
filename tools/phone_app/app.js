@@ -127,6 +127,9 @@ class SimulatorTransport {
       setText: c("sim_set_text", null, ["string"]),
       setSpeed: c("sim_set_speed", null, ["number"]),
       tapCell: c("sim_tap_cell", null, ["number", "number", "number"]),
+      bpm: c("sim_bpm", "number", []),
+      listening: c("sim_listening", "number", []),
+      setBeat: c("sim_set_beat", null, ["number", "number"]),
       selectPreset: c("sim_select_preset", null, ["number", "number"]),
     };
     this.module = m;
@@ -203,6 +206,8 @@ class SimulatorTransport {
       shape: this.api.shapeName(),
       speed: this.speed,
       text: this.text,
+      mic: this.api.listening(),
+      bpm: this.api.bpm(),
     }).toString();
   }
 
@@ -241,6 +246,7 @@ class SimulatorTransport {
           }
         }
         this.applySettings();
+        this.api.setBeat(this.settings.beat_sync, this.settings.beat_sensitivity);
         this.onText("settings " + new URLSearchParams(this.settings).toString());
         break;
       case "get_settings":
@@ -418,6 +424,18 @@ function main() {
 
   if (!onDevice) {
     document.getElementById("password").placeholder = "Simulator password: life";
+    const listen = document.getElementById("listen");
+    listen.hidden = false;
+    listen.addEventListener("click", async () => {
+      listen.disabled = true;
+      try {
+        await startListening(transport.module);
+        listen.textContent = "Listening…";
+      } catch (error) {
+        listen.textContent = "No microphone: " + error.message;
+        listen.disabled = false;
+      }
+    });
   }
 }
 

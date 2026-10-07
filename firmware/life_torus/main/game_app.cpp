@@ -26,6 +26,8 @@ extern const uint8_t app_js_start[] asm("_binary_app_js_start");
 extern const uint8_t app_js_end[] asm("_binary_app_js_end");
 extern const uint8_t style_css_start[] asm("_binary_style_css_start");
 extern const uint8_t style_css_end[] asm("_binary_style_css_end");
+extern const uint8_t listen_js_start[] asm("_binary_listen_js_start");
+extern const uint8_t listen_js_end[] asm("_binary_listen_js_end");
 
 namespace {
 
@@ -39,6 +41,7 @@ const phone_link::StaticFile kPhoneFiles[] = {
     {"/index.html", "text/html", index_html_start, index_html_end},
     {"/app.js", "text/javascript", app_js_start, app_js_end},
     {"/style.css", "text/css", style_css_start, style_css_end},
+    {"/listen.js", "text/javascript", listen_js_start, listen_js_end},
 };
 
 uint32_t now_ms() {
