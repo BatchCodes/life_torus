@@ -121,7 +121,9 @@ form label {
   font-size: 0.9em;
 }
 
-form input[type="number"] {
+form input[type="number"],
+form input[type="text"],
+form select {
   display: block;
   width: 100%;
   margin-top: 2px;

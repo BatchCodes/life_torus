@@ -23,12 +23,16 @@ add_executable(life_torus
     "${COMPONENTS_DIR}/frame/src/ko_code.cpp"
     "${COMPONENTS_DIR}/game/src/game.cpp"
     "${COMPONENTS_DIR}/game/src/ko_code.cpp"
+    "${COMPONENTS_DIR}/display_modes/src/font.cpp"
+    "${COMPONENTS_DIR}/display_modes/src/effects.cpp"
+    "${COMPONENTS_DIR}/display_modes/src/mode_manager.cpp"
 )
 target_include_directories(life_torus PRIVATE
     "${COMPONENTS_DIR}/life/include"
     "${COMPONENTS_DIR}/patterns/include"
     "${COMPONENTS_DIR}/frame/include"
     "${COMPONENTS_DIR}/game/include"
+    "${COMPONENTS_DIR}/display_modes/include"
 )
 target_compile_options(life_torus PRIVATE -O2 -Wall -Wextra -Werror -fno-exceptions -fno-rtti)
 target_link_options(life_torus PRIVATE

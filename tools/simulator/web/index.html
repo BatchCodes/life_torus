@@ -49,6 +49,25 @@
           <dd id="shape">-</dd>
         </dl>
 
+        <h2>Display Mode</h2>
+        <form id="modes">
+          <label
+            >Mode
+            <select name="mode">
+              <option value="0">Game of Life</option>
+              <option value="1">Scrolling text</option>
+              <option value="2">Rain</option>
+              <option value="3">Barber pole</option>
+              <option value="4">Ripples</option>
+              <option value="5">Sparkle</option>
+            </select></label
+          >
+          <label>Text <input name="text" type="text" maxlength="120" value="Life Torus" /></label>
+          <label
+            >Speed (1 to 10) <input name="speed" type="range" min="1" max="10" value="5"
+          /></label>
+        </form>
+
         <h2>Keys</h2>
         <table class="keys">
           <tbody>

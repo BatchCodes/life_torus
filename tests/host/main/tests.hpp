@@ -7,3 +7,4 @@ void run_frame_tests();
 void run_game_tests();
 void run_panel_map_tests();
 void run_gamepad_report_tests();
+void run_display_modes_tests();

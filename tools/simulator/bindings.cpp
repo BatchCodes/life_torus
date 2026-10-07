@@ -6,6 +6,7 @@
 
 #include <cstdint>
 
+#include "display_modes/mode_manager.hpp"
 #include "frame/image.hpp"
 #include "game/game.hpp"
 #include "patterns/library.hpp"
@@ -13,6 +14,7 @@
 namespace {
 
 game::Game g_game{game::GameConfig{}};
+display_modes::ModeManager g_modes{g_game, 12345};
 frame::Image g_image;
 uint8_t g_levels[life::kWidth * life::kHeight];
 
@@ -44,20 +46,38 @@ EMSCRIPTEN_KEEPALIVE void sim_start(uint32_t now_ms) {
 }
 
 EMSCRIPTEN_KEEPALIVE void sim_press(int button, uint32_t now_ms) {
-    g_game.press(static_cast<game::Button>(button), now_ms);
+    g_modes.press(static_cast<game::Button>(button), now_ms);
 }
 
 EMSCRIPTEN_KEEPALIVE void sim_release(int button, uint32_t now_ms) {
-    g_game.release(static_cast<game::Button>(button), now_ms);
+    g_modes.release(static_cast<game::Button>(button), now_ms);
 }
 
 EMSCRIPTEN_KEEPALIVE void sim_tick(uint32_t now_ms) {
-    g_game.tick(now_ms);
+    g_modes.tick(now_ms);
+}
+
+EMSCRIPTEN_KEEPALIVE void sim_set_mode(int mode, uint32_t now_ms) {
+    if (mode >= 0 && mode < display_modes::kModeCount) {
+        g_modes.set_mode(static_cast<display_modes::ModeId>(mode), now_ms);
+    }
+}
+
+EMSCRIPTEN_KEEPALIVE void sim_set_text(const char* text) {
+    g_modes.set_text(text);
+}
+
+EMSCRIPTEN_KEEPALIVE void sim_set_speed(int speed) {
+    g_modes.set_speed(speed);
+}
+
+EMSCRIPTEN_KEEPALIVE int sim_display_mode() {
+    return static_cast<int>(g_modes.mode());
 }
 
 // Renders the display and returns 64 × 32 brightness levels (0 to 3), row by row.
 EMSCRIPTEN_KEEPALIVE const uint8_t* sim_render(uint32_t now_ms) {
-    g_game.render(g_image, now_ms);
+    g_modes.render(g_image, now_ms);
     for (int y = 0; y < life::kHeight; ++y) {
         for (int x = 0; x < life::kWidth; ++x) {
             g_levels[y * life::kWidth + x] = static_cast<uint8_t>(g_image.get(x, y));

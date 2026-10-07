@@ -1,0 +1,233 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+#include "display_modes/effects.hpp"
+
+#include <cmath>
+#include <cstring>
+
+#include "display_modes/font.hpp"
+
+namespace display_modes {
+
+namespace {
+
+using frame::Level;
+
+constexpr int kTextTop = (life::kHeight - kCharHeight) / 2;
+constexpr int kTextGap = life::kWidth;  // Empty columns after the message.
+
+uint32_t elapsed(uint32_t& last_ms, uint32_t now_ms) {
+    const uint32_t dt = now_ms - last_ms;
+    last_ms = now_ms;
+    // Limit a long gap (for example after a mode change) to one normal frame.
+    return dt > 200 ? 20 : dt;
+}
+
+}  // namespace
+
+// ----- Scrolling text: 4 × speed columns per second.
+
+void ScrollingText::start(uint32_t now_ms) {
+    last_ms_ = now_ms;
+    offset_milli_ = 0;
+}
+
+void ScrollingText::set_text(const char* text) {
+    std::strncpy(text_, text, kMaxTextLength);
+    text_[kMaxTextLength] = '\0';
+    length_ = static_cast<int>(std::strlen(text_));
+    offset_milli_ = 0;
+}
+
+void ScrollingText::tick(uint32_t now_ms, int speed) {
+    offset_milli_ += elapsed(last_ms_, now_ms) * 4u * static_cast<uint32_t>(speed);
+    const uint32_t strip = static_cast<uint32_t>(length_ * kCharAdvance + kTextGap) * 1000u;
+    offset_milli_ %= strip;
+}
+
+void ScrollingText::render(frame::Image& image) const {
+    image.fill(Level::kOff);
+    const int strip = length_ * kCharAdvance + kTextGap;
+    const int offset = static_cast<int>(offset_milli_ / 1000u);
+    for (int x = 0; x < life::kWidth; ++x) {
+        const int sx = (x + offset) % strip;
+        const int index = sx / kCharAdvance;
+        if (index >= length_) {
+            continue;
+        }
+        for (int y = 0; y < kCharHeight; ++y) {
+            if (large_char_cell(text_[index], sx % kCharAdvance, y)) {
+                image.set(x, kTextTop + y, Level::kBright);
+            }
+        }
+    }
+}
+
+// ----- Rain: drops with a bright head and a fading trail.
+
+namespace {
+
+void new_drop(int8_t& x, int16_t& y16, uint8_t& rate, life::Rng& rng, bool anywhere) {
+    x = static_cast<int8_t>(rng.below(life::kWidth));
+    const int start_row = anywhere ? static_cast<int>(rng.below(life::kHeight))
+                                   : -static_cast<int>(rng.below(life::kHeight));
+    y16 = static_cast<int16_t>(start_row * 16);
+    rate = static_cast<uint8_t>(4 + rng.below(9));
+}
+
+}  // namespace
+
+void Rain::start(uint32_t now_ms, life::Rng& rng) {
+    last_ms_ = now_ms;
+    for (Drop& d : drops_) {
+        new_drop(d.x, d.y16, d.rate, rng, true);
+    }
+}
+
+void Rain::tick(uint32_t now_ms, int speed, life::Rng& rng) {
+    const uint32_t dt = elapsed(last_ms_, now_ms);
+    for (Drop& d : drops_) {
+        d.y16 = static_cast<int16_t>(d.y16 + d.rate * dt * static_cast<uint32_t>(speed) / 200u);
+        if (d.y16 / 16 > life::kHeight + 4) {
+            new_drop(d.x, d.y16, d.rate, rng, false);
+        }
+    }
+}
+
+void Rain::render(frame::Image& image) const {
+    image.fill(Level::kOff);
+    constexpr Level kTrail[4] = {Level::kBright, Level::kNormal, Level::kDim, Level::kDim};
+    for (const Drop& d : drops_) {
+        const int head = d.y16 >= 0 ? d.y16 / 16 : -1 - (-d.y16 - 1) / 16;
+        for (int i = 0; i < 4; ++i) {
+            const int y = head - i;
+            if (y >= 0 && y < life::kHeight && image.get(d.x, y) < kTrail[i]) {
+                image.set(d.x, y, kTrail[i]);
+            }
+        }
+    }
+}
+
+// ----- Barber pole: diagonal stripes that turn around the ring.
+
+void BarberPole::start(uint32_t now_ms) {
+    last_ms_ = now_ms;
+    phase_milli_ = 0;
+}
+
+void BarberPole::tick(uint32_t now_ms, int speed) {
+    // Speed 5: one column every 80 ms.
+    phase_milli_ += elapsed(last_ms_, now_ms) * static_cast<uint32_t>(speed) * 5u / 2u;
+    phase_milli_ %= 8000u;
+}
+
+void BarberPole::render(frame::Image& image) const {
+    constexpr Level kStripe[8] = {Level::kBright, Level::kBright, Level::kNormal, Level::kNormal,
+                                  Level::kDim,    Level::kOff,    Level::kOff,    Level::kOff};
+    const int phase = static_cast<int>(phase_milli_ / 1000u);
+    for (int y = 0; y < life::kHeight; ++y) {
+        for (int x = 0; x < life::kWidth; ++x) {
+            image.set(x, y, kStripe[(x + y + 8 - phase) % 8]);
+        }
+    }
+}
+
+// ----- Ripples: rings that spread from random points, across the seam.
+
+void Ripples::start(uint32_t now_ms, life::Rng& rng) {
+    last_ms_ = now_ms;
+    next_spawn_ms_ = now_ms;
+    for (Ripple& r : ripples_) {
+        r.radius_milli = -1;
+    }
+    (void)rng;
+}
+
+void Ripples::tick(uint32_t now_ms, int speed, life::Rng& rng) {
+    const uint32_t dt = elapsed(last_ms_, now_ms);
+    for (Ripple& r : ripples_) {
+        if (r.radius_milli < 0) {
+            continue;
+        }
+        // Speed 5: 12 cells per second.
+        r.radius_milli += static_cast<int32_t>(dt * static_cast<uint32_t>(speed) * 12u / 5u);
+        if (r.radius_milli > 40000) {
+            r.radius_milli = -1;
+        }
+    }
+    if (static_cast<int32_t>(now_ms - next_spawn_ms_) >= 0) {
+        next_spawn_ms_ = now_ms + 3000u / static_cast<uint32_t>(speed);
+        for (Ripple& r : ripples_) {
+            if (r.radius_milli < 0) {
+                r.x = static_cast<int8_t>(rng.below(life::kWidth));
+                r.y = static_cast<int8_t>(rng.below(life::kHeight));
+                r.radius_milli = 0;
+                break;
+            }
+        }
+    }
+}
+
+void Ripples::render(frame::Image& image) const {
+    image.fill(Level::kOff);
+    for (const Ripple& r : ripples_) {
+        if (r.radius_milli < 0) {
+            continue;
+        }
+        const float radius = static_cast<float>(r.radius_milli) / 1000.0f;
+        for (int y = 0; y < life::kHeight; ++y) {
+            int dy = std::abs(y - r.y);
+            dy = dy < life::kHeight - dy ? dy : life::kHeight - dy;
+            for (int x = 0; x < life::kWidth; ++x) {
+                int dx = std::abs(x - r.x);
+                dx = dx < life::kWidth - dx ? dx : life::kWidth - dx;
+                const float band =
+                    std::fabs(std::sqrt(static_cast<float>(dx * dx + dy * dy)) - radius);
+                const Level level = band < 0.75f  ? Level::kBright
+                                    : band < 1.5f ? Level::kNormal
+                                    : band < 2.5f ? Level::kDim
+                                                  : Level::kOff;
+                if (image.get(x, y) < level) {
+                    image.set(x, y, level);
+                }
+            }
+        }
+    }
+}
+
+// ----- Sparkle: random cells that light up and fade.
+
+void Sparkle::start(uint32_t now_ms, life::Rng& rng) {
+    last_ms_ = now_ms;
+    elapsed_ = 0;
+    age_.fill(0);
+    (void)rng;
+}
+
+void Sparkle::tick(uint32_t now_ms, int speed, life::Rng& rng) {
+    // Speed 5: one step every 60 ms.
+    constexpr uint32_t kStep = 60u * kDefaultSpeed;
+    elapsed_ += elapsed(last_ms_, now_ms) * static_cast<uint32_t>(speed);
+    while (elapsed_ >= kStep) {
+        elapsed_ -= kStep;
+        for (uint8_t& age : age_) {
+            if (age > 0) {
+                age = age >= 6 ? 0 : static_cast<uint8_t>(age + 1);
+            }
+        }
+        for (int i = 0; i < 24; ++i) {
+            age_[rng.below(life::kWidth * life::kHeight)] = 1;
+        }
+    }
+}
+
+void Sparkle::render(frame::Image& image) const {
+    constexpr Level kByAge[7] = {Level::kOff,    Level::kBright, Level::kBright, Level::kNormal,
+                                 Level::kNormal, Level::kDim,    Level::kDim};
+    for (int y = 0; y < life::kHeight; ++y) {
+        for (int x = 0; x < life::kWidth; ++x) {
+            image.set(x, y, kByAge[age_[y * life::kWidth + x]]);
+        }
+    }
+}
+
+}  // namespace display_modes

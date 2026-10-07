@@ -16,6 +16,10 @@ The page shows the display two times: as a ring, the way it stands on the table,
 
 The [README](../../README.md) describes what each button does.
 
+## Display Modes
+
+The "Display mode" panel chooses what the display shows, the same as the phone app does on a real Life Torus: Game of Life, scrolling text, rain, barber pole, ripples or sparkle. The text field sets the message of the scrolling text, and the speed slider sets the speed of all modes. In a mode other than Game of Life, the keys do nothing, except the ko code.
+
 ## Settings
 
 The settings panel changes the same values as the firmware configuration, for example the step time and the unattended-play limits. Set a short limit, for example a no-input limit of 50 generations, to see a rule work in a few seconds. "Apply and restart" starts the game again with the new values and a new random seed.

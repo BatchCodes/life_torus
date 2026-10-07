@@ -122,6 +122,9 @@ async function main() {
     shapeName: module.cwrap("sim_shape_name", "string", []),
     presetName: module.cwrap("sim_preset_name", "string", []),
     cursorX: module.cwrap("sim_cursor_x", "number", []),
+    setMode: module.cwrap("sim_set_mode", null, ["number", "number"]),
+    setText: module.cwrap("sim_set_text", null, ["string"]),
+    setSpeed: module.cwrap("sim_set_speed", null, ["number"]),
   };
 
   const flat = document.getElementById("flat").getContext("2d");
@@ -159,6 +162,16 @@ async function main() {
     api.start(now());
   }
 
+  const modes = document.getElementById("modes");
+  modes.elements.mode.addEventListener("change", () =>
+    api.setMode(Number(modes.elements.mode.value), now()),
+  );
+  modes.elements.text.addEventListener("input", () => api.setText(modes.elements.text.value));
+  modes.elements.speed.addEventListener("input", () =>
+    api.setSpeed(Number(modes.elements.speed.value)),
+  );
+  modes.addEventListener("submit", (event) => event.preventDefault());
+
   form.addEventListener("submit", (event) => {
     event.preventDefault();
     restart();
@@ -169,7 +182,7 @@ async function main() {
 
   const held = new Set();
   window.addEventListener("keydown", (event) => {
-    if (event.target instanceof HTMLInputElement) {
+    if (event.target instanceof HTMLInputElement || event.target instanceof HTMLSelectElement) {
       return;
     }
     const button = keyButton(event);

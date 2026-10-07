@@ -1,4 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
+#include "game/ko_code.hpp"
+
 #include <iterator>
 
 #include "game/game.hpp"
@@ -12,7 +14,7 @@ constexpr Button kKoCode[] = {
     Button::kRight, Button::kLeft, Button::kRight, Button::kB,    Button::kA,
 };
 constexpr int kKoLength = static_cast<int>(std::size(kKoCode));
-// The index of the button whose effect the firmware undoes when the code completes.
+// The index of the button whose effect the game undoes when the code completes.
 constexpr int kKoUndoFrom = kKoLength - 2;
 
 // After a wrong press: the longest start of the code that the last presses still match.
@@ -38,33 +40,40 @@ int ko_fallback(int matched, Button button) {
 
 }  // namespace
 
+KoDetector::Result KoDetector::press(Button button, uint32_t now_ms, uint32_t gap_ms) {
+    if (next_ > 0 && now_ms - last_ms_ > gap_ms) {
+        next_ = 0;
+    }
+    last_ms_ = now_ms;
+
+    Result result{false, false, false};
+    if (button != kKoCode[next_]) {
+        const int matched = ko_fallback(next_, button);
+        result.started = matched > 0 && next_ == 0;
+        next_ = matched;
+        return result;
+    }
+    result.started = next_ == 0;
+    result.at_undo = next_ == kKoUndoFrom;
+    ++next_;
+    if (next_ == kKoLength) {
+        next_ = 0;
+        result.complete = true;
+    }
+    return result;
+}
+
 bool Game::ko_code_press(Button button, uint32_t now_ms) {
-    if (next_ko_ > 0 && now_ms - ko_last_ms_ > config_.ko_gap_ms) {
-        next_ko_ = 0;
-    }
-    ko_last_ms_ = now_ms;
-
-    if (button != kKoCode[next_ko_]) {
-        const int matched = ko_fallback(next_ko_, button);
-        if (matched > 0 && next_ko_ == 0) {
-            ko_resume_run_ = mode_ == Mode::kRun;
-        }
-        next_ko_ = matched;
-        return false;
-    }
-
-    if (next_ko_ == 0) {
+    const KoDetector::Result result = ko_.press(button, now_ms, config_.ko_gap_ms);
+    if (result.started) {
         ko_resume_run_ = mode_ == Mode::kRun;
     }
-    if (next_ko_ == kKoUndoFrom) {
+    if (result.at_undo) {
         ko_board_ = simulation_.current();
     }
-    ++next_ko_;
-    if (next_ko_ < kKoLength) {
+    if (!result.complete) {
         return false;
     }
-
-    next_ko_ = 0;
     simulation_.edit(ko_board_);
     dpad_held_ = false;
     mode_ = Mode::kKoCode;

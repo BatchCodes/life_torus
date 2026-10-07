@@ -5,27 +5,14 @@
 #include <cstdint>
 
 #include "frame/image.hpp"
+#include "game/buttons.hpp"
 #include "game/config.hpp"
+#include "game/ko_code.hpp"
 #include "life/grid.hpp"
 #include "life/simulation.hpp"
 #include "patterns/shape.hpp"
 
 namespace game {
-
-enum class Button : uint8_t {
-    kUp,
-    kDown,
-    kLeft,
-    kRight,
-    kA,
-    kB,
-    kX,
-    kY,
-    kL,
-    kR,
-    kSelect,
-    kStart,
-};
 
 enum class Mode : uint8_t {
     kRun,
@@ -103,8 +90,7 @@ private:
     Button held_button_ = Button::kUp;
     uint32_t next_repeat_ms_ = 0;
 
-    int next_ko_ = 0;
-    uint32_t ko_last_ms_ = 0;
+    KoDetector ko_;
     bool ko_resume_run_ = false;
     life::Grid ko_board_;
     uint32_t ko_start_ms_ = 0;
