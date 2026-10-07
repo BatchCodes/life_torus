@@ -50,6 +50,7 @@
     "SNES",
     "SRCS",
     "UART",
+    "VBUS",
     "WAGO",
     "WROOM"
   ]

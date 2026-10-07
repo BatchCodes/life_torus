@@ -54,8 +54,9 @@ menu "Life Torus"
             range 0 15
             default 4
             help
-                The brightness of all LEDs. A higher value uses more current. The bring-up
-                firmware shows the current at each value.
+                The brightness of all LEDs. A higher value uses more current. With one
+                5 V 3 A USB-C input, keep it at 4 or less. With two inputs, up to 8. Refer
+                to docs/hardware/power-and-wiring.md.
 
         config LIFE_BRIGHTNESS_LEVELS
             bool "Variable brightness"

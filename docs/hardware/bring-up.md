@@ -52,22 +52,24 @@ Do these checks in this order. Write down the results. They go into the document
 
 1. **Chain order.** In the chip walk, the blocks must light up from the bottom of board 1 to the top, then board 2, and so on around the ring. If a block stays dark, check the jumper wires to that board. If the order is wrong, check which board gets `DOUT` from which.
 2. **Panel layout.** Show the chip numbers. Press X, Y, A, B, Up and Down until all numbers are upright and readable, and increase from left to right around the ring. Copy the logged `CONFIG_LIFE_PANEL_*` lines into `firmware/life_torus/sdkconfig.local`. Then check the column sweep and the row sweep.
-3. **Current.** Show all on. Measure the current in the 5 V wire from the power supply at intensities 0, 4, 8 and 15. The default intensity is 4.
-4. **Brightness levels.** Show levels. Look at the display directly and through a phone camera. If you see flicker or moving bands, change `CONFIG_LIFE_SUBFRAME_MS`, or turn off `CONFIG_LIFE_BRIGHTNESS_LEVELS`.
-5. **Controller power.** Connect the controller to the "USB" port. The log must show `controller connected` and a report for each button. If the log shows nothing, the board does not supply 5 V to the port. Then use a powered USB OTG adapter or a USB OTG Y-cable from the 5 V supply.
-6. **Controller layout.** Press each button and compare the logged report with the generic layout in [report.cpp](../../components/gamepad_input/src/report.cpp). The idle report is `01 7F 7F 7F 7F 0F 00 00`.
+3. **Current.** Connect both USB-C inputs. Show all on. Measure the current in the 5 V wire from each USB-C input at intensities 0, 4 and 8, and add the two values. Do not go above intensity 8: the current can be more than two 3 A inputs can supply. The default intensity is 4.
+4. **Power bank.** Disconnect input 2. Run the game firmware from one power bank on input 1 for 10 minutes. The display must not flicker, and the ESP32-S3 must not restart.
+5. **Brightness levels.** Show levels. Look at the display directly and through a phone camera. If you see flicker or moving bands, change `CONFIG_LIFE_SUBFRAME_MS`, or turn off `CONFIG_LIFE_BRIGHTNESS_LEVELS`.
+6. **Controller power.** Connect the controller to the "USB" port. The log must show `controller connected` and a report for each button. If the log shows nothing, the board does not supply 5 V to the port. Then use a powered USB OTG adapter or a USB OTG Y-cable from the 5 V supply.
+7. **Controller layout.** Press each button and compare the logged report with the generic layout in [report.cpp](../../components/gamepad_input/src/report.cpp). The idle report is `01 7F 7F 7F 7F 0F 00 00`.
 
 ## Results
 
 Record the results of your display here, and open an issue or a pull request with them.
 
-| Check                               | Result         |
-| ----------------------------------- | -------------- |
-| panel layout options                | not yet tested |
-| current at intensity 0 / 4 / 8 / 15 | not yet tested |
-| brightness levels                   | not yet tested |
-| controller power on the "USB" port  | not yet tested |
-| controller report layout            | not yet tested |
+| Check                              | Result         |
+| ---------------------------------- | -------------- |
+| panel layout options               | not yet tested |
+| current at intensity 0 / 4 / 8     | not yet tested |
+| one power bank, 10 minutes         | not yet tested |
+| brightness levels                  | not yet tested |
+| controller power on the "USB" port | not yet tested |
+| controller report layout           | not yet tested |
 
 ## See Also
 

@@ -1,10 +1,10 @@
 # Power and Wiring
 
-This document tells you how to connect the parts of a Life Torus: the signal chain from the ESP32-S3 to the eight LED boards, the USB controller, and the 5 V power distribution. It also tells you how to size the power supply and how to do the mains side safely. The [Bill of Materials](bill-of-materials.md) lists the parts. The [Assembly Guide](../assembly/README.md) tells you in which order to build the ring.
+This document tells you how to connect the parts of a Life Torus: the signal chain from the ESP32-S3 to the eight LED boards, the USB controller, the USB-C power inputs and the 5 V power distribution. It also tells you how much current the display uses, and which power bank or charger is enough. The [Bill of Materials](bill-of-materials.md) lists the parts. The [Assembly Guide](../assembly/README.md) tells you in which order to build the ring.
 
-![Wiring diagram: mains inlet, 5 V supply, lever connectors, eight boards, ESP32-S3, 74AHCT125 and USB controller](wiring.svg)
+![Wiring diagram: two USB-C inputs with diodes, lever connectors, eight boards, ESP32-S3, 74AHCT125 and USB controller](wiring.svg)
 
-Fig 1. Signal chain, controller and 5 V power.
+Fig 1. Signal chain, controller and USB-C power.
 
 ## Signal Chain
 
@@ -45,9 +45,28 @@ Connect the USB controller to the "USB" port of the ESP32-S3 board, through a US
 
 The ESP32-S3-DevKitC-1 does not always supply 5 V to a device on its "USB" port. If the controller does not start, use a powered USB OTG adapter, or a USB OTG Y-cable with its power lead on the 5 V bus. The bring-up checklist confirms which method works.
 
+## USB-C Power Input
+
+A USB-C power bank or a USB-C wall charger powers the display, at 5 V. The display has one or two USB-C power inputs. Each input is a USB-C socket breakout for power:
+
+- The breakout must have a 5.1 kΩ resistor from CC1 to GND and one from CC2 to GND. These resistors tell the power bank or charger that a device is connected. Without them, most USB-C sources do not turn on their 5 V output.
+- With these resistors, a USB-C source supplies 5 V only. It never changes to 9 V or more. Do not use a USB-C "PD trigger" board: the LED boards and the ESP32-S3 board take 5 V only.
+- Use a USB-C to USB-C cable that is rated for 3 A. A USB-A to USB-C cable usually supplies less current.
+
+Connect each input to the 5 V lever connector through its own SB560 Schottky diode, with the stripe (cathode) towards the lever connector. Connect the GND of each input to the GND lever connector. The diodes stop one source from feeding current into the other when both inputs are connected. They also drop approximately 0.4 V, so the bus is at approximately 4.6 V. The MAX7219 and the 74AHCT125 work from 4.0 V to 5.5 V.
+
+| Inputs connected | Current available | Use                                     |
+| ---------------- | ----------------- | --------------------------------------- |
+| one, 5 V 3 A     | approximately 3 A | default brightness (intensity 4)        |
+| two, 5 V 3 A     | approximately 6 A | higher intensity, up to approximately 8 |
+
+With two inputs, the source with the higher voltage supplies most of the current. When it reaches its limit, its voltage drops and the other source supplies the rest. You can use two ports of one power bank, or a power bank and a charger.
+
+Some power banks turn off when the current is very low. The display always uses at least approximately 0.3 A, so a power bank stays on.
+
 ## Power Distribution
 
-The 5 V supply feeds two lever connectors: one for 5 V and one for GND. Use 1.0 mm² wire from the supply to the lever connectors. From the lever connectors, four branches of 0.5 mm² wire go to the IN headers of boards 1, 3, 5 and 7. The jumper wires carry the power on to boards 2, 4, 6 and 8. Put a 1000 µF capacitor across 5 V and GND at each of the four injection points, with the correct polarity.
+The USB-C inputs feed two lever connectors: one for 5 V and one for GND. Use 1.0 mm² wire from the inputs to the lever connectors. From the lever connectors, four branches of 0.5 mm² wire go to the IN headers of boards 1, 3, 5 and 7. The jumper wires carry the power on to boards 2, 4, 6 and 8. Put a 1000 µF capacitor across 5 V and GND at each of the four injection points, with the correct polarity.
 
 Do not feed all eight boards through the board-to-board jumpers. The jumpers and the header pins are not made for the current of the full display.
 
@@ -57,26 +76,23 @@ Connect the `5V` pin of the ESP32-S3 board to the 5 V bus through a 1N5819 Schot
 
 Each MAX7219 multiplexes its 64 LEDs: only one row of 8 LEDs is on at a time. The current depends on the number of lit LEDs and on the intensity setting. These values are estimates from the MAX7219 datasheet, with the typical segment current of these boards (approximately 40 mA):
 
-| Display state                   | Intensity 4 (default) | Intensity 15 (maximum) |
-| ------------------------------- | --------------------- | ---------------------- |
-| all 2,048 LEDs on               | approximately 3 A     | approximately 10.5 A   |
-| a typical Life board (25 % lit) | approximately 1 A     | approximately 3 A      |
-| all LEDs off                    | approximately 0.3 A   | approximately 0.3 A    |
+| Display state                   | Intensity 4 (default) | Intensity 8         | Intensity 15 (maximum) |
+| ------------------------------- | --------------------- | ------------------- | ---------------------- |
+| all 2,048 LEDs on               | approximately 3 A     | approximately 5.5 A | approximately 10.5 A   |
+| a typical Life board (25 % lit) | approximately 1 A     | approximately 1.6 A | approximately 3 A      |
+| all LEDs off                    | approximately 0.3 A   | approximately 0.3 A | approximately 0.3 A    |
 
-The firmware limits the intensity to 4 by default, so a 5 V 10 A supply has a large margin. At intensity 15 with all LEDs on, the display can reach the limit of the supply. The supply then limits the current, and the display goes dark or flickers. The bring-up checklist measures the real current. Its results replace these estimates.
+A Life board is rarely more than 30 % lit, so one 3 A input is enough at the default intensity. The "all on" test pattern of the bring-up firmware is the worst case. At intensity 4 it uses the full 3 A of one input, so test it with two inputs, or keep the test short. If a source reaches its limit, its voltage drops and the display flickers or the ESP32-S3 restarts. Then lower the intensity or connect the second input.
 
-## Mains Safety
+At 5 V 1 A, a 10,000 mAh power bank (approximately 37 Wh) runs the display for approximately 6 hours. The bring-up checklist measures the real current. Its results replace these estimates.
 
-**Warning:** the power supply connects to mains voltage, which can kill. Keep all mains parts inside an enclosure that a person cannot open without a tool.
+## Safety
 
-- Use an enclosed, certified power supply, for example the Mean Well LRS-50-5. Do not use an open-frame supply.
-- Feed mains through an IEC inlet with a switch and a T2A fuse.
-- Connect the protective earth (PE) to the earth terminal of the supply.
-- Close the terminal cover of the supply.
-- Use strain relief for the mains cable and for the 5 V wires where they leave the enclosure.
-- Disconnect the mains cable before you touch the wiring.
+Everything in the build is at 5 V, so there is no mains voltage to touch. The current can still be high:
 
-If you do not have experience with mains wiring, ask a qualified person to do the mains side. Everything outside the enclosure is at 5 V.
+- Use wire of the size in this document. A thin wire can get hot.
+- Make sure that the 5 V and GND wires cannot touch each other. A short circuit can make a power bank or a wire very hot. Most USB-C sources turn off at a short circuit, but do not trust this.
+- Check the polarity of the diodes and the bulk capacitors before you connect power. A reversed electrolytic capacitor can burst.
 
 ## See Also
 

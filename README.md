@@ -18,12 +18,12 @@ The source code is at [github.com/BatchCodes/life_torus](https://github.com/Batc
 USB game controller --USB--> ESP32-S3 --3.3 V SPI--> 74AHCT125 --5 V SPI--> board 1 --> board 2 --> ... --> board 8
                                  ^                                              ^
                                  |                                              |
-                                 +-------------- 5 V power supply --------------+
+                                 +---- USB-C power bank or USB-C charger -------+
 ```
 
 - Each board is an 8 × 32 LED matrix with four MAX7219 driver chips. The eight boards make one chain of 32 chips.
 - The ESP32-S3 sends the image over three wires (`DIN`, `CLK` and `CS`). A 74AHCT125 buffer changes the 3.3 V signals to 5 V.
-- A 5 V power supply feeds the boards at several points. The ESP32-S3 uses the same supply.
+- A USB-C power bank or a USB-C wall charger at 5 V feeds the boards at several points. A second USB-C input is optional, for more brightness. The ESP32-S3 uses the same 5 V bus.
 - The game controller connects to the USB port of the ESP32-S3.
 
 ## Controls
@@ -140,7 +140,7 @@ Life Torus is free software under the GNU General Public License, version 3 or l
 - [Bill of Materials](docs/hardware/bill-of-materials.md): parts, suppliers and prices.
 - [Browser Simulator](tools/simulator/README.md): try the game in a browser.
 - [Assembly Guide](docs/assembly/README.md): build the ring step by step.
-- [Power and Wiring](docs/hardware/power-and-wiring.md): signal chain, power distribution and mains safety.
+- [Power and Wiring](docs/hardware/power-and-wiring.md): signal chain, USB-C power and power distribution.
 - [Display Bring-Up](docs/hardware/bring-up.md): test patterns and checks for a new display.
 - [Firmware Configuration](docs/software/configuration.md): all options and defaults.
 - [Flashing](docs/software/flashing.md): web flasher, local ESP-IDF, Docker and release images.

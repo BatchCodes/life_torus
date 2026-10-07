@@ -31,7 +31,7 @@ idf.py build
 | `CONFIG_LIFE_PIN_CLK`               | 12      | GPIO for the clock line of all boards.                                                        |
 | `CONFIG_LIFE_PIN_CS`                | 10      | GPIO for the CS (LOAD) line of all boards.                                                    |
 | `CONFIG_LIFE_SPI_CLOCK_KHZ`         | 2000    | SPI clock. Reduce it if cells flicker at random.                                              |
-| `CONFIG_LIFE_INTENSITY`             | 4       | Brightness of all LEDs, 0 to 15. A higher value uses more current.                            |
+| `CONFIG_LIFE_INTENSITY`             | 4       | Brightness of all LEDs, 0 to 15. With one 3 A USB-C input, keep it at 4 or less.              |
 | `CONFIG_LIFE_BRIGHTNESS_LEVELS`     | y       | Born cells bright, surviving cells normal, dying cells dim. Turn off if the display flickers. |
 | `CONFIG_LIFE_SUBFRAME_MS`           | 3       | Time of each of the 3 sub-frames for the brightness levels.                                   |
 | `CONFIG_LIFE_REINIT_MS`             | 5000    | Period for a rewrite of the display start-up registers. 0: never.                             |
