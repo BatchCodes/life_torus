@@ -14,6 +14,7 @@ dependencies.lock
 # Browser simulator build output
 tools/simulator/web/life_torus.js
 tools/simulator/web/life_torus.wasm
+tools/simulator/web/phone/
 
 # Editors
 .vscode/*

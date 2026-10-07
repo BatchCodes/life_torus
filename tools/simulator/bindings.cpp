@@ -10,6 +10,7 @@
 #include "frame/image.hpp"
 #include "game/game.hpp"
 #include "patterns/library.hpp"
+#include "patterns/presets.hpp"
 
 namespace {
 
@@ -69,6 +70,31 @@ EMSCRIPTEN_KEEPALIVE void sim_set_text(const char* text) {
 
 EMSCRIPTEN_KEEPALIVE void sim_set_speed(int speed) {
     g_modes.set_speed(speed);
+}
+
+EMSCRIPTEN_KEEPALIVE void sim_tap_cell(int x, int y, uint32_t now_ms) {
+    if (g_modes.mode() == display_modes::ModeId::kGameOfLife) {
+        g_game.tap_cell(x, y, now_ms);
+    }
+}
+
+EMSCRIPTEN_KEEPALIVE void sim_select_preset(int index, uint32_t now_ms) {
+    if (g_modes.mode() == display_modes::ModeId::kGameOfLife) {
+        g_game.select_preset(index, now_ms);
+    }
+}
+
+EMSCRIPTEN_KEEPALIVE int sim_preset_index() {
+    return g_game.preset_index();
+}
+
+EMSCRIPTEN_KEEPALIVE int sim_preset_count() {
+    return static_cast<int>(patterns::presets().size());
+}
+
+EMSCRIPTEN_KEEPALIVE const char* sim_preset_name_at(int index) {
+    const auto all = patterns::presets();
+    return index >= 0 && index < static_cast<int>(all.size()) ? all[index].name : "";
 }
 
 EMSCRIPTEN_KEEPALIVE int sim_display_mode() {

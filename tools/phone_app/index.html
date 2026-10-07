@@ -1,0 +1,122 @@
+<!doctype html>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<html lang="en-GB">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <title>Life Torus</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <section id="login" class="panel">
+      <h1>Life Torus</h1>
+      <form id="login-form">
+        <label
+          >Password <input id="password" type="password" autocomplete="current-password"
+        /></label>
+        <button type="submit">Log in</button>
+        <p id="login-error" class="error" hidden>Wrong password.</p>
+      </form>
+    </section>
+
+    <main id="app" hidden>
+      <canvas
+        id="display"
+        width="640"
+        height="320"
+        aria-label="Live display. Tap a cell to toggle it."
+      ></canvas>
+      <p id="status" class="status">Connecting…</p>
+
+      <section class="pad" aria-label="Controller">
+        <div class="shoulders">
+          <button data-button="l">L</button>
+          <button data-button="r">R</button>
+        </div>
+        <div class="dpad">
+          <button data-button="up" class="up">▲</button>
+          <button data-button="left" class="left">◀</button>
+          <button data-button="right" class="right">▶</button>
+          <button data-button="down" class="down">▼</button>
+        </div>
+        <div class="middle">
+          <button data-button="select">Select</button>
+          <button data-button="start">Start</button>
+        </div>
+        <div class="face">
+          <button data-button="x" class="x">X</button>
+          <button data-button="y" class="y">Y</button>
+          <button data-button="a" class="a">A</button>
+          <button data-button="b" class="b">B</button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Display</h2>
+        <label
+          >Mode
+          <select id="mode"></select
+        ></label>
+        <label>Text <input id="text" type="text" maxlength="120" /></label>
+        <label>Speed <input id="speed" type="range" min="1" max="10" /></label>
+        <label
+          >Preset
+          <select id="preset"></select
+        ></label>
+      </section>
+
+      <details class="panel">
+        <summary>Settings</summary>
+        <form id="settings">
+          <label>Step time (ms) <input name="step_ms" type="number" min="20" max="5000" /></label>
+          <label
+            >Settled board limit (generations) <input name="settled_limit" type="number" min="1"
+          /></label>
+          <label
+            >No-input limit (generations) <input name="no_input_limit" type="number" min="1"
+          /></label>
+          <label
+            >Repeat limit (generations, 0: off) <input name="repeat_limit" type="number" min="0"
+          /></label>
+          <label
+            >Pause timeout (ms) <input name="pause_timeout_ms" type="number" min="1000"
+          /></label>
+          <label
+            >Random preset fill (%) <input name="random_percent" type="number" min="1" max="99"
+          /></label>
+          <label
+            >Intensity (0 to 15) <input name="intensity" type="number" min="0" max="15"
+          /></label>
+          <label><input name="brightness_levels" type="checkbox" /> Brightness levels</label>
+          <label
+            ><input name="cylinder" type="checkbox" /> Cylinder edges for empty and random
+            presets</label
+          >
+          <fieldset>
+            <legend>Panel layout</legend>
+            <label><input name="reverse_ring" type="checkbox" /> Chain goes right to left</label>
+            <label><input name="flip_boards" type="checkbox" /> All boards upside down</label>
+            <label><input name="zigzag" type="checkbox" /> Every second board turned</label>
+            <label
+              ><input name="block_transpose" type="checkbox" /> Blocks: swap rows and columns</label
+            >
+            <label
+              ><input name="block_flip_x" type="checkbox" /> Blocks: mirror left to right</label
+            >
+            <label
+              ><input name="block_flip_y" type="checkbox" /> Blocks: mirror top to bottom</label
+            >
+          </fieldset>
+          <label
+            >New password (empty: no change)
+            <input name="password" type="password" autocomplete="new-password"
+          /></label>
+          <button type="submit">Save</button>
+          <p id="saved" class="status" hidden>Saved.</p>
+        </form>
+      </details>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>

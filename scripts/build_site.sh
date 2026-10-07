@@ -69,6 +69,7 @@ main() {
   mkdir -p "${SITE_DIR}/firmware"
   cp "${SIMULATOR_DIR}/index.html" "${SIMULATOR_DIR}/app.js" "${SIMULATOR_DIR}/style.css" \
     "${SIMULATOR_DIR}/life_torus.js" "${SITE_DIR}/"
+  cp -r "${REPO_DIR}/tools/phone_app" "${SITE_DIR}/phone"
   sed "s/VERSION/${version}/" "${SITE_SOURCE_DIR}/flash.html" >"${SITE_DIR}/flash.html"
   cp -r "${DIST_DIR}/parts/game" "${DIST_DIR}/parts/bringup" "${SITE_DIR}/firmware/"
   write_manifest "${SITE_DIR}/firmware/manifest.json" "Life Torus" "${version}" "game"

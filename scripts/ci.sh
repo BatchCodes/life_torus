@@ -106,6 +106,9 @@ build_simulator() {
 
   emcmake cmake -S "${source_dir}" -B "${build_dir}" -DCMAKE_BUILD_TYPE=Release
   cmake --build "${build_dir}" --parallel
+  # The phone app runs next to the simulator, in web/phone/. It loads ../life_torus.js.
+  rm -rf "${source_dir}/web/phone"
+  cp -r "${REPO_DIR}/tools/phone_app" "${source_dir}/web/phone"
   printf 'Simulator built: %s/web/index.html\n' "${source_dir}"
 }
 
