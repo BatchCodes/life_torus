@@ -18,6 +18,10 @@ void test_round_trip() {
     a.pixels.start = pixel_map::Start::kTopRight;
     a.pixels.rows = false;
     a.pixels.zigzag = true;
+    a.single_colour = true;
+    a.colour = 0x00FF80;
+    a.brightness = 40;
+    a.led_current_ma = 9000;
     a.brightness_levels = false;
     a.cylinder = true;
     a.panel.zigzag = true;
@@ -39,6 +43,10 @@ void test_round_trip() {
                       static_cast<int>(b.pixels.start));
     TEST_ASSERT_FALSE(b.pixels.rows);
     TEST_ASSERT_TRUE(b.pixels.zigzag);
+    TEST_ASSERT_TRUE(b.single_colour);
+    TEST_ASSERT_EQUAL_HEX32(0x00FF80, b.colour);
+    TEST_ASSERT_EQUAL_UINT32(40, b.brightness);
+    TEST_ASSERT_EQUAL_UINT32(9000, b.led_current_ma);
     TEST_ASSERT_FALSE(b.brightness_levels);
     TEST_ASSERT_TRUE(b.cylinder);
     TEST_ASSERT_TRUE(b.panel.zigzag);
@@ -68,7 +76,9 @@ void test_values_are_clamped() {
     TEST_ASSERT_TRUE(
         settings::from_text("intensity=99&step_ms=1&random_percent=0&beat_sensitivity=0", s));
     TEST_ASSERT_EQUAL_UINT32(1, s.beat_sensitivity);
-    TEST_ASSERT_TRUE(settings::from_text("boards=40", s));
+    TEST_ASSERT_TRUE(settings::from_text("boards=40&brightness=0&led_current_ma=50", s));
+    TEST_ASSERT_EQUAL_UINT32(1, s.brightness);
+    TEST_ASSERT_EQUAL_UINT32(500, s.led_current_ma);
     TEST_ASSERT_EQUAL_UINT32(16, s.boards);
     TEST_ASSERT_EQUAL_UINT32(15, s.intensity);
     TEST_ASSERT_EQUAL_UINT32(20, s.step_ms);

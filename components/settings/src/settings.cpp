@@ -93,6 +93,9 @@ void clamp(Settings& s) {
     s.random_percent = limit(s.random_percent, 1, 99);
     s.intensity = limit(s.intensity, 0, 15);
     s.boards = limit(s.boards, 1, 16);
+    s.colour = limit(s.colour, 0, 0xFFFFFF);
+    s.brightness = limit(s.brightness, 1, 100);
+    s.led_current_ma = limit(s.led_current_ma, 500, 20000);
     s.beat_sensitivity = limit(s.beat_sensitivity, 1, 10);
     s.password[kMaxPassword] = '\0';
 }
@@ -127,6 +130,10 @@ size_t to_text(const Settings& s, char* out, size_t size, bool include_password)
         append_number(out, size, &used, "pixel_serpentine", s.pixels.serpentine) &&
         append_number(out, size, &used, "pixel_zigzag", s.pixels.zigzag) &&
         append_number(out, size, &used, "pixel_reverse_ring", s.pixels.reverse_ring) &&
+        append_number(out, size, &used, "single_colour", s.single_colour) &&
+        append_number(out, size, &used, "colour", s.colour) &&
+        append_number(out, size, &used, "brightness", s.brightness) &&
+        append_number(out, size, &used, "led_current_ma", s.led_current_ma) &&
         append_number(out, size, &used, "beat_sync", s.beat_sync) &&
         append_number(out, size, &used, "beat_sensitivity", s.beat_sensitivity) &&
         (!include_password || append_encoded(out, size, &used, "password", s.password));
@@ -212,6 +219,14 @@ bool from_text(const char* text, Settings& s) {
             ok = parse_bool(value, result.pixels.zigzag);
         } else if (std::strcmp(key, "pixel_reverse_ring") == 0) {
             ok = parse_bool(value, result.pixels.reverse_ring);
+        } else if (std::strcmp(key, "single_colour") == 0) {
+            ok = parse_bool(value, result.single_colour);
+        } else if (std::strcmp(key, "colour") == 0) {
+            ok = parse_number(value, result.colour);
+        } else if (std::strcmp(key, "brightness") == 0) {
+            ok = parse_number(value, result.brightness);
+        } else if (std::strcmp(key, "led_current_ma") == 0) {
+            ok = parse_number(value, result.led_current_ma);
         } else if (std::strcmp(key, "boards") == 0) {
             ok = parse_number(value, result.boards);
         } else if (std::strcmp(key, "intensity") == 0) {
