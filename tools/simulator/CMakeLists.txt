@@ -27,6 +27,8 @@ add_executable(life_torus
     "${COMPONENTS_DIR}/display_modes/src/effects.cpp"
     "${COMPONENTS_DIR}/display_modes/src/mode_manager.cpp"
     "${COMPONENTS_DIR}/beat/src/beat_detector.cpp"
+    "${COMPONENTS_DIR}/spectrum/src/fft.cpp"
+    "${COMPONENTS_DIR}/spectrum/src/analyser.cpp"
 )
 target_include_directories(life_torus PRIVATE
     "${COMPONENTS_DIR}/life/include"
@@ -35,6 +37,7 @@ target_include_directories(life_torus PRIVATE
     "${COMPONENTS_DIR}/game/include"
     "${COMPONENTS_DIR}/display_modes/include"
     "${COMPONENTS_DIR}/beat/include"
+    "${COMPONENTS_DIR}/spectrum/include"
 )
 target_compile_options(life_torus PRIVATE -O2 -Wall -Wextra -Werror -fno-exceptions -fno-rtti)
 target_link_options(life_torus PRIVATE

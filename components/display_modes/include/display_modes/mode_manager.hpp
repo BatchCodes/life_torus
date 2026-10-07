@@ -18,8 +18,9 @@ enum class ModeId : uint8_t {
     kBarberPole,
     kRipples,
     kSparkle,
+    kVisualiser,
 };
-constexpr int kModeCount = 6;
+constexpr int kModeCount = 7;
 
 const char* mode_name(ModeId mode);
 
@@ -42,6 +43,11 @@ public:
     // A beat of the music, from the beat detector. Game of Life ignores it. A mode reacts to the
     // beats only while they keep coming.
     void beat(uint32_t now_ms);
+    // The music spectrum for the visualiser: kBands levels from 0 to 1, bass first. Call it at
+    // each new spectrum while there is sound.
+    void set_spectrum(const float* levels, uint32_t now_ms) {
+        visualiser_.set_bands(levels, now_ms);
+    }
     bool beats_active(uint32_t now_ms) const;
 
     void press(game::Button button, uint32_t now_ms);
@@ -59,6 +65,7 @@ private:
     BarberPole barber_pole_;
     Ripples ripples_;
     Sparkle sparkle_;
+    Visualiser visualiser_;
     uint32_t last_beat_ms_ = 0;
     uint32_t beat_period_ms_ = 0;  // 0: no beats yet.
     game::KoDetector ko_;

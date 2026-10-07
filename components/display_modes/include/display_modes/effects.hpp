@@ -101,4 +101,28 @@ private:
     uint32_t elapsed_ = 0;  // Time since the last step, multiplied by the speed.
 };
 
+// A music spectrum: 32 bands, each 2 columns wide, as bars from the bottom. The top of a bar is
+// bright, the rest normal, and a dim peak marker falls slowly. With no audio for 1 s, a slow
+// wave plays, so the display does not go dark.
+class Visualiser {
+public:
+    static constexpr int kBands = 32;
+
+    void start(uint32_t now_ms);
+    // Band levels 0 to 1, bass first.
+    void set_bands(const float* levels, uint32_t now_ms);
+    void tick(uint32_t now_ms, int speed);
+    void render(frame::Image& image) const;
+    bool idle() const { return idle_; }
+
+private:
+    std::array<float, kBands> levels_{};
+    std::array<float, kBands> peaks_{};
+    uint32_t last_ms_ = 0;
+    uint32_t last_bands_ms_ = 0;
+    uint32_t wave_ms_ = 0;
+    bool has_bands_ = false;
+    bool idle_ = true;
+};
+
 }  // namespace display_modes

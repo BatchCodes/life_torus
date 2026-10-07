@@ -244,9 +244,47 @@ void test_next_mode_cycles() {
     }
 }
 
+void test_visualiser_shows_bands() {
+    Rig rig;
+    rig.modes.set_mode(ModeId::kVisualiser, rig.now);
+    float levels[32] = {};
+    levels[0] = 1.0f;   // Full bar in columns 0 and 1.
+    levels[10] = 0.5f;  // Half bar in columns 20 and 21.
+    rig.modes.set_spectrum(levels, rig.now);
+    rig.run(20);
+    TEST_ASSERT_EQUAL(static_cast<int>(Level::kBright), static_cast<int>(rig.image.get(0, 0)));
+    TEST_ASSERT_EQUAL(static_cast<int>(Level::kNormal), static_cast<int>(rig.image.get(1, 31)));
+    TEST_ASSERT_EQUAL(static_cast<int>(Level::kBright), static_cast<int>(rig.image.get(20, 16)));
+    TEST_ASSERT_EQUAL(static_cast<int>(Level::kOff), static_cast<int>(rig.image.get(20, 15)));
+    TEST_ASSERT_EQUAL(static_cast<int>(Level::kOff), static_cast<int>(rig.image.get(4, 31)));
+
+    // The bar drops at once. The peak marker stays a moment and falls slowly.
+    levels[10] = 0.0f;
+    rig.modes.set_spectrum(levels, rig.now);
+    rig.run(100);
+    TEST_ASSERT_EQUAL(static_cast<int>(Level::kOff), static_cast<int>(rig.image.get(20, 31)));
+    bool marker = false;
+    for (int y = 14; y < 20; ++y) {
+        marker = marker || rig.image.get(20, y) == Level::kDim;
+    }
+    TEST_ASSERT_TRUE(marker);
+}
+
+void test_visualiser_idle_wave() {
+    Rig rig;
+    rig.modes.set_mode(ModeId::kVisualiser, rig.now);
+    rig.run(500);
+    const Image a = rig.image;
+    TEST_ASSERT_TRUE(count_lit(a) > 200);  // Not dark with no audio.
+    rig.run(1000);
+    TEST_ASSERT_FALSE(rig.image == a);  // The wave moves.
+}
+
 }  // namespace
 
 void run_display_modes_tests() {
+    RUN_TEST(test_visualiser_shows_bands);
+    RUN_TEST(test_visualiser_idle_wave);
     RUN_TEST(test_next_mode_cycles);
     RUN_TEST(test_beats_add_activity);
     RUN_TEST(test_beats_active_only_while_beats_come);

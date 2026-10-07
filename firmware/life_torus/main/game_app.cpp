@@ -227,6 +227,10 @@ void run_game(Board& board, settings::Settings& s) {
         if (mic.take_beat(now) && s.beat_sync) {
             modes.beat(now);
         }
+        float levels[spectrum::kBands];
+        if (mic.spectrum(levels)) {
+            modes.set_spectrum(levels, now);
+        }
         modes.tick(now);
         if (game.preset_index() != last_preset) {
             last_preset = game.preset_index();

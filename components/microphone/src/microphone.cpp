@@ -29,6 +29,7 @@ float to_float(int32_t raw) {
 esp_err_t Microphone::start(const MicConfig& config) {
     config_ = config;
     detector_ = beat::BeatDetector(config.sample_rate);
+    analyser_ = spectrum::Analyser(config.sample_rate);
     lock_ = xSemaphoreCreateMutex();
     ESP_RETURN_ON_FALSE(lock_ != nullptr, ESP_ERR_NO_MEM, kTag, "mutex create failed");
 
@@ -123,6 +124,22 @@ float Microphone::bpm() {
     return value;
 }
 
+bool Microphone::spectrum(float* levels) {
+    if (!present_) {
+        return false;
+    }
+    xSemaphoreTake(lock_, portMAX_DELAY);
+    const bool fresh = analyser_.updates() != spectrum_seen_ && analyser_.active();
+    if (fresh) {
+        spectrum_seen_ = analyser_.updates();
+        for (int b = 0; b < spectrum::kBands; ++b) {
+            levels[b] = analyser_.bands()[b];
+        }
+    }
+    xSemaphoreGive(lock_);
+    return fresh;
+}
+
 void Microphone::task_entry(void* arg) {
     static_cast<Microphone*>(arg)->run();
 }
@@ -142,6 +159,7 @@ void Microphone::run() {
         }
         xSemaphoreTake(lock_, portMAX_DELAY);
         detector_.process(samples, static_cast<size_t>(count));
+        analyser_.process(samples, static_cast<size_t>(count));
         last_block_ms_ = now_ms();
         xSemaphoreGive(lock_);
     }

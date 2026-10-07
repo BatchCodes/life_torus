@@ -12,6 +12,7 @@
 #include "game/game.hpp"
 #include "patterns/library.hpp"
 #include "patterns/presets.hpp"
+#include "spectrum/analyser.hpp"
 
 namespace {
 
@@ -24,6 +25,8 @@ uint8_t g_levels[life::kWidth * life::kHeight];
 constexpr int kAudioBuffer = 8192;
 float g_audio[kAudioBuffer];
 beat::BeatDetector g_beat{48000};
+spectrum::Analyser g_spectrum{48000};
+uint32_t g_spectrum_seen = 0;
 bool g_listening = false;
 bool g_beat_sync = true;
 uint32_t g_last_audio_ms = 0;
@@ -71,12 +74,17 @@ EMSCRIPTEN_KEEPALIVE void sim_tick(uint32_t now_ms) {
             g_modes.beat(now_ms);
         }
     }
+    if (g_listening && g_spectrum.active() && g_spectrum.updates() != g_spectrum_seen) {
+        g_spectrum_seen = g_spectrum.updates();
+        g_modes.set_spectrum(g_spectrum.bands().data(), now_ms);
+    }
     g_modes.tick(now_ms);
 }
 
 // Starts beat detection at the sample rate of the page's audio input.
 EMSCRIPTEN_KEEPALIVE void sim_listen(int sample_rate) {
     g_beat = beat::BeatDetector(sample_rate);
+    g_spectrum = spectrum::Analyser(sample_rate);
     g_listening = true;
 }
 
@@ -87,6 +95,7 @@ EMSCRIPTEN_KEEPALIVE float* sim_audio_buffer() {
 EMSCRIPTEN_KEEPALIVE void sim_audio_process(int count, uint32_t now_ms) {
     if (count > 0 && count <= kAudioBuffer) {
         g_beat.process(g_audio, static_cast<size_t>(count));
+        g_spectrum.process(g_audio, static_cast<size_t>(count));
         g_last_audio_ms = now_ms;
     }
 }

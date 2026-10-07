@@ -263,4 +263,56 @@ void Sparkle::render(frame::Image& image) const {
     }
 }
 
+// ----- Visualiser: a spectrum of the music, or a slow wave with no music.
+
+void Visualiser::start(uint32_t now_ms) {
+    last_ms_ = now_ms;
+    peaks_.fill(0);
+}
+
+void Visualiser::set_bands(const float* levels, uint32_t now_ms) {
+    for (int b = 0; b < kBands; ++b) {
+        levels_[b] = levels[b] < 0 ? 0 : (levels[b] > 1 ? 1 : levels[b]);
+    }
+    last_bands_ms_ = now_ms;
+    has_bands_ = true;
+}
+
+void Visualiser::tick(uint32_t now_ms, int speed) {
+    const uint32_t dt = elapsed(last_ms_, now_ms);
+    idle_ = !has_bands_ || now_ms - last_bands_ms_ > 1000;
+    if (idle_) {
+        // Speed 5: one wave in approximately 4 s.
+        wave_ms_ += dt * static_cast<uint32_t>(speed);
+        const float t = static_cast<float>(wave_ms_) / 5000.0f * 1.6f;
+        for (int b = 0; b < kBands; ++b) {
+            levels_[b] = 0.35f + 0.25f * std::sin(t + static_cast<float>(b) * 0.39f) +
+                         0.1f * std::sin(t * 1.7f - static_cast<float>(b) * 0.2f);
+        }
+    }
+    // The peak markers fall at 0.6 full heights per second.
+    const float fall = 0.6f * static_cast<float>(dt) / 1000.0f;
+    for (int b = 0; b < kBands; ++b) {
+        peaks_[b] = levels_[b] > peaks_[b] ? levels_[b] : peaks_[b] - fall;
+    }
+}
+
+void Visualiser::render(frame::Image& image) const {
+    image.fill(Level::kOff);
+    for (int b = 0; b < kBands; ++b) {
+        const int height = static_cast<int>(levels_[b] * life::kHeight + 0.5f);
+        const int peak = static_cast<int>(peaks_[b] * life::kHeight + 0.5f);
+        for (int c = 0; c < 2; ++c) {
+            const int x = b * 2 + c;
+            for (int h = 0; h < height; ++h) {
+                image.set(x, life::kHeight - 1 - h,
+                          h == height - 1 ? Level::kBright : Level::kNormal);
+            }
+            if (peak > height && peak <= life::kHeight) {
+                image.set(x, life::kHeight - peak, Level::kDim);
+            }
+        }
+    }
+}
+
 }  // namespace display_modes

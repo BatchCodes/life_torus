@@ -17,6 +17,8 @@ const char* mode_name(ModeId mode) {
             return "Ripples";
         case ModeId::kSparkle:
             return "Sparkle";
+        case ModeId::kVisualiser:
+            return "Visualiser";
     }
     return "";
 }
@@ -53,6 +55,9 @@ void ModeManager::set_mode(ModeId mode, uint32_t now_ms) {
             break;
         case ModeId::kSparkle:
             sparkle_.start(now_ms, rng_);
+            break;
+        case ModeId::kVisualiser:
+            visualiser_.start(now_ms);
             break;
     }
 }
@@ -100,6 +105,7 @@ void ModeManager::beat(uint32_t now_ms) {
         case ModeId::kGameOfLife:
         case ModeId::kText:
         case ModeId::kBarberPole:
+        case ModeId::kVisualiser:
             break;
     }
 }
@@ -153,6 +159,9 @@ void ModeManager::tick(uint32_t now_ms) {
         case ModeId::kSparkle:
             sparkle_.tick(now_ms, speed_, rng_);
             break;
+        case ModeId::kVisualiser:
+            visualiser_.tick(now_ms, speed_);
+            break;
     }
 }
 
@@ -181,9 +190,13 @@ void ModeManager::render(frame::Image& image, uint32_t now_ms) const {
         case ModeId::kSparkle:
             sparkle_.render(image);
             break;
+        case ModeId::kVisualiser:
+            visualiser_.render(image);
+            break;
     }
-    // Text and barber pole: a short flash on the beat.
-    const bool flash_mode = mode_ == ModeId::kText || mode_ == ModeId::kBarberPole;
+    // Text, barber pole and visualiser: a short flash on the beat.
+    const bool flash_mode =
+        mode_ == ModeId::kText || mode_ == ModeId::kBarberPole || mode_ == ModeId::kVisualiser;
     if (flash_mode && beats_active(now_ms) && now_ms - last_beat_ms_ < kFlashMs) {
         for (int y = 0; y < life::kHeight; ++y) {
             for (int x = 0; x < life::kWidth; ++x) {

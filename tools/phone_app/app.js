@@ -9,7 +9,15 @@ const WIDTH = 64;
 const HEIGHT = 32;
 const COLOURS = ["#1c0707", "#5e1410", "#c42a20", "#ff6a50"];
 const BUTTONS = ["up", "down", "left", "right", "a", "b", "x", "y", "l", "r", "select", "start"];
-const MODES = ["Game of Life", "Scrolling text", "Rain", "Barber pole", "Ripples", "Sparkle"];
+const MODES = [
+  "Game of Life",
+  "Scrolling text",
+  "Rain",
+  "Barber pole",
+  "Ripples",
+  "Sparkle",
+  "Visualiser",
+];
 const GAME_STATES = ["run", "pause", "new preset", "effect"];
 const SETTING_NUMBERS = [
   "step_ms",
