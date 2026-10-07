@@ -136,6 +136,7 @@ class SimulatorTransport {
       setSpeed: c("sim_set_speed", null, ["number"]),
       tapCell: c("sim_tap_cell", null, ["number", "number", "number"]),
       bpm: c("sim_bpm", "number", []),
+      bpmEstimate: c("sim_bpm_estimate", "number", []),
       listening: c("sim_listening", "number", []),
       audioLevel: c("sim_audio_level", "number", []),
       setBeat: c("sim_set_beat", null, ["number", "number"]),
@@ -217,6 +218,7 @@ class SimulatorTransport {
       text: this.text,
       mic: this.api.listening(),
       bpm: this.api.bpm(),
+      bpm_estimate: this.api.bpmEstimate(),
     }).toString();
   }
 
@@ -301,6 +303,24 @@ function main() {
     }
   }
 
+  const tempoLine = document.getElementById("tempo");
+  function showTempo(s) {
+    if (s.get("mic") !== "1") {
+      tempoLine.hidden = true;
+      return;
+    }
+    const bpm = Number(s.get("bpm"));
+    const estimate = Number(s.get("bpm_estimate"));
+    tempoLine.hidden = false;
+    tempoLine.textContent =
+      "Tempo: " +
+      (bpm > 0
+        ? `${bpm} BPM (locked)`
+        : estimate > 0
+          ? `about ${estimate} BPM (estimating)`
+          : "no beat yet");
+  }
+
   function beatText(s) {
     if (s.get("mic") !== "1") {
       return "";
@@ -316,6 +336,7 @@ function main() {
     if (kind === "status") {
       const s = new URLSearchParams(body);
       const mode = Number(s.get("display_mode"));
+      showTempo(s);
       if (document.activeElement !== modeSelect) {
         modeSelect.value = String(mode);
       }

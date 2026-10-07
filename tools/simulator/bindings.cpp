@@ -116,6 +116,11 @@ EMSCRIPTEN_KEEPALIVE int sim_bpm() {
     return g_listening && g_beat.stable() ? static_cast<int>(g_beat.bpm() + 0.5f) : 0;
 }
 
+// The running tempo estimate, also before the beat is stable, or 0.
+EMSCRIPTEN_KEEPALIVE int sim_bpm_estimate() {
+    return g_listening ? static_cast<int>(g_beat.bpm_estimate() + 0.5f) : 0;
+}
+
 // The input level, 0 to 100, on a dB scale from -60 dBFS to 0 dBFS.
 EMSCRIPTEN_KEEPALIVE int sim_audio_level() {
     const float db = 20.0f * std::log10(g_audio_level + 1e-9f);

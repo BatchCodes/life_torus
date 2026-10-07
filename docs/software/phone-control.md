@@ -36,7 +36,7 @@ With the optional INMP441 microphone, the display modes move with the beat of mu
 
 The visualiser shows the sound from the microphone as a spectrum around the ring: 32 bands from 40 Hz (bass) to 8 kHz (treble), each band 2 columns wide. Each band is a bar from the bottom. The top of a bar is bright, and a dim marker shows the recent peak. An automatic gain makes quiet and loud music both fill the display. With no microphone or no sound for 1 s, the visualiser plays a slow wave, so the display does not go dark.
 
-The firmware filters the bass, finds the tempo (60 to 180 BPM) and predicts the next beat, so the display is on the beat and not late. It reacts only when the tempo is steady for a few seconds. With no microphone, no music, or no steady beat, each mode keeps its normal timing. The status line of the app shows the tempo.
+The firmware filters the bass, finds the tempo (60 to 180 BPM) and predicts the next beat, so the display is on the beat and not late. It reacts only when the tempo is steady for a few seconds. With no microphone, no music, or no steady beat, each mode keeps its normal timing. The "Tempo" line of the app shows the tempo: "about 120 BPM (estimating)" while the detector is still sure of nothing, and "120 BPM (locked)" when the beat is steady and the modes follow it.
 
 The settings page has two beat options: "Beat sync with the microphone" (on or off) and "Beat sensitivity" from 1 (only clear, loud beats) to 10 (quiet music too).
 

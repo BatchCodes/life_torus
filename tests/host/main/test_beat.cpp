@@ -125,10 +125,23 @@ void test_tempo_change() {
     TEST_ASSERT_TRUE(worst_offset(beats, kicks) < 40.0);
 }
 
+void test_estimate_comes_before_lock() {
+    BeatDetector d(kRate);
+    Generator g(13);
+    std::vector<float> audio;
+    std::vector<double> kicks;
+    g.add(Song{128.0f}, 4.0f, audio, kicks);
+    run(d, audio, 0);
+    // After 4 s the detector has an estimate, but the beat is not locked yet.
+    TEST_ASSERT_FALSE(d.stable());
+    TEST_ASSERT_FLOAT_WITHIN(4.0f, 128.0f, d.bpm_estimate());
+}
+
 void test_silence_has_no_beat() {
     BeatDetector d(kRate);
     std::vector<float> audio(kRate * 10, 0.0f);
     const std::vector<double> beats = run(d, audio, 0);
+    TEST_ASSERT_EQUAL_FLOAT(0.0f, d.bpm_estimate());
     TEST_ASSERT_FALSE(d.stable());
     TEST_ASSERT_EQUAL(0, static_cast<int>(beats.size()));
 }
@@ -170,6 +183,7 @@ void run_beat_tests() {
     RUN_TEST(test_90_bpm);
     RUN_TEST(test_follows_bass_not_hi_hat);
     RUN_TEST(test_tempo_change);
+    RUN_TEST(test_estimate_comes_before_lock);
     RUN_TEST(test_silence_has_no_beat);
     RUN_TEST(test_noise_has_no_beat);
     RUN_TEST(test_sensitivity_for_quiet_music);

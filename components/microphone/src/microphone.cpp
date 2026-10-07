@@ -124,6 +124,16 @@ float Microphone::bpm() {
     return value;
 }
 
+float Microphone::bpm_estimate() {
+    if (!present_) {
+        return 0;
+    }
+    xSemaphoreTake(lock_, portMAX_DELAY);
+    const float value = detector_.bpm_estimate();
+    xSemaphoreGive(lock_);
+    return value;
+}
+
 bool Microphone::spectrum(float* levels) {
     if (!present_) {
         return false;

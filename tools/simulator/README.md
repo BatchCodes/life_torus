@@ -23,7 +23,7 @@ The "Display mode" panel chooses what the display shows, the same as the phone a
 
 ## Beat Sync
 
-"Listen to music" uses the microphone of your computer, through the browser, and runs the same beat detector and spectrum analyser as the firmware. The button turns red, and a level meter shows the sound that it hears. If the display shows Game of Life, it changes to the music visualiser. Play music with a clear bass beat. After a few seconds, the page shows the tempo, and the display modes (not Game of Life) move with the beat. The browser asks for permission first. It allows the microphone only on `https://` addresses and on `localhost`.
+"Listen to music" uses the microphone of your computer, through the browser, and runs the same beat detector and spectrum analyser as the firmware. The button turns red, and a level meter shows the sound that it hears. If the display shows Game of Life, it changes to the music visualiser. Play music with a clear bass beat. The "Tempo" field in the status shows the estimate after a few seconds ("estimating"), then "locked" when the beat is steady. Then the display modes (not Game of Life) move with the beat. The browser asks for permission first. It allows the microphone only on `https://` addresses and on `localhost`.
 
 ## Settings
 

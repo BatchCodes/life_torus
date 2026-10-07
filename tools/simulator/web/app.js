@@ -130,6 +130,7 @@ async function main() {
     displayMode: module.cwrap("sim_display_mode", "number", []),
     listening: module.cwrap("sim_listening", "number", []),
     audioLevel: module.cwrap("sim_audio_level", "number", []),
+    bpmEstimate: module.cwrap("sim_bpm_estimate", "number", []),
   };
 
   const flat = document.getElementById("flat").getContext("2d");
@@ -144,6 +145,7 @@ async function main() {
     generation: document.getElementById("generation"),
     population: document.getElementById("population"),
     shape: document.getElementById("shape"),
+    tempo: document.getElementById("tempo"),
   };
 
   // The game uses a 32-bit millisecond clock.
@@ -299,6 +301,13 @@ async function main() {
       const bpm = api.bpm();
       const level = api.audioLevel();
       levelBar.style.width = level + "%";
+      const estimate = api.bpmEstimate();
+      status.tempo.textContent =
+        bpm > 0
+          ? `${bpm} BPM (locked)`
+          : estimate > 0
+            ? `about ${estimate} BPM (estimating)`
+            : "no beat yet";
       beatLine.textContent =
         level < 5
           ? "Listening, but the sound is very quiet. Check the microphone."

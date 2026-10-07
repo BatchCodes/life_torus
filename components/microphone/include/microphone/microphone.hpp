@@ -32,6 +32,8 @@ public:
     bool take_beat(uint32_t now_ms);
     // The tempo, or 0 when there is no stable beat.
     float bpm();
+    // The running tempo estimate, also before the beat is stable, or 0.
+    float bpm_estimate();
     // Copies the spectrum when a new one is ready and there is sound. Returns false otherwise.
     bool spectrum(float* levels);
 

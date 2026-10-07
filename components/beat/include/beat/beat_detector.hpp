@@ -29,6 +29,9 @@ public:
     bool stable() const { return stable_; }
     float bpm() const { return bpm_; }
     float confidence() const { return confidence_; }
+    // The current tempo estimate, also before it is stable, or 0 when the detector has no
+    // useful estimate yet (for example in silence).
+    float bpm_estimate() const { return confidence_ >= 0.15f ? bpm_ : 0.0f; }
 
     // Returns true once for each predicted beat at or before `at_ms` (audio time), while the
     // beat is stable. Call it often, for example every 10 ms.
