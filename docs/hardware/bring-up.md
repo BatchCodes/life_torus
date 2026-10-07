@@ -58,6 +58,10 @@ Do these checks in this order. Write down the results. They go into the document
 6. **Controller power.** Connect the controller to the "USB" port. The log must show `controller connected` and a report for each button. If the log shows nothing, the board does not supply 5 V to the port. Then use a powered USB OTG adapter or a USB OTG Y-cable from the 5 V supply.
 7. **Controller layout.** Press each button and compare the logged report with the generic layout in [report.cpp](../../components/gamepad_input/src/report.cpp). The idle report is `01 7F 7F 7F 7F 0F 00 00`.
 
+With a microphone, also do this check:
+
+8. **Microphone.** Flash the game firmware. The log must show `microphone found`. Play music with a clear beat near the display, and open the phone app. After a few seconds, the status shows the tempo in BPM, and the display modes (for example ripples) move with the beat.
+
 ## Results
 
 Record the results of your display here, and open an issue or a pull request with them.
@@ -70,6 +74,7 @@ Record the results of your display here, and open an issue or a pull request wit
 | brightness levels                  | not yet tested |
 | controller power on the "USB" port | not yet tested |
 | controller report layout           | not yet tested |
+| microphone and beat sync           | not yet tested |
 
 ## See Also
 

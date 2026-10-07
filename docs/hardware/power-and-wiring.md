@@ -26,6 +26,21 @@ Connect the other pins of the 74AHCT125 like this:
 
 The GPIO numbers are the firmware defaults. You can change them in the firmware options. Refer to [Firmware Configuration](../software/configuration.md).
 
+## Microphone
+
+The INMP441 microphone is optional. With it, the display modes (not Game of Life) move with the beat of music. Refer to [Phone Control](../software/phone-control.md). Connect it to the ESP32-S3 board with short wires:
+
+| INMP441 pin | ESP32-S3 pin |
+| ----------- | ------------ |
+| `VDD`       | `3V3`        |
+| `GND`       | `G`          |
+| `SCK`       | `GPIO4`      |
+| `WS`        | `GPIO5`      |
+| `SD`        | `GPIO6`      |
+| `L/R`       | `G`          |
+
+The microphone takes 3.3 V, not 5 V. Mount it where the sound can reach it, for example behind a small hole in the base, and away from the 5 V power wires. The firmware finds it at start-up. With no microphone, the data line stays low and the firmware turns beat sync off.
+
 ## Board to Board
 
 Each board stands upright in the ring, with its IN header at the bottom and its OUT header at the top. Connect the OUT header of each board to the IN header of the next board with female-to-female jumper wires:

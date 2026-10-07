@@ -19,7 +19,21 @@ Up to four phones can connect at the same time. Each phone sees the live display
 - **Controller.** The same buttons as the USB controller.
 - **Display modes.** Game of Life, scrolling text, rain, barber pole, ripples and sparkle. Type the message for the scrolling text, and set the speed of all modes. A mode stays on until you change it in the app, or until the power goes off. At power on, the display always starts with Game of Life. While another mode is on, the USB controller does nothing, except the ko code.
 - **Presets.** Load any preset board directly.
-- **Settings.** The step time, the unattended-play limits, the intensity, the brightness levels, the panel layout and the app password. The display saves them in NVS, so they stay after a power cycle.
+- **Settings.** The step time, the unattended-play limits, the intensity, the brightness levels, the panel layout, beat sync and the app password. The display saves them in NVS, so they stay after a power cycle.
+
+## Beat Sync
+
+With the optional INMP441 microphone, the display modes move with the beat of music. Game of Life ignores the music. The [wiring guide](../hardware/power-and-wiring.md) shows how to connect the microphone.
+
+- ripples: a new ring starts on each beat
+- sparkle: a burst of sparkles on each beat
+- rain: a row of drops starts on each beat
+- barber pole: the stripes move one stripe per beat, and flash brighter on the beat
+- scrolling text: the letters flash brighter on the beat
+
+The firmware filters the bass, finds the tempo (60 to 180 BPM) and predicts the next beat, so the display is on the beat and not late. It reacts only when the tempo is steady for a few seconds. With no microphone, no music, or no steady beat, each mode keeps its normal timing. The status line of the app shows the tempo.
+
+The settings page has two beat options: "Beat sync with the microphone" (on or off) and "Beat sensitivity" from 1 (only clear, loud beats) to 10 (quiet music too).
 
 ## Password
 
