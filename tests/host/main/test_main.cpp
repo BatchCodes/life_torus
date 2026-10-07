@@ -12,5 +12,6 @@ int main() {
     run_frame_tests();
     run_game_tests();
     run_panel_map_tests();
+    run_gamepad_report_tests();
     return UNITY_END();
 }
