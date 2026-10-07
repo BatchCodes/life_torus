@@ -155,6 +155,7 @@ run_all() {
   run_host_tests
   build_app life_torus
   build_app life_torus bringup
+  build_app life_torus ws2812
 }
 
 main() {

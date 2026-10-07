@@ -204,7 +204,8 @@ void run_game(Board& board, settings::Settings& s) {
                         break;
                     }
                     const bool new_password = std::strcmp(changed.password, s.password) != 0;
-                    const bool new_boards = changed.boards != s.boards;
+                    // The grid width and the display type are fixed at start-up.
+                    const bool restart = changed.boards != s.boards || changed.ws2812 != s.ws2812;
                     s = changed;
                     board.apply(s);
                     game.set_config(game_config(s));
@@ -216,10 +217,8 @@ void run_game(Board& board, settings::Settings& s) {
                         ESP_LOGI(kTag, "settings saved");
                     }
                     send_settings(phone, s);
-                    if (new_boards) {
-                        // The grid width is fixed at start-up, so restart with the new count.
-                        ESP_LOGI(kTag, "board count changed to %lu: restarting",
-                                 static_cast<unsigned long>(s.boards));
+                    if (restart) {
+                        ESP_LOGI(kTag, "board count or display type changed: restarting");
                         vTaskDelay(pdMS_TO_TICKS(500));
                         esp_restart();
                     }
@@ -252,7 +251,7 @@ void run_game(Board& board, settings::Settings& s) {
         if (now - last_render >= kRenderMs) {
             last_render = now;
             modes.render(image, now);
-            board.show(image);
+            board.show(image, static_cast<colour::Source>(modes.mode()), now);
         }
         if (phone_on && phone.client_count() > 0) {
             if (phone.client_count() > last_clients) {

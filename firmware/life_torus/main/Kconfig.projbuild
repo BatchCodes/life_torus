@@ -19,6 +19,20 @@ menu "Life Torus"
 
     menu "Display hardware"
 
+        choice LIFE_DISPLAY
+            prompt "Display type"
+            default LIFE_DISPLAY_MAX7219
+            help
+                MAX7219: red 32x8 boards with MAX7219 drivers.
+                WS2812B: flexible RGB panels of 8x32 LEDs, upright in the ring.
+                The phone app can change the display type, then the display restarts.
+
+            config LIFE_DISPLAY_MAX7219
+                bool "MAX7219 boards"
+            config LIFE_DISPLAY_WS2812B
+                bool "WS2812B RGB panels"
+        endchoice
+
         config LIFE_BOARDS
             int "Number of 32x8 boards"
             range 1 16
@@ -56,6 +70,48 @@ menu "Life Torus"
                 The MAX7219 accepts up to 10 MHz. The CLK and CS wires go to all eight
                 boards, so a lower clock is more reliable. Reduce it if cells flicker at
                 random.
+
+        config LIFE_WS2812_LINES
+            int "WS2812B data lines"
+            range 1 4
+            default 4
+            help
+                The panels split over this number of data lines, in ring order. More lines give
+                a faster refresh.
+
+        config LIFE_PIN_WS_LINE1
+            int "WS2812B data line 1 GPIO"
+            range 0 48
+            default 11
+
+        config LIFE_PIN_WS_LINE2
+            int "WS2812B data line 2 GPIO"
+            range 0 48
+            default 12
+
+        config LIFE_PIN_WS_LINE3
+            int "WS2812B data line 3 GPIO"
+            range 0 48
+            default 10
+
+        config LIFE_PIN_WS_LINE4
+            int "WS2812B data line 4 GPIO"
+            range 0 48
+            default 13
+
+        config LIFE_WS_BRIGHTNESS
+            int "WS2812B brightness (%)"
+            range 1 100
+            default 25
+
+        config LIFE_WS_CURRENT_MA
+            int "WS2812B LED current limit (mA)"
+            range 500 20000
+            default 4500
+            help
+                The firmware estimates the current of each frame, also the idle current of the
+                dark LEDs (up to 1 mA each), and makes the frame darker to stay under this limit.
+                Two 3 A USB-C inputs: 4500 mA leaves room for the ESP32-S3.
 
         config LIFE_INTENSITY
             int "MAX7219 intensity (0 to 15)"

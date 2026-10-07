@@ -18,6 +18,11 @@ settings::Settings settings_from_kconfig() {
     s.cylinder = true;
 #endif
     s.boards = CONFIG_LIFE_BOARDS;
+#if CONFIG_LIFE_DISPLAY_WS2812B
+    s.ws2812 = true;
+#endif
+    s.brightness = CONFIG_LIFE_WS_BRIGHTNESS;
+    s.led_current_ma = CONFIG_LIFE_WS_CURRENT_MA;
     s.intensity = CONFIG_LIFE_INTENSITY;
 #if CONFIG_LIFE_BRIGHTNESS_LEVELS
     s.brightness_levels = true;

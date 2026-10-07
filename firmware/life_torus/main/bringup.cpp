@@ -77,10 +77,45 @@ void log_panel(const panel_map::PanelConfig& p) {
     ESP_LOGI(kTag, "  CONFIG_LIFE_PANEL_BLOCK_FLIP_Y=%s", p.block_flip_y ? "y" : "n");
 }
 
+void log_pixels(const pixel_map::PixelConfig& p) {
+    constexpr const char* kStarts[] = {"bottom left", "bottom right", "top left", "top right"};
+    ESP_LOGI(kTag, "WS2812B layout: start %s, %s, %s, zigzag %s, ring %s",
+             kStarts[static_cast<int>(p.start)], p.rows ? "rows" : "columns",
+             p.serpentine ? "serpentine" : "same direction", p.zigzag ? "on" : "off",
+             p.reverse_ring ? "right to left" : "left to right");
+}
+
+// WS2812B: one lit LED walks along the LED order of each data line, with a short tail. It shows
+// the start corner and the direction of the panels.
+void render_led_walk(Board& board, uint32_t now_ms) {
+    std::array<std::vector<colour::Rgb>, pixel_map::kMaxLines> leds;
+    const int head = static_cast<int>((now_ms / 40) % pixel_map::kLedsPerPanel);
+    for (int line = 0; line < pixel_map::kMaxLines; ++line) {
+        leds[line].assign(static_cast<size_t>(pixel_map::line_length(board.pixels(), line)), {});
+        for (int k = 0; k < 6 && head - k >= 0; ++k) {
+            const uint8_t v = static_cast<uint8_t>(60 - k * 10);
+            // Line 1 red, line 2 green, line 3 blue, line 4 white.
+            const colour::Rgb c = line == 0   ? colour::Rgb{v, 0, 0}
+                                  : line == 1 ? colour::Rgb{0, v, 0}
+                                  : line == 2 ? colour::Rgb{0, 0, v}
+                                              : colour::Rgb{v, v, v};
+            for (size_t panel = 0; panel * pixel_map::kLedsPerPanel < leds[line].size(); ++panel) {
+                leds[line][panel * pixel_map::kLedsPerPanel + static_cast<size_t>(head - k)] = c;
+            }
+        }
+    }
+    board.show_raw_leds(leds);
+}
+
 void render(Board& board, Pattern pattern, uint32_t now_ms) {
     frame::Image image;
+    colour::Source source = colour::Source::kGameOfLife;
     switch (pattern) {
         case Pattern::kChipWalk: {
+            if (board.ws2812()) {
+                render_led_walk(board, now_ms);
+                return;
+            }
             panel_map::Registers registers{};
             const int chip = static_cast<int>((now_ms / 500) % panel_map::chips());
             for (auto& digit : registers) {
@@ -90,6 +125,15 @@ void render(Board& board, Pattern pattern, uint32_t now_ms) {
             return;
         }
         case Pattern::kChipNumbers:
+            if (board.ws2812()) {
+                // The panel number at the top of each panel, upright and readable.
+                for (int panel = 0; panel < pixel_map::panels(); ++panel) {
+                    draw_digit(image, panel / 10, panel * 8, 1);
+                    draw_digit(image, panel % 10, panel * 8 + 4, 1);
+                    image.set(panel * 8, 31, frame::Level::kHighlight);  // Bottom-left corner.
+                }
+                break;
+            }
             for (int bx = 0; bx < life::width() / 8; ++bx) {
                 for (int by = 0; by < life::kHeight / 8; ++by) {
                     const int x0 = bx * 8;
@@ -115,7 +159,7 @@ void render(Board& board, Pattern pattern, uint32_t now_ms) {
             break;
         }
         case Pattern::kAllOn:
-            image.fill(frame::Level::kBright);
+            image.fill(board.ws2812() ? frame::Level::kHighlight : frame::Level::kBright);
             break;
         case Pattern::kLevels:
             for (int y = 0; y < life::kHeight; ++y) {
@@ -129,11 +173,62 @@ void render(Board& board, Pattern pattern, uint32_t now_ms) {
                     image.set(x, y, level);
                 }
             }
+            source = colour::Source::kRain;  // WS2812B: a rainbow, at each level.
             break;
         case Pattern::kCount:
             break;
     }
-    board.show(image);
+    board.show(image, source, now_ms);
+}
+
+// WS2812B bring-up buttons: Start/Select change the pattern, L/R the brightness, and X, Y, A, B
+// and Up the panel layout. The firmware saves each change.
+template <typename ChangePattern>
+void ws2812_button(Board& board, settings::Settings& s, game::Button button, uint32_t now_ms,
+                   ChangePattern& change_pattern) {
+    pixel_map::PixelConfig& p = board.pixels();
+    switch (button) {
+        case game::Button::kStart:
+            change_pattern(1, now_ms);
+            return;
+        case game::Button::kSelect:
+            change_pattern(-1, now_ms);
+            return;
+        case game::Button::kL:
+        case game::Button::kR: {
+            int brightness = static_cast<int>(s.brightness);
+            brightness += button == game::Button::kR ? 5 : -5;
+            s.brightness =
+                static_cast<uint32_t>(brightness < 5 ? 5 : (brightness > 100 ? 100 : brightness));
+            ESP_LOGI(kTag, "brightness %lu %%, last frame approximately %lu mA",
+                     static_cast<unsigned long>(s.brightness),
+                     static_cast<unsigned long>(board.last_current_ma()));
+            break;
+        }
+        case game::Button::kX:
+            p.rows = !p.rows;
+            break;
+        case game::Button::kY:
+            p.serpentine = !p.serpentine;
+            break;
+        case game::Button::kA:
+            p.start = static_cast<pixel_map::Start>((static_cast<int>(p.start) + 1) % 4);
+            break;
+        case game::Button::kB:
+            p.zigzag = !p.zigzag;
+            break;
+        case game::Button::kUp:
+            p.reverse_ring = !p.reverse_ring;
+            break;
+        default:
+            return;
+    }
+    s.pixels = p;
+    board.apply(s);
+    log_pixels(board.pixels());
+    if (settings::save(s) == ESP_OK) {
+        ESP_LOGI(kTag, "WS2812B layout and brightness saved");
+    }
 }
 
 }  // namespace
@@ -158,7 +253,14 @@ void run_bringup(Board& board, settings::Settings& s) {
              "bring-up firmware. Start: next pattern, Select: previous pattern, L/R: "
              "intensity, X/Y/A/B/Up/Down: panel layout options.");
     ESP_LOGI(kTag, "pattern: %s", describe(pattern));
-    log_panel(board.panel());
+    if (board.ws2812()) {
+        ESP_LOGI(kTag,
+                 "WS2812B: L/R brightness, X rows/columns, Y serpentine, A start corner, "
+                 "B zigzag, Up ring direction.");
+        log_pixels(board.pixels());
+    } else {
+        log_panel(board.panel());
+    }
 
     const auto change_pattern = [&](int step, uint32_t now_ms) {
         const int count = static_cast<int>(Pattern::kCount);
@@ -175,6 +277,10 @@ void run_bringup(Board& board, settings::Settings& s) {
                 continue;
             }
             auto_advance = false;
+            if (board.ws2812()) {
+                ws2812_button(board, s, event.button, now_ms, change_pattern);
+                continue;
+            }
             panel_map::PanelConfig& p = board.panel();
             bool layout_changed = true;
             switch (event.button) {

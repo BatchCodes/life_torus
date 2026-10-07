@@ -1,0 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# CI variant: 10 WS2812B panels.
+CONFIG_LIFE_DISPLAY_WS2812B=y
+CONFIG_LIFE_BOARDS=10
