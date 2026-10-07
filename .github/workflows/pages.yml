@@ -1,0 +1,86 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# Publishes the GitHub Pages site on each push to main: the browser simulator as the main page,
+# and the web flasher with firmware built from the same commit. Keep the image tags in sync with
+# scripts/esp_idf_version.txt and scripts/emsdk_version.txt.
+name: Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  firmware:
+    name: Firmware images
+    runs-on: ubuntu-latest
+    container: espressif/idf:v6.1
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Version
+        id: version
+        shell: bash
+        run: |
+          git config --global --add safe.directory "${GITHUB_WORKSPACE}"
+          echo "version=$(git describe --tags --always)" >>"${GITHUB_OUTPUT}"
+      - name: Build images
+        shell: bash
+        run: scripts/ci.sh release "${{ steps.version.outputs.version }}"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: firmware
+          path: dist
+
+  simulator:
+    name: Browser simulator
+    runs-on: ubuntu-latest
+    container: emscripten/emsdk:6.0.11
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build simulator
+        shell: bash
+        run: scripts/ci.sh simulator
+      - uses: actions/upload-artifact@v4
+        with:
+          name: simulator-js
+          path: tools/simulator/web/life_torus.js
+
+  deploy:
+    name: Deploy site
+    needs: [firmware, simulator]
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: firmware
+          path: dist
+      - uses: actions/download-artifact@v4
+        with:
+          name: simulator-js
+          path: tools/simulator/web
+      - name: Assemble site
+        run: scripts/build_site.sh "${{ needs.firmware.outputs.version }}"
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deployment
+        uses: actions/deploy-pages@v4

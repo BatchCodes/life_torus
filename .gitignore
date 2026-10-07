@@ -2,13 +2,14 @@
 build/
 build_ci_*/
 build_bringup/
-
-# Release images
-dist/
 sdkconfig
 sdkconfig.old
 managed_components/
 dependencies.lock
+
+# Release images and the GitHub Pages site
+dist/
+site/
 
 # Browser simulator build output
 tools/simulator/web/life_torus.js

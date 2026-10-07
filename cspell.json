@@ -12,6 +12,7 @@
   ],
   "words": [
     "AHCT",
+    "batchcodes",
     "bringup",
     "clangd",
     "cwrap",
@@ -23,6 +24,7 @@
     "Emscripten",
     "emsdk",
     "Espressif",
+    "esptool",
     "Gosper",
     "HEAPU",
     "heptomino",

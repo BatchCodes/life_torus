@@ -6,6 +6,8 @@ Life Torus is a physical display for Conway's Game of Life. Eight red LED matrix
 
 This repository contains everything that you need to build one: the firmware, a bill of materials, the wiring and assembly documents, and three ways to flash the ESP32-S3. A [browser simulator](tools/simulator/README.md) lets you try the game before you buy the parts.
 
+**[Play Life Torus in your browser](https://batchcodes.github.io/life_torus/)** · **[Flash a display from your browser](https://batchcodes.github.io/life_torus/flash.html)**
+
 The source code is at [github.com/BatchCodes/life_torus](https://github.com/BatchCodes/life_torus). Report problems and ideas as GitHub issues.
 
 > **Status: early development.** The firmware and the browser simulator are complete. The firmware is not yet tested on a real display, and the wiring and assembly documents are not yet checked on a real build.
@@ -92,7 +94,7 @@ The host tests build the pure C++ components on your computer and run them. You 
 
 ## Try the Simulator
 
-The browser simulator runs the same game code on your computer. Build it in Docker and open `http://localhost:8000`:
+The browser simulator runs the same game code as the firmware. [Play it online](https://batchcodes.github.io/life_torus/), or build it in Docker and open `http://localhost:8000`:
 
 ```bash
 ./scripts/simulator_docker.sh --serve
@@ -111,7 +113,7 @@ idf.py build
 idf.py -p /dev/ttyUSB0 flash monitor
 ```
 
-For a new display, flash the bring-up firmware first. Refer to [Display Bring-Up](docs/hardware/bring-up.md). To change an option, refer to [Firmware Configuration](docs/software/configuration.md).
+You can also flash from Chrome or Edge with the [web flasher](https://batchcodes.github.io/life_torus/flash.html), or use Docker. Refer to [Flashing](docs/software/flashing.md). For a new display, flash the bring-up firmware first. Refer to [Display Bring-Up](docs/hardware/bring-up.md). To change an option, refer to [Firmware Configuration](docs/software/configuration.md).
 
 ## Build with Docker
 
@@ -141,5 +143,6 @@ Life Torus is free software under the GNU General Public License, version 3 or l
 - [Power and Wiring](docs/hardware/power-and-wiring.md): signal chain, power distribution and mains safety.
 - [Display Bring-Up](docs/hardware/bring-up.md): test patterns and checks for a new display.
 - [Firmware Configuration](docs/software/configuration.md): all options and defaults.
+- [Flashing](docs/software/flashing.md): web flasher, local ESP-IDF, Docker and release images.
 - [Preset Boards](docs/software/presets.md): the preset list and how long each preset runs.
 - [CONTRIBUTING.md](CONTRIBUTING.md): repository layout, build, test and code style.
