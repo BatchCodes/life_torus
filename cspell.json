@@ -7,11 +7,13 @@
     "LICENSE",
     "sdkconfig*",
     "*.rle",
-    ".claude/**"
+    ".claude/**",
+    "tools/simulator/web/life_torus.js"
   ],
   "words": [
     "AHCT",
     "clangd",
+    "cwrap",
     "devcontainer",
     "dialout",
     "DigiKey",
@@ -19,6 +21,7 @@
     "emsdk",
     "Espressif",
     "Gosper",
+    "HEAPU",
     "heptomino",
     "idf",
     "Kconfig",

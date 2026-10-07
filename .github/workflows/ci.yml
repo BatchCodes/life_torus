@@ -20,3 +20,18 @@ jobs:
         run: |
           git config --global --add safe.directory "${GITHUB_WORKSPACE}"
           scripts/ci.sh host-tests
+
+  simulator:
+    name: Browser simulator
+    runs-on: ubuntu-latest
+    # Keep the image tag in sync with scripts/emsdk_version.txt.
+    container: emscripten/emsdk:6.0.11
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build simulator
+        shell: bash
+        run: scripts/ci.sh simulator
+      - uses: actions/upload-artifact@v4
+        with:
+          name: simulator
+          path: tools/simulator/web

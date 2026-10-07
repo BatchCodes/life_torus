@@ -58,6 +58,8 @@ GitHub Actions runs [scripts/ci.sh](scripts/ci.sh) on each push and pull request
 docker run --rm -v "$PWD:/project" -w /project espressif/idf:v6.1 scripts/ci.sh all
 ```
 
+The `simulator` command needs Emscripten, so `all` does not run it. CI builds the simulator in the `emscripten/emsdk` image. Locally, use [simulator_docker.sh](scripts/simulator_docker.sh). To change the Emscripten version, update [scripts/emsdk_version.txt](scripts/emsdk_version.txt) and the image tag in the workflow in the same change.
+
 The container runs as `root`, so the build directories it makes belong to `root`. Delete them with `sudo`, or run the checks on a copy of the repository. `scripts/ci.sh` builds in `build_ci_*` directories, not in `build/`, so a CI run does not change the settings of your own `idf.py build`. CI does not read `sdkconfig.local`.
 
 ## Code Style

@@ -1,0 +1,123 @@
+<!doctype html>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<html lang="en-GB">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Life Torus Simulator</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Life Torus Simulator</h1>
+      <p>
+        Conway's Game of Life on a 64 × 32 torus. This page runs the same game code as the Life
+        Torus firmware.
+        <a href="https://github.com/BatchCodes/life_torus">Source code</a>
+      </p>
+    </header>
+
+    <main>
+      <section class="display" aria-label="Display">
+        <div class="views">
+          <canvas id="ring" width="360" height="480" aria-label="Ring view"></canvas>
+          <canvas
+            id="flat"
+            width="960"
+            height="480"
+            aria-label="Flat view of the 64 × 32 grid"
+          ></canvas>
+        </div>
+        <label class="toggle"><input id="show-ring" type="checkbox" checked /> Ring view</label>
+      </section>
+
+      <section class="side">
+        <h2>Status</h2>
+        <dl id="status">
+          <dt>State</dt>
+          <dd id="state">-</dd>
+          <dt>Preset</dt>
+          <dd id="preset">-</dd>
+          <dt>Edges</dt>
+          <dd id="edges">-</dd>
+          <dt>Generation</dt>
+          <dd id="generation">-</dd>
+          <dt>Population</dt>
+          <dd id="population">-</dd>
+          <dt>Cursor shape</dt>
+          <dd id="shape">-</dd>
+        </dl>
+
+        <h2>Keys</h2>
+        <table class="keys">
+          <tbody>
+            <tr>
+              <td>Arrow keys</td>
+              <td>D-pad</td>
+            </tr>
+            <tr>
+              <td><kbd>A</kbd> <kbd>B</kbd> <kbd>X</kbd> <kbd>Y</kbd></td>
+              <td>A, B, X, Y</td>
+            </tr>
+            <tr>
+              <td><kbd>L</kbd> <kbd>R</kbd></td>
+              <td>L, R</td>
+            </tr>
+            <tr>
+              <td><kbd>S</kbd></td>
+              <td>Select</td>
+            </tr>
+            <tr>
+              <td><kbd>Space</kbd></td>
+              <td>Start</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="hint">
+          In run, any button pauses. In pause: arrows move the cursor, A stamps, B erases, L and R
+          change the cursor shape, X turns it, Y mirrors it, Select loads the next preset and Space
+          runs.
+        </p>
+
+        <h2>Settings</h2>
+        <form id="settings">
+          <label>Step time (ms) <input name="step_ms" type="number" min="10" value="100" /></label>
+          <label
+            >Empty board limit (generations)
+            <input name="empty_limit" type="number" min="1" value="10"
+          /></label>
+          <label
+            >No-input limit (generations)
+            <input name="no_input_limit" type="number" min="1" value="10000"
+          /></label>
+          <label
+            >Repeat limit (generations, 0: off)
+            <input name="repeat_limit" type="number" min="0" value="300"
+          /></label>
+          <label
+            >Pause timeout (ms)
+            <input name="pause_timeout_ms" type="number" min="1000" value="30000"
+          /></label>
+          <label
+            >Effect time (ms) <input name="ko_effect_ms" type="number" min="1000" value="10000"
+          /></label>
+          <label
+            >Random preset fill (%)
+            <input name="random_percent" type="number" min="1" max="99" value="30"
+          /></label>
+          <label
+            ><input name="brightness_levels" type="checkbox" checked /> Brightness levels</label
+          >
+          <label
+            ><input name="cylinder" type="checkbox" /> Cylinder edges for empty and random
+            presets</label
+          >
+          <button type="submit">Apply and restart</button>
+        </form>
+      </section>
+    </main>
+
+    <script src="life_torus.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

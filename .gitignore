@@ -7,7 +7,6 @@ managed_components/
 dependencies.lock
 
 # Browser simulator build output
-tools/simulator/build/
 tools/simulator/web/life_torus.js
 tools/simulator/web/life_torus.wasm
 

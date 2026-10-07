@@ -4,7 +4,7 @@
 
 Life Torus is a physical display for Conway's Game of Life. Eight red LED matrix boards stand in a ring and make a grid of 64 cells around and 32 cells high. An ESP32-S3 runs the simulation and drives the boards. A USB game controller moves a cursor, so you can draw cells and patterns on the ring. The grid wraps around the ring and from the top to the bottom, so the game runs on a torus.
 
-This repository contains everything that you need to build one: the firmware, a bill of materials, the wiring and assembly documents, and three ways to flash the ESP32-S3. A browser simulator lets you try the game before you buy the parts.
+This repository contains everything that you need to build one: the firmware, a bill of materials, the wiring and assembly documents, and three ways to flash the ESP32-S3. A [browser simulator](tools/simulator/README.md) lets you try the game before you buy the parts.
 
 The source code is at [github.com/BatchCodes/life_torus](https://github.com/BatchCodes/life_torus). Report problems and ideas as GitHub issues.
 
@@ -90,6 +90,16 @@ The host tests build the pure C++ components on your computer and run them. You 
 ./scripts/run_host_tests.sh
 ```
 
+## Try the Simulator
+
+The browser simulator runs the same game code on your computer. Build it in Docker and open `http://localhost:8000`:
+
+```bash
+./scripts/simulator_docker.sh --serve
+```
+
+Refer to [Browser Simulator](tools/simulator/README.md) for the keys and the native build.
+
 ## Build with Docker
 
 If you do not want to install ESP-IDF, use the official ESP-IDF Docker image. The script uses the pinned version:
@@ -113,5 +123,6 @@ Life Torus is free software under the GNU General Public License, version 3 or l
 ## See Also
 
 - [Bill of Materials](docs/hardware/bill-of-materials.md): parts, suppliers and prices.
+- [Browser Simulator](tools/simulator/README.md): try the game in a browser.
 - [Preset Boards](docs/software/presets.md): the preset list and how long each preset runs.
 - [CONTRIBUTING.md](CONTRIBUTING.md): repository layout, build, test and code style.

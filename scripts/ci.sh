@@ -16,6 +16,8 @@ Usage: scripts/ci.sh COMMAND
 Commands:
   host-tests                Build and run the host tests.
   build APP [VARIANT]       Build firmware/APP. VARIANT selects firmware/APP/sdkconfig.ci.VARIANT.
+  simulator                 Build the browser simulator in tools/simulator/web. Needs Emscripten
+                            (emcmake) on the PATH, for example in the emscripten/emsdk image.
   all                       Run the host tests and build every app and variant.
 USAGE
 }
@@ -91,6 +93,20 @@ build_app() {
     build
 }
 
+build_simulator() {
+  local source_dir="${REPO_DIR}/tools/simulator"
+  local build_dir="${source_dir}/build"
+
+  if ! command -v emcmake &>/dev/null; then
+    printf 'error: emcmake not found. Load emsdk, or use scripts/simulator_docker.sh.\n' >&2
+    return 1
+  fi
+
+  emcmake cmake -S "${source_dir}" -B "${build_dir}" -DCMAKE_BUILD_TYPE=Release
+  cmake --build "${build_dir}" --parallel
+  printf 'Simulator built: %s/web/index.html\n' "${source_dir}"
+}
+
 run_all() {
   run_host_tests
 }
@@ -108,6 +124,9 @@ main() {
         return 1
       fi
       build_app "$2" "${3:-}"
+      ;;
+    simulator)
+      build_simulator
       ;;
     all)
       run_all
