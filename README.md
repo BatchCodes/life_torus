@@ -8,7 +8,7 @@ This repository contains everything that you need to build one: the firmware, a 
 
 The source code is at [github.com/BatchCodes/life_torus](https://github.com/BatchCodes/life_torus). Report problems and ideas as GitHub issues.
 
-> **Status: early development.** The repository skeleton is in place. The firmware, the documents and the simulator are not complete yet.
+> **Status: early development.** The firmware and the browser simulator are complete. The firmware is not yet tested on a real display. The wiring and assembly documents are not complete yet.
 
 ## How It Works
 
@@ -100,6 +100,19 @@ The browser simulator runs the same game code on your computer. Build it in Dock
 
 Refer to [Browser Simulator](tools/simulator/README.md) for the keys and the native build.
 
+## Build and Flash
+
+Connect the "UART" port of the ESP32-S3 board to your computer. Load ESP-IDF, then build and flash the firmware:
+
+```bash
+. ~/esp/esp-idf/export.sh
+cd firmware/life_torus
+idf.py build
+idf.py -p /dev/ttyUSB0 flash monitor
+```
+
+For a new display, flash the bring-up firmware first. Refer to [Display Bring-Up](docs/hardware/bring-up.md). To change an option, refer to [Firmware Configuration](docs/software/configuration.md).
+
 ## Build with Docker
 
 If you do not want to install ESP-IDF, use the official ESP-IDF Docker image. The script uses the pinned version:
@@ -124,5 +137,7 @@ Life Torus is free software under the GNU General Public License, version 3 or l
 
 - [Bill of Materials](docs/hardware/bill-of-materials.md): parts, suppliers and prices.
 - [Browser Simulator](tools/simulator/README.md): try the game in a browser.
+- [Display Bring-Up](docs/hardware/bring-up.md): test patterns and checks for a new display.
+- [Firmware Configuration](docs/software/configuration.md): all options and defaults.
 - [Preset Boards](docs/software/presets.md): the preset list and how long each preset runs.
 - [CONTRIBUTING.md](CONTRIBUTING.md): repository layout, build, test and code style.

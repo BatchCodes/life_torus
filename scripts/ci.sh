@@ -109,6 +109,8 @@ build_simulator() {
 
 run_all() {
   run_host_tests
+  build_app life_torus
+  build_app life_torus bringup
 }
 
 main() {

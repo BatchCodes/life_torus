@@ -113,8 +113,107 @@ menu "Life Torus"
 
     endmenu
 
+    menu "Game"
+        visible if LIFE_MODE_GAME
+
+        config LIFE_STEP_MS
+            int "Step time in run (ms)"
+            range 20 5000
+            default 100
+            help
+                The time between two generations. 100 ms gives 10 generations per second.
+
+        config LIFE_EMPTY_LIMIT
+            int "Empty board limit (generations)"
+            range 1 100000
+            default 10
+            help
+                In run, an empty board for this number of generations loads a new preset.
+
+        config LIFE_NO_INPUT_LIMIT
+            int "No-input limit (generations)"
+            range 1 1000000
+            default 10000
+            help
+                In run, this number of generations with no button press loads a new preset.
+
+        config LIFE_REPEAT_LIMIT
+            int "Repeat limit (generations)"
+            range 0 100000
+            default 300
+            help
+                In run, a board that repeats with a period of 32 generations or less (for
+                example only still lifes and blinkers) for this number of generations loads a
+                new preset. 0: off.
+
+        config LIFE_PAUSE_TIMEOUT_MS
+            int "Pause timeout (ms)"
+            range 1000 3600000
+            default 30000
+            help
+                Pause with no button press for this time changes to run.
+
+        config LIFE_TRANSITION_MS
+            int "New preset wipe time (ms)"
+            range 0 10000
+            default 800
+
+        config LIFE_CURSOR_BLINK_MS
+            int "Cursor blink half period (ms)"
+            range 50 2000
+            default 250
+
+        config LIFE_DPAD_REPEAT_DELAY_MS
+            int "D-pad repeat delay (ms)"
+            range 50 2000
+            default 300
+            help
+                A held D-pad button moves the cursor again after this time.
+
+        config LIFE_DPAD_REPEAT_INTERVAL_MS
+            int "D-pad repeat interval (ms)"
+            range 20 1000
+            default 80
+
+        config LIFE_KO_SCROLL_MS
+            int "Ko code effect duration (ms)"
+            range 1000 60000
+            default 10000
+
+        config LIFE_KO_GAP_MS
+            int "Ko code button gap (ms)"
+            range 200 10000
+            default 2000
+
+        choice LIFE_EDGE
+            prompt "Edges of the empty and random presets"
+            default LIFE_EDGE_TORUS
+            help
+                Torus: the grid wraps around the ring and from the top to the bottom.
+                Cylinder: the grid wraps around the ring only. The other presets have their
+                own edge mode.
+
+            config LIFE_EDGE_TORUS
+                bool "Torus"
+            config LIFE_EDGE_CYLINDER
+                bool "Cylinder"
+        endchoice
+
+        config LIFE_RANDOM_PERCENT
+            int "Random preset fill (%)"
+            range 1 99
+            default 30
+
+        config LIFE_LOG_CONTROLLER_REPORTS
+            bool "Log raw controller reports"
+            default n
+            help
+                Log each USB controller report as hex. Use it to check a new controller.
+
+    endmenu
+
     menu "Bring-up"
-        depends on LIFE_MODE_BRINGUP
+        visible if LIFE_MODE_BRINGUP
 
         config LIFE_BRINGUP_AUTO_ADVANCE_S
             int "Next test pattern after (s)"
