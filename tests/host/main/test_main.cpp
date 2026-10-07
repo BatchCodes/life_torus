@@ -16,5 +16,6 @@ int main() {
     run_display_modes_tests();
     run_settings_tests();
     run_phone_protocol_tests();
+    run_beat_tests();
     return UNITY_END();
 }
