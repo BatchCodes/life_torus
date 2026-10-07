@@ -43,7 +43,7 @@ The microphone takes 3.3 V, not 5 V. Mount it where the sound can reach it, for 
 
 ## Mode Button
 
-The mode button moves to the next display mode at each press: Game of Life, scrolling text, rain, barber pole, ripples, sparkle, then Game of Life again. Connect a normally open push button from `GPIO7` to a `G` pin of the ESP32-S3 board. The firmware uses the internal pull-up of the GPIO and removes the contact bounce, so you need no resistor or capacitor. You can change the GPIO in the firmware options.
+The mode button is optional. It moves to the next display mode at each press: Game of Life, scrolling text, rain, barber pole, ripples, sparkle, visualiser, then Game of Life again. Connect a normally open push button from `GPIO7` to a `G` pin of the ESP32-S3 board. The firmware uses the internal pull-up of the GPIO and removes the contact bounce, so you need no resistor or capacitor. You can change the GPIO in the firmware options. With no button, the firmware sees the GPIO always high, so nothing happens. The phone app can still change the display mode.
 
 ## Board to Board
 
@@ -85,9 +85,11 @@ Some power banks turn off when the current is very low. The display always uses 
 
 ## Power Switch
 
-The power switch turns the whole Life Torus on and off: the LED boards, the ESP32-S3 and the microphone. Put it in the 5 V wire after the two SB560 diodes, between the point where the two inputs join and the 5 V lever connector. Leave the GND wire without a switch.
+The power switch is optional. It turns the whole Life Torus on and off: the LED boards, the ESP32-S3 and the microphone. Put it in the 5 V wire after the two SB560 diodes, between the point where the two inputs join and the 5 V lever connector. Leave the GND wire without a switch.
 
 Use a switch rated for at least 10 A, so it stays cool with two 3 A inputs. A switch rated for mains voltage (for example 10 A, 250 V AC) is good for 5 V DC too.
+
+With no power switch, connect the joined diodes straight to the 5 V lever connector. Then the USB-C cable is the on and off switch.
 
 Some power banks turn off by themselves when nothing draws current. After a long time with the switch off, you can have to press the button on the power bank before the display starts again.
 

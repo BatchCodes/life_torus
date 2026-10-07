@@ -19,11 +19,11 @@ The [README](../../README.md) describes what each button does.
 
 ## Display Modes
 
-The "Display mode" panel chooses what the display shows, the same as the phone app does on a real Life Torus: Game of Life, scrolling text, rain, barber pole, ripples or sparkle. The text field sets the message of the scrolling text, and the speed slider sets the speed of all modes. In a mode other than Game of Life, the keys do nothing, except the ko code.
+The "Display mode" panel chooses what the display shows, the same as the phone app does on a real Life Torus: Game of Life, scrolling text, rain, barber pole, ripples, sparkle or the music visualiser. Type a message in "Message to scroll" and press "Show message" or Enter to scroll it, and the speed slider sets the speed of all modes. In a mode other than Game of Life, the keys do nothing, except the ko code.
 
 ## Beat Sync
 
-"Listen for a beat" uses the microphone of your computer, through the browser, and runs the same beat detector as the firmware. Play music with a clear bass beat. After a few seconds, the page shows the tempo, and the display modes (not Game of Life) move with the beat. The browser asks for permission first. It allows the microphone only on `https://` addresses and on `localhost`.
+"Listen to music" uses the microphone of your computer, through the browser, and runs the same beat detector and spectrum analyser as the firmware. The button turns red, and a level meter shows the sound that it hears. If the display shows Game of Life, it changes to the music visualiser. Play music with a clear bass beat. After a few seconds, the page shows the tempo, and the display modes (not Game of Life) move with the beat. The browser asks for permission first. It allows the microphone only on `https://` addresses and on `localhost`.
 
 ## Settings
 

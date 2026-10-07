@@ -6,7 +6,7 @@ The app has:
 
 - a live copy of the display: tap a cell to toggle it (in Game of Life, this pauses the game)
 - the controller buttons, which work like the USB controller
-- the display modes: Game of Life, scrolling text, rain, barber pole, ripples and sparkle, with the text and the speed
+- the display modes: Game of Life, scrolling text, rain, barber pole, ripples, sparkle and the music visualiser, with the message and the speed
 - the preset list
 - the settings: game limits, intensity, brightness levels, panel layout and the password
 
@@ -22,7 +22,7 @@ When the app does not run on a Life Torus (for example on GitHub Pages, or with 
 ./scripts/simulator_docker.sh --serve
 ```
 
-Then open `http://localhost:8000/phone/?sim`. In the simulator, "Listen for a beat" uses the phone or computer microphone for beat sync, the same as a microphone on a real Life Torus. The online version is at [batchcodes.github.io/life_torus/phone/](https://batchcodes.github.io/life_torus/phone/).
+Then open `http://localhost:8000/phone/?sim`. In the simulator, "Listen to music" uses the phone or computer microphone for beat sync and the visualiser, the same as a microphone on a real Life Torus. A level meter shows that it hears sound. The online version is at [batchcodes.github.io/life_torus/phone/](https://batchcodes.github.io/life_torus/phone/).
 
 ## See Also
 

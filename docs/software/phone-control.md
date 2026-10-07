@@ -17,7 +17,7 @@ Up to four phones can connect at the same time. Each phone sees the live display
 
 - **Live display.** A copy of the 64 × 32 display, approximately 10 frames per second. Tap a cell to toggle it. In run, a tap pauses the game first.
 - **Controller.** The same buttons as the USB controller.
-- **Display modes.** Game of Life, scrolling text, rain, barber pole, ripples and sparkle. Type the message for the scrolling text, and set the speed of all modes. A mode stays on until you change it in the app, or until the power goes off. At power on, the display always starts with Game of Life. While another mode is on, the USB controller does nothing, except the ko code.
+- **Display modes.** Game of Life, scrolling text, rain, barber pole, ripples, sparkle and the music visualiser. Type the message in "Message to scroll" and press "Show message" or Enter, and set the speed of all modes. A mode stays on until you change it in the app, or until the power goes off. At power on, the display always starts with Game of Life. While another mode is on, the USB controller does nothing, except the ko code.
 - **Presets.** Load any preset board directly.
 - **Settings.** The step time, the unattended-play limits, the intensity, the brightness levels, the panel layout, beat sync and the app password. The display saves them in NVS, so they stay after a power cycle.
 
@@ -30,6 +30,11 @@ With the optional INMP441 microphone, the display modes move with the beat of mu
 - rain: a row of drops starts on each beat
 - barber pole: the stripes move one stripe per beat, and flash brighter on the beat
 - scrolling text: the letters flash brighter on the beat
+- visualiser: the bars flash brighter on the beat
+
+## Music Visualiser
+
+The visualiser shows the sound from the microphone as a spectrum around the ring: 32 bands from 40 Hz (bass) to 8 kHz (treble), each band 2 columns wide. Each band is a bar from the bottom. The top of a bar is bright, and a dim marker shows the recent peak. An automatic gain makes quiet and loud music both fill the display. With no microphone or no sound for 1 s, the visualiser plays a slow wave, so the display does not go dark.
 
 The firmware filters the bass, finds the tempo (60 to 180 BPM) and predicts the next beat, so the display is on the beat and not late. It reacts only when the tempo is steady for a few seconds. With no microphone, no music, or no steady beat, each mode keeps its normal timing. The status line of the app shows the tempo.
 

@@ -25,8 +25,8 @@ USB game controller --USB--> ESP32-S3 --3.3 V SPI--> 74AHCT125 --5 V SPI--> boar
 - The ESP32-S3 sends the image over three wires (`DIN`, `CLK` and `CS`). A 74AHCT125 buffer changes the 3.3 V signals to 5 V.
 - A USB-C power bank or a USB-C wall charger at 5 V feeds the boards at several points. A second USB-C input is optional, for more brightness. The ESP32-S3 uses the same 5 V bus.
 - The game controller connects to the USB port of the ESP32-S3. It is optional.
-- An optional INMP441 microphone lets the display modes move with the beat of music.
-- The ESP32-S3 makes an open Wi-Fi network. A phone joins it and opens the [phone app](docs/software/phone-control.md): a live copy of the display, the controls, display modes (scrolling text, rain, barber pole, ripples, sparkle) and the settings.
+- An optional INMP441 microphone lets the display modes move with the beat of music, and drives the music visualiser.
+- The ESP32-S3 makes an open Wi-Fi network. A phone joins it and opens the [phone app](docs/software/phone-control.md): a live copy of the display, the controls, display modes (scrolling text, rain, barber pole, ripples, sparkle, music visualiser) and the settings.
 
 ## Controls
 
@@ -44,7 +44,7 @@ The display has two states: run and pause. It starts in run.
 | pause | Y      | mirror the cursor shape                                |
 | pause | Select | load the next [preset board](docs/software/presets.md) |
 
-The display also has a mode button and a power switch. The mode button moves to the next display mode at each press: Game of Life, scrolling text, rain, barber pole, ripples and sparkle. The power switch turns everything on and off. At power on, the display always starts with Game of Life.
+The display can also have a mode button and a power switch. Both are optional. The mode button moves to the next display mode at each press: Game of Life, scrolling text, rain, barber pole, ripples, sparkle and the music visualiser. The power switch turns everything on and off. At power on, the display always starts with Game of Life.
 
 When nobody uses it, the display looks after itself. It loads a new preset when the board is empty or stops moving, when it only repeats, or after a long time with no button press. A USB controller is optional: with no controller, the display runs by itself. After 30 s in pause with no button press, it starts to run again.
 

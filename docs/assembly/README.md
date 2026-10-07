@@ -33,7 +33,7 @@ Flash the firmware before you wire anything. Then you know that the board works.
 Do this step with no USB-C cable connected.
 
 1. Solder 1.0 mm² wires to the 5 V (VBUS) and GND pads of each USB-C power input. Check that each breakout has the 5.1 kΩ resistors on CC1 and CC2.
-2. Connect the 5 V wire of each input to an SB560 diode, with the stripe away from the input. Join the two diode stripes, and connect them through the power switch to the 5 V lever connector. Connect the GND wires to the GND lever connector.
+2. Connect the 5 V wire of each input to an SB560 diode, with the stripe away from the input. Join the two diode stripes, and connect them through the power switch (optional) to the 5 V lever connector. With no power switch, connect them straight to the lever connector. Connect the GND wires to the GND lever connector.
 3. Prepare four branches of 0.5 mm² wire, red and black, each approximately 20 cm long. Solder a 1000 µF capacitor across the far end of each branch. The stripe on the capacitor is the negative side.
 4. Connect the `5V` pin of the ESP32-S3 board to the 5 V lever connector through the 1N5819 diode, and a `G` pin to the GND lever connector.
 5. Connect the VCC and GND pins of the level shifter header to the lever connectors.
@@ -60,7 +60,7 @@ The boards make an octagonal prism. A simple frame is enough:
 - Cut two octagons from 3 mm plywood, acrylic or card, approximately 78 mm across the flat sides. Each side is 32.3 mm long, the width of one board.
 - Cut a centre hole in the bottom octagon for the jumper wires and the power branches.
 - Glue the boards to the edges of the two octagons with hot glue or foam tape, LEDs out. Keep board 1 to board 8 in chain order around the ring. Look from the outside: the chain goes left to right.
-- Put the power switch, the mode button and the USB-C sockets in the wall of the base, so a person can reach them from the outside. Connect the mode button from `GPIO7` to `G`.
+- Put the USB-C sockets, and the optional power switch and mode button, in the wall of the base, so a person can reach them from the outside. Connect the mode button from `GPIO7` to `G`.
 - The jumper wires and the power branches run inside the ring. The ESP32-S3, the level shifter and the USB-C inputs go into a base under the ring. Put the USB-C sockets in the wall of the base, so you can connect a cable from the outside.
 
 Leave space at the seam between board 8 and board 1, so that the ring stays a regular octagon. A later phase of the project adds a printable frame with a diffuser.
