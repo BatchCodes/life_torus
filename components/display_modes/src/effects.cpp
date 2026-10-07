@@ -56,7 +56,7 @@ void ScrollingText::render(frame::Image& image) const {
         }
         for (int y = 0; y < kCharHeight; ++y) {
             if (large_char_cell(text_[index], sx % kCharAdvance, y)) {
-                image.set(x, kTextTop + y, Level::kBright);
+                image.set(x, kTextTop + y, letter_level_);
             }
         }
     }
@@ -93,6 +93,16 @@ void Rain::tick(uint32_t now_ms, int speed, life::Rng& rng) {
     }
 }
 
+void Rain::beat(life::Rng& rng) {
+    // Restart a quarter of the drops at the top, at once.
+    for (int i = 0; i < kDrops / 4; ++i) {
+        Drop& d = drops_[rng.below(kDrops)];
+        d.x = static_cast<int8_t>(rng.below(life::kWidth));
+        d.y16 = 0;
+        d.rate = static_cast<uint8_t>(8 + rng.below(5));
+    }
+}
+
 void Rain::render(frame::Image& image) const {
     image.fill(Level::kOff);
     constexpr Level kTrail[4] = {Level::kBright, Level::kNormal, Level::kDim, Level::kDim};
@@ -114,9 +124,15 @@ void BarberPole::start(uint32_t now_ms) {
     phase_milli_ = 0;
 }
 
-void BarberPole::tick(uint32_t now_ms, int speed) {
-    // Speed 5: one column every 80 ms.
-    phase_milli_ += elapsed(last_ms_, now_ms) * static_cast<uint32_t>(speed) * 5u / 2u;
+void BarberPole::tick(uint32_t now_ms, int speed, uint32_t beat_period_ms) {
+    const uint32_t dt = elapsed(last_ms_, now_ms);
+    if (beat_period_ms > 0) {
+        // One stripe (8 columns) per beat.
+        phase_milli_ += dt * 8000u / beat_period_ms;
+    } else {
+        // Speed 5: one column every 80 ms.
+        phase_milli_ += dt * static_cast<uint32_t>(speed) * 5u / 2u;
+    }
     phase_milli_ %= 8000u;
 }
 
@@ -142,7 +158,18 @@ void Ripples::start(uint32_t now_ms, life::Rng& rng) {
     (void)rng;
 }
 
-void Ripples::tick(uint32_t now_ms, int speed, life::Rng& rng) {
+void Ripples::beat(life::Rng& rng) {
+    for (Ripple& r : ripples_) {
+        if (r.radius_milli < 0) {
+            r.x = static_cast<int8_t>(rng.below(life::kWidth));
+            r.y = static_cast<int8_t>(rng.below(life::kHeight));
+            r.radius_milli = 0;
+            return;
+        }
+    }
+}
+
+void Ripples::tick(uint32_t now_ms, int speed, life::Rng& rng, bool beats) {
     const uint32_t dt = elapsed(last_ms_, now_ms);
     for (Ripple& r : ripples_) {
         if (r.radius_milli < 0) {
@@ -154,7 +181,7 @@ void Ripples::tick(uint32_t now_ms, int speed, life::Rng& rng) {
             r.radius_milli = -1;
         }
     }
-    if (static_cast<int32_t>(now_ms - next_spawn_ms_) >= 0) {
+    if (!beats && static_cast<int32_t>(now_ms - next_spawn_ms_) >= 0) {
         next_spawn_ms_ = now_ms + 3000u / static_cast<uint32_t>(speed);
         for (Ripple& r : ripples_) {
             if (r.radius_milli < 0) {
@@ -217,6 +244,12 @@ void Sparkle::tick(uint32_t now_ms, int speed, life::Rng& rng) {
         for (int i = 0; i < 24; ++i) {
             age_[rng.below(life::kWidth * life::kHeight)] = 1;
         }
+    }
+}
+
+void Sparkle::beat(life::Rng& rng) {
+    for (int i = 0; i < 160; ++i) {
+        age_[rng.below(life::kWidth * life::kHeight)] = 1;
     }
 }
 

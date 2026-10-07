@@ -23,8 +23,11 @@ public:
     const char* text() const { return text_; }
     void tick(uint32_t now_ms, int speed);
     void render(frame::Image& image) const;
+    // With beat sync, the letters are normal and flash bright on the beat.
+    void set_letter_level(frame::Level level) { letter_level_ = level; }
 
 private:
+    frame::Level letter_level_ = frame::Level::kBright;
     char text_[kMaxTextLength + 1] = "Life Torus";
     int length_ = 10;
     uint32_t last_ms_ = 0;
@@ -36,6 +39,8 @@ public:
     void start(uint32_t now_ms, life::Rng& rng);
     void tick(uint32_t now_ms, int speed, life::Rng& rng);
     void render(frame::Image& image) const;
+    // On a beat: a row of new drops starts at the top.
+    void beat(life::Rng& rng);
 
 private:
     static constexpr int kDrops = 40;
@@ -51,7 +56,8 @@ private:
 class BarberPole {
 public:
     void start(uint32_t now_ms);
-    void tick(uint32_t now_ms, int speed);
+    // With a beat period (ms), the stripes move one full stripe per beat. 0: normal speed.
+    void tick(uint32_t now_ms, int speed, uint32_t beat_period_ms = 0);
     void render(frame::Image& image) const;
 
 private:
@@ -62,8 +68,11 @@ private:
 class Ripples {
 public:
     void start(uint32_t now_ms, life::Rng& rng);
-    void tick(uint32_t now_ms, int speed, life::Rng& rng);
+    // With beats, new rings start only on the beat.
+    void tick(uint32_t now_ms, int speed, life::Rng& rng, bool beats = false);
     void render(frame::Image& image) const;
+    // On a beat: a new ring.
+    void beat(life::Rng& rng);
 
 private:
     static constexpr int kRipples = 4;
@@ -82,6 +91,8 @@ public:
     void start(uint32_t now_ms, life::Rng& rng);
     void tick(uint32_t now_ms, int speed, life::Rng& rng);
     void render(frame::Image& image) const;
+    // On a beat: a burst of new sparkles.
+    void beat(life::Rng& rng);
 
 private:
     // Age of each cell in steps: 0 is off, 1 and 2 bright, 3 and 4 normal, 5 and 6 dim.

@@ -162,9 +162,88 @@ void test_speed_is_limited() {
     TEST_ASSERT_EQUAL(display_modes::kMinSpeed, rig.modes.speed());
 }
 
+// Runs a mode for 3 s with a beat every 500 ms (120 BPM), and returns the number of lit cells
+// right after the last beat.
+int lit_after_beats(ModeId mode, bool beats) {
+    Rig rig;
+    rig.modes.set_mode(mode, rig.now);
+    for (int i = 0; i < 6; ++i) {
+        rig.run(500);
+        if (beats) {
+            rig.modes.beat(rig.now);
+        }
+    }
+    rig.run(20);
+    return count_lit(rig.image);
+}
+
+void test_beats_add_activity() {
+    TEST_ASSERT_TRUE(lit_after_beats(ModeId::kSparkle, true) >
+                     lit_after_beats(ModeId::kSparkle, false));
+    TEST_ASSERT_TRUE(lit_after_beats(ModeId::kRipples, true) > 0);
+}
+
+void test_beats_active_only_while_beats_come() {
+    Rig rig;
+    rig.modes.set_mode(ModeId::kBarberPole, rig.now);
+    TEST_ASSERT_FALSE(rig.modes.beats_active(rig.now));
+    rig.modes.beat(rig.now);
+    rig.run(500);
+    rig.modes.beat(rig.now);
+    TEST_ASSERT_TRUE(rig.modes.beats_active(rig.now));
+    rig.run(1100);
+    TEST_ASSERT_FALSE(rig.modes.beats_active(rig.now));
+}
+
+void test_flash_on_beat() {
+    Rig rig;
+    rig.modes.set_text("I");
+    rig.modes.set_mode(ModeId::kText, rig.now);
+    rig.modes.beat(rig.now);
+    rig.run(500);
+    rig.modes.beat(rig.now);
+    rig.run(20);
+    TEST_ASSERT_FALSE(uses_level(rig.image, Level::kNormal));  // Flash: the letters are bright.
+    rig.run(200);
+    TEST_ASSERT_FALSE(uses_level(rig.image, Level::kBright));  // After the flash: normal.
+}
+
+void test_barber_pole_moves_with_the_beat() {
+    Rig rig;
+    rig.modes.set_mode(ModeId::kBarberPole, rig.now);
+    rig.modes.beat(rig.now);
+    rig.run(400);
+    rig.modes.beat(rig.now);  // Beat period 400 ms.
+    rig.run(200);
+    const Image a = rig.image;
+    rig.run(400);  // One beat: one full stripe of 8 columns, so the same picture.
+    // Compare outside the flash time.
+    rig.run(0);
+    int same = 0;
+    for (int y = 0; y < life::kHeight; ++y) {
+        for (int x = 0; x < life::kWidth; ++x) {
+            same += a.get(x, y) == rig.image.get(x, y) ? 1 : 0;
+        }
+    }
+    TEST_ASSERT_TRUE(same > life::kWidth * life::kHeight * 3 / 4);
+}
+
+void test_game_of_life_ignores_beats() {
+    Rig rig;
+    rig.run(1000);
+    const uint32_t generation = rig.game.simulation().generation();
+    rig.modes.beat(rig.now);
+    TEST_ASSERT_EQUAL_UINT32(generation, rig.game.simulation().generation());
+}
+
 }  // namespace
 
 void run_display_modes_tests() {
+    RUN_TEST(test_beats_add_activity);
+    RUN_TEST(test_beats_active_only_while_beats_come);
+    RUN_TEST(test_flash_on_beat);
+    RUN_TEST(test_barber_pole_moves_with_the_beat);
+    RUN_TEST(test_game_of_life_ignores_beats);
     RUN_TEST(test_font);
     RUN_TEST(test_starts_in_game_of_life);
     RUN_TEST(test_each_mode_draws_and_moves);
