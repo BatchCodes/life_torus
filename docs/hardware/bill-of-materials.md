@@ -36,6 +36,7 @@ The suppliers and prices are examples from October 2026, in euros, with VAT. Equ
 | -------------------- | -------- | -------------------------------------------------------------------------------- | ------------- |
 | Prototype board      | 1        | Perforated board, approximately 50 × 70 mm, for the 74AHCT125 and its connectors | € 2           |
 | Decoupling capacitor | 2        | 100 nF ceramic, one at the 74AHCT125 and one spare                               | € 0.20        |
+| Schottky diode       | 1        | 1N5819, in the 5 V feed to the ESP32-S3 board                                    | € 0.20        |
 | Jumper wires         | 40       | Female-to-female Dupont wires, 20 cm, for the board-to-board chain               | € 4           |
 | Pin headers          | 1 strip  | 2.54 mm male headers, 40 pins                                                    | € 1           |
 
@@ -54,10 +55,11 @@ Then order the mains inlet, the fuses, the wire, the lever connectors, the bulk 
 ## Notes
 
 - The LED boards are red only. Life Torus uses brightness levels, not colours, to show the cell states.
-- The total current of the eight boards depends on the brightness. The firmware limits the brightness by default. The power supply has a large margin.
+- The total current of the eight boards depends on the brightness. The firmware limits the brightness by default. The power supply has a large margin. Refer to [Power and Wiring](power-and-wiring.md).
 - The ESP32-S3-DevKitC-1 does not always supply 5 V to a device on its "USB" port. If the controller does not start, connect it through a powered USB OTG adapter or a USB OTG Y-cable from the 5 V supply. The hardware tests confirm which method works.
 - You do not need the "UART" port of the ESP32-S3 board for normal use. Use it to flash the firmware and to read the log.
 
 ## See Also
 
 - [README](../../README.md): project overview.
+- [Power and Wiring](power-and-wiring.md): signal chain, power distribution and mains safety.

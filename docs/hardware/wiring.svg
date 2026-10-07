@@ -1,0 +1,121 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 700" font-family="Helvetica, Arial, sans-serif" font-size="14">
+  <!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+  <title>Life Torus wiring: signal chain, controller and 5 V power</title>
+  <rect x="0" y="0" width="1100" height="700" fill="#ffffff"/>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#333"/>
+    </marker>
+  </defs>
+
+  <!-- Mains and power supply -->
+  <rect x="20" y="40" width="150" height="70" rx="6" fill="#fde2e0" stroke="#b3261e" stroke-width="2"/>
+  <text x="95" y="68" text-anchor="middle" font-weight="bold">Mains inlet</text>
+  <text x="95" y="88" text-anchor="middle">switch + T2A fuse</text>
+  <rect x="220" y="30" width="170" height="90" rx="6" fill="#fff4d6" stroke="#9a6b00" stroke-width="2"/>
+  <text x="305" y="62" text-anchor="middle" font-weight="bold">5 V 10 A supply</text>
+  <text x="305" y="82" text-anchor="middle">Mean Well LRS-50-5</text>
+  <text x="305" y="102" text-anchor="middle">V+ / V−</text>
+  <line x1="170" y1="75" x2="220" y2="75" stroke="#b3261e" stroke-width="4"/>
+  <text x="195" y="62" text-anchor="middle" font-size="11" fill="#b3261e">L N PE</text>
+
+  <!-- Distribution -->
+  <rect x="450" y="30" width="200" height="40" rx="5" fill="#ffe7cc" stroke="#c45500" stroke-width="2"/>
+  <text x="550" y="55" text-anchor="middle" font-weight="bold">5 V lever connector</text>
+  <rect x="450" y="80" width="200" height="40" rx="5" fill="#e6e6e6" stroke="#333" stroke-width="2"/>
+  <text x="550" y="105" text-anchor="middle" font-weight="bold">GND lever connector</text>
+  <line x1="390" y1="50" x2="450" y2="50" stroke="#c45500" stroke-width="5"/>
+  <line x1="390" y1="100" x2="450" y2="100" stroke="#333" stroke-width="5"/>
+  <text x="420" y="140" text-anchor="middle" font-size="11">1.0 mm²</text>
+
+  <!-- Injection branches -->
+  <g stroke-width="3" fill="none">
+    <path d="M650 45 H 700 V 160" stroke="#c45500"/>
+    <path d="M650 105 H 690 V 160" stroke="#333"/>
+  </g>
+  <text x="760" y="40" font-size="12">4 branches, 0.5 mm²,</text>
+  <text x="760" y="56" font-size="12">one to each pair of boards</text>
+  <text x="760" y="72" font-size="12">(boards 1–2, 3–4, 5–6, 7–8),</text>
+  <text x="760" y="88" font-size="12">with 1000 µF at each</text>
+
+  <!-- Boards -->
+  <g font-size="13">
+    <rect x="300" y="200" width="90" height="250" rx="4" fill="#f7d9d9" stroke="#8b1a1a" stroke-width="2"/>
+    <rect x="400" y="200" width="90" height="250" rx="4" fill="#f7d9d9" stroke="#8b1a1a" stroke-width="2"/>
+    <rect x="500" y="200" width="90" height="250" rx="4" fill="#f7d9d9" stroke="#8b1a1a" stroke-width="2"/>
+    <rect x="600" y="200" width="90" height="250" rx="4" fill="#f7d9d9" stroke="#8b1a1a" stroke-width="2"/>
+    <rect x="700" y="200" width="90" height="250" rx="4" fill="#f7d9d9" stroke="#8b1a1a" stroke-width="2"/>
+    <rect x="800" y="200" width="90" height="250" rx="4" fill="#f7d9d9" stroke="#8b1a1a" stroke-width="2"/>
+    <rect x="900" y="200" width="90" height="250" rx="4" fill="#f7d9d9" stroke="#8b1a1a" stroke-width="2"/>
+    <rect x="1000" y="200" width="90" height="250" rx="4" fill="#f7d9d9" stroke="#8b1a1a" stroke-width="2"/>
+    <text x="345" y="330" text-anchor="middle" font-weight="bold">Board 1</text>
+    <text x="445" y="330" text-anchor="middle" font-weight="bold">Board 2</text>
+    <text x="545" y="330" text-anchor="middle" font-weight="bold">Board 3</text>
+    <text x="645" y="330" text-anchor="middle" font-weight="bold">Board 4</text>
+    <text x="745" y="330" text-anchor="middle" font-weight="bold">Board 5</text>
+    <text x="845" y="330" text-anchor="middle" font-weight="bold">Board 6</text>
+    <text x="945" y="330" text-anchor="middle" font-weight="bold">Board 7</text>
+    <text x="1045" y="330" text-anchor="middle" font-weight="bold">Board 8</text>
+    <text x="335" y="350" text-anchor="middle" font-size="10">4 × MAX7219</text>
+    <text x="345" y="440" text-anchor="middle" font-size="11">IN (bottom)</text>
+    <text x="345" y="216" text-anchor="middle" font-size="11">OUT (top)</text>
+  </g>
+
+  <!-- Power to boards -->
+  <g stroke="#c45500" stroke-width="3" fill="none">
+    <path d="M700 160 H 345 V 200"/>
+    <path d="M700 160 V 175 H 545 V 200"/>
+    <path d="M700 160 H 745 V 200"/>
+    <path d="M700 160 H 945 V 200"/>
+  </g>
+  <text x="352" y="190" font-size="11" fill="#c45500">5 V and GND (pair of wires) to the IN header</text>
+
+  <!-- Chain: DOUT to next DIN -->
+  <g stroke="#1f5fa8" stroke-width="2.5" fill="none" marker-end="url(#arrow)">
+    <path d="M375 205 C 395 190, 395 470, 415 445"/>
+    <path d="M475 205 C 495 190, 495 470, 515 445"/>
+    <path d="M575 205 C 595 190, 595 470, 615 445"/>
+    <path d="M675 205 C 695 190, 695 470, 715 445"/>
+    <path d="M775 205 C 795 190, 795 470, 815 445"/>
+    <path d="M875 205 C 895 190, 895 470, 915 445"/>
+    <path d="M975 205 C 995 190, 995 470, 1015 445"/>
+  </g>
+  <text x="545" y="485" text-anchor="middle" fill="#1f5fa8" font-size="12">Jumper from the OUT header (top) of each board to the IN header (bottom) of the next board:</text>
+  <text x="545" y="502" text-anchor="middle" fill="#1f5fa8" font-size="12">DOUT → DIN, CLK → CLK, CS → CS. VCC and GND only inside a pair (1–2, 3–4, 5–6, 7–8).</text>
+
+  <!-- 74AHCT125 -->
+  <rect x="120" y="540" width="170" height="130" rx="6" fill="#e3f0e3" stroke="#2e7d32" stroke-width="2"/>
+  <text x="205" y="565" text-anchor="middle" font-weight="bold">74AHCT125</text>
+  <text x="205" y="584" text-anchor="middle" font-size="11">VCC 5 V (14), GND (7)</text>
+  <text x="205" y="600" text-anchor="middle" font-size="11">OE 1, 4, 10, 13 to GND</text>
+  <text x="205" y="616" text-anchor="middle" font-size="11">4A (12) to GND</text>
+  <text x="205" y="632" text-anchor="middle" font-size="11">100 nF from 14 to 7</text>
+  <text x="205" y="655" text-anchor="middle" font-size="11">2→3, 5→6, 9→8</text>
+
+  <!-- ESP32-S3 -->
+  <rect x="20" y="230" width="200" height="200" rx="6" fill="#e0ecfb" stroke="#1f5fa8" stroke-width="2"/>
+  <text x="120" y="258" text-anchor="middle" font-weight="bold">ESP32-S3-DevKitC-1</text>
+  <text x="30" y="290" font-size="12">GPIO11 → 1A (2)</text>
+  <text x="30" y="310" font-size="12">GPIO12 → 2A (5)</text>
+  <text x="30" y="330" font-size="12">GPIO10 → 3A (9)</text>
+  <text x="30" y="355" font-size="12">5V ← 5 V bus through</text>
+  <text x="30" y="371" font-size="12">     1N5819 diode</text>
+  <text x="30" y="391" font-size="12">G ← GND bus</text>
+  <text x="30" y="418" font-size="12">"USB" port ← controller</text>
+
+  <g stroke="#2e7d32" stroke-width="2.5" fill="none">
+    <path d="M150 430 V 540"/>
+  </g>
+  <text x="158" y="490" font-size="11" fill="#2e7d32">3.3 V DIN, CLK, CS</text>
+  <g stroke="#2e7d32" stroke-width="2.5" fill="none" marker-end="url(#arrow)">
+    <path d="M290 600 H 345 V 455"/>
+  </g>
+  <text x="360" y="580" font-size="11" fill="#2e7d32">5 V DIN (3), CLK (6), CS (8)</text>
+  <text x="360" y="596" font-size="11" fill="#2e7d32">to the IN header of board 1</text>
+
+  <!-- Controller -->
+  <rect x="20" y="130" width="150" height="60" rx="6" fill="#efe3f6" stroke="#6a1b9a" stroke-width="2"/>
+  <text x="95" y="156" text-anchor="middle" font-weight="bold">USB controller</text>
+  <text x="95" y="175" text-anchor="middle" font-size="11">through USB OTG adapter</text>
+  <line x1="95" y1="190" x2="95" y2="230" stroke="#6a1b9a" stroke-width="3" marker-end="url(#arrow)"/>
+</svg>

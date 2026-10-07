@@ -137,6 +137,7 @@ Life Torus is free software under the GNU General Public License, version 3 or l
 
 - [Bill of Materials](docs/hardware/bill-of-materials.md): parts, suppliers and prices.
 - [Browser Simulator](tools/simulator/README.md): try the game in a browser.
+- [Power and Wiring](docs/hardware/power-and-wiring.md): signal chain, power distribution and mains safety.
 - [Display Bring-Up](docs/hardware/bring-up.md): test patterns and checks for a new display.
 - [Firmware Configuration](docs/software/configuration.md): all options and defaults.
 - [Preset Boards](docs/software/presets.md): the preset list and how long each preset runs.
