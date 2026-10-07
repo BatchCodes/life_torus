@@ -56,6 +56,10 @@ Shape load_shape(int index) {
     return shape;
 }
 
+bool shape_fits(int index) {
+    return load_shape(index).width() <= life::width();
+}
+
 int find_shape(const char* name) {
     for (int i = 0; i < static_cast<int>(std::size(kShapes)); ++i) {
         if (std::strcmp(kShapes[i].name, name) == 0) {

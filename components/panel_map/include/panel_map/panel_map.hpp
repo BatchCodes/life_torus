@@ -8,11 +8,19 @@
 
 namespace panel_map {
 
-constexpr int kBoards = 8;
 constexpr int kChipsPerBoard = 4;
-constexpr int kChips = kBoards * kChipsPerBoard;
 constexpr int kDigits = 8;
 constexpr int kBoardColumns = 8;
+constexpr int kMaxBoards = life::kMaxWidth / kBoardColumns;
+constexpr int kMaxChips = kMaxBoards * kChipsPerBoard;
+
+// The number of boards and chips follows the grid width: 8 columns per board.
+inline int boards() {
+    return life::width() / kBoardColumns;
+}
+inline int chips() {
+    return boards() * kChipsPerBoard;
+}
 
 // How the boards stand in the ring and how each 8 × 8 block connects to its MAX7219.
 //
@@ -43,8 +51,8 @@ struct Address {
 
 Address map_cell(const PanelConfig& config, int x, int y);
 
-// The register data of one full display: data[digit][chip].
-using Registers = std::array<std::array<uint8_t, kChips>, kDigits>;
+// The register data of one full display: data[digit][chip], for chips() chips.
+using Registers = std::array<std::array<uint8_t, kMaxChips>, kDigits>;
 
 // True if a cell with this level is on in sub-frame `subframe` of `subframes`. With levels,
 // bright cells are on in all sub-frames, normal cells in two thirds and dim cells in one third.

@@ -22,6 +22,9 @@ std::span<const ShapeInfo> cursor_shapes();
 // Parses one entry of cursor_shapes(). The library is fixed, so this cannot fail.
 Shape load_shape(int index);
 
+// True if the shape is not wider than the grid.
+bool shape_fits(int index);
+
 // The index of the shape with this name in cursor_shapes(), or -1.
 int find_shape(const char* name);
 

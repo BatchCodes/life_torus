@@ -13,7 +13,7 @@ namespace {
 int count(const Image& image, Level level) {
     int n = 0;
     for (int y = 0; y < life::kHeight; ++y) {
-        for (int x = 0; x < life::kWidth; ++x) {
+        for (int x = 0; x < life::width(); ++x) {
             if (image.get(x, y) == level) {
                 ++n;
             }
@@ -41,7 +41,7 @@ void test_life_levels() {
     TEST_ASSERT_EQUAL(static_cast<int>(Level::kNormal), static_cast<int>(image.get(11, 10)));
     TEST_ASSERT_EQUAL(static_cast<int>(Level::kDim), static_cast<int>(image.get(11, 9)));
     TEST_ASSERT_EQUAL(static_cast<int>(Level::kDim), static_cast<int>(image.get(11, 11)));
-    TEST_ASSERT_EQUAL(life::kWidth * life::kHeight - 3, count(image, Level::kOff));
+    TEST_ASSERT_EQUAL(life::width() * life::kHeight - 3, count(image, Level::kOff));
 
     // A glider has born cells that survive into the next generation.
     life::Grid glider;
@@ -85,7 +85,7 @@ void test_wipe() {
     frame::draw_wipe(image, from, to, 16);
     TEST_ASSERT_EQUAL(static_cast<int>(Level::kOff), static_cast<int>(image.get(15, 3)));
     TEST_ASSERT_EQUAL(static_cast<int>(Level::kNormal), static_cast<int>(image.get(16, 3)));
-    frame::draw_wipe(image, from, to, life::kWidth);
+    frame::draw_wipe(image, from, to, life::width());
     TEST_ASSERT_TRUE(image == to);
 }
 
@@ -96,13 +96,13 @@ void test_ko_effect_moves_around_the_ring() {
     frame::draw_ko_code(b, 1);
     TEST_ASSERT_TRUE(count(a, Level::kBright) > 100);
     // Rows outside the text band stay dark.
-    for (int x = 0; x < life::kWidth; ++x) {
+    for (int x = 0; x < life::width(); ++x) {
         TEST_ASSERT_EQUAL(static_cast<int>(Level::kOff), static_cast<int>(a.get(x, 0)));
         TEST_ASSERT_EQUAL(static_cast<int>(Level::kOff), static_cast<int>(a.get(x, 31)));
     }
     // One column of movement: column x of offset 1 is column x + 1 of offset 0.
     for (int y = 0; y < life::kHeight; ++y) {
-        for (int x = 0; x < life::kWidth - 1; ++x) {
+        for (int x = 0; x < life::width() - 1; ++x) {
             TEST_ASSERT_EQUAL(static_cast<int>(a.get(x + 1, y)), static_cast<int>(b.get(x, y)));
         }
     }

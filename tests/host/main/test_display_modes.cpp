@@ -14,7 +14,7 @@ namespace {
 int count_lit(const Image& image) {
     int n = 0;
     for (int y = 0; y < life::kHeight; ++y) {
-        for (int x = 0; x < life::kWidth; ++x) {
+        for (int x = 0; x < life::width(); ++x) {
             if (image.get(x, y) != Level::kOff) {
                 ++n;
             }
@@ -25,7 +25,7 @@ int count_lit(const Image& image) {
 
 bool uses_level(const Image& image, Level level) {
     for (int y = 0; y < life::kHeight; ++y) {
-        for (int x = 0; x < life::kWidth; ++x) {
+        for (int x = 0; x < life::width(); ++x) {
             if (image.get(x, y) == level) {
                 return true;
             }
@@ -105,13 +105,13 @@ void test_text_scrolls_at_speed() {
     const Image b = rig.image;
     int matches = 0;
     for (int y = 0; y < life::kHeight; ++y) {
-        for (int x = 0; x + 20 < life::kWidth; ++x) {
+        for (int x = 0; x + 20 < life::width(); ++x) {
             if (a.get(x + 20, y) == b.get(x, y)) {
                 ++matches;
             }
         }
     }
-    TEST_ASSERT_EQUAL(life::kHeight * (life::kWidth - 20), matches);
+    TEST_ASSERT_EQUAL(life::kHeight * (life::width() - 20), matches);
     TEST_ASSERT_EQUAL_STRING("HI", rig.modes.text());
 }
 
@@ -221,11 +221,11 @@ void test_barber_pole_moves_with_the_beat() {
     rig.run(0);
     int same = 0;
     for (int y = 0; y < life::kHeight; ++y) {
-        for (int x = 0; x < life::kWidth; ++x) {
+        for (int x = 0; x < life::width(); ++x) {
             same += a.get(x, y) == rig.image.get(x, y) ? 1 : 0;
         }
     }
-    TEST_ASSERT_TRUE(same > life::kWidth * life::kHeight * 3 / 4);
+    TEST_ASSERT_TRUE(same > life::width() * life::kHeight * 3 / 4);
 }
 
 void test_game_of_life_ignores_beats() {

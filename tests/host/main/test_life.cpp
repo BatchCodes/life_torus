@@ -72,7 +72,7 @@ void test_glider_wraps_around_torus() {
     // top-bottom edge, and comes back after 4 × 64 generations.
     const Grid glider = make(60, 28, {".O.", "..O", "OOO"});
     TEST_ASSERT_TRUE(run(glider, EdgeMode::kTorus, 4 * 6) == make(2, 2, {".O.", "..O", "OOO"}));
-    TEST_ASSERT_TRUE(run(glider, EdgeMode::kTorus, 4 * life::kWidth) == glider);
+    TEST_ASSERT_TRUE(run(glider, EdgeMode::kTorus, 4 * life::width()) == glider);
 }
 
 void test_glider_stops_at_cylinder_edge() {
@@ -87,7 +87,7 @@ void test_glider_stops_at_cylinder_edge() {
 void test_full_neighbourhood_dies() {
     Grid grid;
     for (int y = 0; y < life::kHeight; ++y) {
-        grid.set_row(y, ~uint64_t{0});
+        grid.fill_row(y);
     }
     TEST_ASSERT_TRUE(life::step(grid, EdgeMode::kTorus).empty());
 }
@@ -122,14 +122,13 @@ void test_cell_states() {
     TEST_ASSERT_EQUAL_UINT32(1, sim.generation());
     // The new vertical cells are born, and they die in the next generation.
     TEST_ASSERT_EQUAL(static_cast<int>(CellState::kDiesNext), static_cast<int>(sim.state(31, 14)));
-    TEST_ASSERT_TRUE(sim.born_row(14) != 0);
-    TEST_ASSERT_TRUE(sim.dies_next_row(14) != 0);
+    TEST_ASSERT_EQUAL(static_cast<int>(CellState::kDiesNext), static_cast<int>(sim.state(31, 16)));
 
     sim.load(make(10, 10, {".O.", "..O", "OOO"}), EdgeMode::kTorus);
     sim.advance();
     int born = 0;
     for (int y = 0; y < life::kHeight; ++y) {
-        for (int x = 0; x < life::kWidth; ++x) {
+        for (int x = 0; x < life::width(); ++x) {
             if (sim.state(x, y) == CellState::kBorn) {
                 ++born;
             }
@@ -153,9 +152,67 @@ void test_step_time() {
     TEST_ASSERT_TRUE(us < 1000.0);
 }
 
+// The rule, cell by cell, for a check of the bit-sliced step.
+Grid slow_step(const Grid& grid, EdgeMode mode) {
+    Grid out;
+    for (int y = 0; y < life::kHeight; ++y) {
+        for (int x = 0; x < life::width(); ++x) {
+            int n = 0;
+            for (int dy = -1; dy <= 1; ++dy) {
+                for (int dx = -1; dx <= 1; ++dx) {
+                    if (dx == 0 && dy == 0) {
+                        continue;
+                    }
+                    const int yy = y + dy;
+                    if (mode == EdgeMode::kCylinder && (yy < 0 || yy >= life::kHeight)) {
+                        continue;
+                    }
+                    n += grid.get(life::wrap_x(x + dx), life::wrap_y(yy)) ? 1 : 0;
+                }
+            }
+            out.set(x, y, n == 3 || (n == 2 && grid.get(x, y)));
+        }
+    }
+    return out;
+}
+
+// Runs a test at each width, then sets the width back to 64.
+void test_all_widths() {
+    for (int width : {8, 32, 56, 64, 72, 80, 128}) {
+        TEST_ASSERT_TRUE(life::set_width(width));
+        life::Rng rng(static_cast<uint32_t>(width));
+        for (EdgeMode mode : {EdgeMode::kTorus, EdgeMode::kCylinder}) {
+            Grid grid;
+            grid.randomise(rng, 35);
+            for (int i = 0; i < 20; ++i) {
+                const Grid fast = life::step(grid, mode);
+                TEST_ASSERT_TRUE_MESSAGE(fast == slow_step(grid, mode), "step differs");
+                grid = fast;
+            }
+            // No cell past the width.
+            for (int y = 0; y < life::kHeight; ++y) {
+                for (int x = width; x < life::kMaxWidth; ++x) {
+                    TEST_ASSERT_FALSE(grid.get(x, y));
+                }
+            }
+        }
+        // A glider comes back after it has crossed the seam and the top-bottom edge.
+        const Grid glider = make(width - 3, 28, {".O.", "..O", "OOO"});
+        int period = width;
+        while (period % life::kHeight != 0) {
+            period += width;
+        }
+        TEST_ASSERT_TRUE(run(glider, EdgeMode::kTorus, 4 * period) == glider);
+    }
+    TEST_ASSERT_FALSE(life::set_width(12));
+    TEST_ASSERT_FALSE(life::set_width(136));
+    TEST_ASSERT_TRUE(life::set_width(64));
+}
+
 }  // namespace
 
 void run_life_tests() {
+    RUN_TEST(test_all_widths);
     RUN_TEST(test_block_is_still);
     RUN_TEST(test_beehive_is_still);
     RUN_TEST(test_blinker_has_period_two);

@@ -80,7 +80,7 @@ bool parse_rle(const char* text, Shape& out) {
             if (x > width) {
                 width = x;
             }
-            if (width > life::kWidth || y >= life::kHeight) {
+            if (width > kMaxShapeWidth || y >= life::kHeight) {
                 return false;
             }
         }

@@ -96,7 +96,7 @@ public:
 
 private:
     // Age of each cell in steps: 0 is off, 1 and 2 bright, 3 and 4 normal, 5 and 6 dim.
-    std::array<uint8_t, life::kWidth * life::kHeight> age_{};
+    std::array<uint8_t, life::kMaxWidth * life::kHeight> age_{};  // Index: y * kMaxWidth + x.
     uint32_t last_ms_ = 0;
     uint32_t elapsed_ = 0;  // Time since the last step, multiplied by the speed.
 };

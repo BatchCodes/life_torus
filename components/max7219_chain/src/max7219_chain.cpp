@@ -37,19 +37,20 @@ esp_err_t Max7219Chain::init(const ChainConfig& config) {
 esp_err_t Max7219Chain::write_digit(uint8_t reg, const uint8_t* values) {
     // The first 16 bits that go out end in the last chip of the chain, so send the last chip
     // first.
-    for (int chip = 0; chip < panel_map::kChips; ++chip) {
-        const int slot = panel_map::kChips - 1 - chip;
+    const int chips = panel_map::chips();
+    for (int chip = 0; chip < chips; ++chip) {
+        const int slot = chips - 1 - chip;
         buffer_[slot * 2] = reg;
         buffer_[slot * 2 + 1] = values[chip];
     }
     spi_transaction_t transaction = {};
-    transaction.length = sizeof(buffer_) * 8;
+    transaction.length = static_cast<size_t>(chips) * 16;
     transaction.tx_buffer = buffer_;
     return spi_device_polling_transmit(device_, &transaction);
 }
 
 esp_err_t Max7219Chain::write_all(uint8_t reg, uint8_t value) {
-    uint8_t values[panel_map::kChips];
+    uint8_t values[panel_map::kMaxChips];
     for (uint8_t& v : values) {
         v = value;
     }

@@ -173,17 +173,23 @@ bool parse_command(const char* data, size_t length, Command& out) {
     return false;
 }
 
+size_t frame_size() {
+    return 3 + static_cast<size_t>(life::width() * life::kHeight / 4);
+}
+
 void pack_frame(const frame::Image& image, uint8_t* out) {
     out[0] = 'F';
-    for (int i = 0; i < life::kWidth * life::kHeight / 4; ++i) {
+    out[1] = static_cast<uint8_t>(life::width());
+    out[2] = static_cast<uint8_t>(life::kHeight);
+    for (int i = 0; i < life::width() * life::kHeight / 4; ++i) {
         uint8_t byte = 0;
         for (int k = 0; k < 4; ++k) {
             const int cell = i * 4 + k;
             byte |= static_cast<uint8_t>(
-                static_cast<uint8_t>(image.get(cell % life::kWidth, cell / life::kWidth))
+                static_cast<uint8_t>(image.get(cell % life::width(), cell / life::width()))
                 << (k * 2));
         }
-        out[1 + i] = byte;
+        out[3 + i] = byte;
     }
 }
 

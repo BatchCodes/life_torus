@@ -6,7 +6,7 @@ namespace panel_map {
 Address map_cell(const PanelConfig& config, int x, int y) {
     int board = x / kBoardColumns;
     if (config.reverse_ring) {
-        board = kBoards - 1 - board;
+        board = boards() - 1 - board;
     }
     // Position inside an upright board: u from the left, v from the top.
     // The columns inside a board stay left to right. Only the board order reverses.
@@ -58,7 +58,7 @@ void encode(const PanelConfig& config, const frame::Image& image, int subframe, 
         digit.fill(0);
     }
     for (int y = 0; y < life::kHeight; ++y) {
-        for (int x = 0; x < life::kWidth; ++x) {
+        for (int x = 0; x < life::width(); ++x) {
             if (cell_on(image.get(x, y), subframe, subframes, levels)) {
                 const Address a = map_cell(config, x, y);
                 out[a.digit][a.chip] |= static_cast<uint8_t>(1u << a.bit);

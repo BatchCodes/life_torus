@@ -31,8 +31,12 @@ struct Preset {
 // The preset boards, in the order that Select steps through them.
 std::span<const Preset> presets();
 
-// Builds the board of a preset. A random preset uses the generator and percent_alive.
-// Returns the edge mode of the board.
+// True if every shape of the preset fits in the grid width. A preset that does not fit is left
+// out of the cycle.
+bool preset_fits(const Preset& preset);
+
+// Builds the board of a preset. The x positions are for 64 columns and scale with the width. A
+// random preset uses the generator and percent_alive. Returns the edge mode of the board.
 life::EdgeMode build_preset(const Preset& preset, life::Grid& grid, life::Rng& rng,
                             life::EdgeMode default_edge_mode, int percent_alive);
 

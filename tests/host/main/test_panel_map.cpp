@@ -19,9 +19,9 @@ int key(const Address& a) {
 void check_one_to_one(const PanelConfig& config) {
     std::set<int> seen;
     for (int y = 0; y < life::kHeight; ++y) {
-        for (int x = 0; x < life::kWidth; ++x) {
+        for (int x = 0; x < life::width(); ++x) {
             const Address a = panel_map::map_cell(config, x, y);
-            TEST_ASSERT_TRUE(a.chip < panel_map::kChips);
+            TEST_ASSERT_TRUE(a.chip < panel_map::chips());
             TEST_ASSERT_TRUE(a.digit < 8);
             TEST_ASSERT_TRUE(a.bit < 8);
             TEST_ASSERT_TRUE(seen.insert(key(a)).second);

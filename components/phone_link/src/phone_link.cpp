@@ -305,9 +305,9 @@ void PhoneLink::send_all(httpd_ws_type_t type, const uint8_t* data, size_t lengt
 }
 
 void PhoneLink::send_frame(const frame::Image& image) {
-    uint8_t data[kFrameSize];
+    uint8_t data[kMaxFrameSize];
     pack_frame(image, data);
-    send_all(HTTPD_WS_TYPE_BINARY, data, sizeof(data));
+    send_all(HTTPD_WS_TYPE_BINARY, data, frame_size());
 }
 
 void PhoneLink::send_text(const char* text) {

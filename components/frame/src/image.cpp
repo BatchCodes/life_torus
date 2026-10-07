@@ -5,7 +5,7 @@ namespace frame {
 
 void draw_life(Image& image, const life::Simulation& simulation, bool levels) {
     for (int y = 0; y < life::kHeight; ++y) {
-        for (int x = 0; x < life::kWidth; ++x) {
+        for (int x = 0; x < life::width(); ++x) {
             Level level = Level::kOff;
             switch (simulation.state(x, y)) {
                 case life::CellState::kDead:
@@ -34,7 +34,7 @@ void draw_cursor(Image& image, const patterns::Shape& shape, int x, int y, life:
 
 void draw_wipe(Image& image, const Image& from, const Image& to, int columns) {
     for (int y = 0; y < life::kHeight; ++y) {
-        for (int x = 0; x < life::kWidth; ++x) {
+        for (int x = 0; x < life::width(); ++x) {
             image.set(x, y, x < columns ? to.get(x, y) : from.get(x, y));
         }
     }

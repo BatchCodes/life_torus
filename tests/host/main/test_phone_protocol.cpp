@@ -66,12 +66,15 @@ void test_pack_frame() {
     image.set(0, 0, frame::Level::kBright);
     image.set(1, 0, frame::Level::kDim);
     image.set(63, 31, frame::Level::kNormal);
-    uint8_t out[phone_link::kFrameSize];
+    uint8_t out[phone_link::kMaxFrameSize];
     phone_link::pack_frame(image, out);
+    const size_t size = phone_link::frame_size();
     TEST_ASSERT_EQUAL_HEX8('F', out[0]);
-    TEST_ASSERT_EQUAL_HEX8(0x07, out[1]);                           // 3 | 1 << 2
-    TEST_ASSERT_EQUAL_HEX8(0x80, out[phone_link::kFrameSize - 1]);  // 2 << 6
-    TEST_ASSERT_EQUAL(513, static_cast<int>(phone_link::kFrameSize));
+    TEST_ASSERT_EQUAL(64, out[1]);
+    TEST_ASSERT_EQUAL(32, out[2]);
+    TEST_ASSERT_EQUAL_HEX8(0x07, out[3]);         // 3 | 1 << 2
+    TEST_ASSERT_EQUAL_HEX8(0x80, out[size - 1]);  // 2 << 6
+    TEST_ASSERT_EQUAL(515, static_cast<int>(size));
 }
 
 void test_url_encode() {

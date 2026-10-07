@@ -72,7 +72,7 @@ private:
     int preset_index_ = 0;
     int shape_index_ = 0;
     patterns::Shape shape_;
-    int cursor_x_ = life::kWidth / 2;
+    int cursor_x_ = life::width() / 2;
     int cursor_y_ = life::kHeight / 2;
     uint32_t cursor_moved_ms_ = 0;
 

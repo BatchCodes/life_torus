@@ -13,7 +13,6 @@ namespace {
 using frame::Level;
 
 constexpr int kTextTop = (life::kHeight - kCharHeight) / 2;
-constexpr int kTextGap = life::kWidth;  // Empty columns after the message.
 
 uint32_t elapsed(uint32_t& last_ms, uint32_t now_ms) {
     const uint32_t dt = now_ms - last_ms;
@@ -40,15 +39,15 @@ void ScrollingText::set_text(const char* text) {
 
 void ScrollingText::tick(uint32_t now_ms, int speed) {
     offset_milli_ += elapsed(last_ms_, now_ms) * 4u * static_cast<uint32_t>(speed);
-    const uint32_t strip = static_cast<uint32_t>(length_ * kCharAdvance + kTextGap) * 1000u;
+    const uint32_t strip = static_cast<uint32_t>(length_ * kCharAdvance + life::width()) * 1000u;
     offset_milli_ %= strip;
 }
 
 void ScrollingText::render(frame::Image& image) const {
     image.fill(Level::kOff);
-    const int strip = length_ * kCharAdvance + kTextGap;
+    const int strip = length_ * kCharAdvance + life::width();
     const int offset = static_cast<int>(offset_milli_ / 1000u);
-    for (int x = 0; x < life::kWidth; ++x) {
+    for (int x = 0; x < life::width(); ++x) {
         const int sx = (x + offset) % strip;
         const int index = sx / kCharAdvance;
         if (index >= length_) {
@@ -67,7 +66,7 @@ void ScrollingText::render(frame::Image& image) const {
 namespace {
 
 void new_drop(int8_t& x, int16_t& y16, uint8_t& rate, life::Rng& rng, bool anywhere) {
-    x = static_cast<int8_t>(rng.below(life::kWidth));
+    x = static_cast<int8_t>(rng.below(life::width()));
     const int start_row = anywhere ? static_cast<int>(rng.below(life::kHeight))
                                    : -static_cast<int>(rng.below(life::kHeight));
     y16 = static_cast<int16_t>(start_row * 16);
@@ -97,7 +96,7 @@ void Rain::beat(life::Rng& rng) {
     // Restart a quarter of the drops at the top, at once.
     for (int i = 0; i < kDrops / 4; ++i) {
         Drop& d = drops_[rng.below(kDrops)];
-        d.x = static_cast<int8_t>(rng.below(life::kWidth));
+        d.x = static_cast<int8_t>(rng.below(life::width()));
         d.y16 = 0;
         d.rate = static_cast<uint8_t>(8 + rng.below(5));
     }
@@ -141,7 +140,7 @@ void BarberPole::render(frame::Image& image) const {
                                   Level::kDim,    Level::kOff,    Level::kOff,    Level::kOff};
     const int phase = static_cast<int>(phase_milli_ / 1000u);
     for (int y = 0; y < life::kHeight; ++y) {
-        for (int x = 0; x < life::kWidth; ++x) {
+        for (int x = 0; x < life::width(); ++x) {
             image.set(x, y, kStripe[(x + y + 8 - phase) % 8]);
         }
     }
@@ -161,7 +160,7 @@ void Ripples::start(uint32_t now_ms, life::Rng& rng) {
 void Ripples::beat(life::Rng& rng) {
     for (Ripple& r : ripples_) {
         if (r.radius_milli < 0) {
-            r.x = static_cast<int8_t>(rng.below(life::kWidth));
+            r.x = static_cast<int8_t>(rng.below(life::width()));
             r.y = static_cast<int8_t>(rng.below(life::kHeight));
             r.radius_milli = 0;
             return;
@@ -185,7 +184,7 @@ void Ripples::tick(uint32_t now_ms, int speed, life::Rng& rng, bool beats) {
         next_spawn_ms_ = now_ms + 3000u / static_cast<uint32_t>(speed);
         for (Ripple& r : ripples_) {
             if (r.radius_milli < 0) {
-                r.x = static_cast<int8_t>(rng.below(life::kWidth));
+                r.x = static_cast<int8_t>(rng.below(life::width()));
                 r.y = static_cast<int8_t>(rng.below(life::kHeight));
                 r.radius_milli = 0;
                 break;
@@ -204,9 +203,9 @@ void Ripples::render(frame::Image& image) const {
         for (int y = 0; y < life::kHeight; ++y) {
             int dy = std::abs(y - r.y);
             dy = dy < life::kHeight - dy ? dy : life::kHeight - dy;
-            for (int x = 0; x < life::kWidth; ++x) {
+            for (int x = 0; x < life::width(); ++x) {
                 int dx = std::abs(x - r.x);
-                dx = dx < life::kWidth - dx ? dx : life::kWidth - dx;
+                dx = dx < life::width() - dx ? dx : life::width() - dx;
                 const float band =
                     std::fabs(std::sqrt(static_cast<float>(dx * dx + dy * dy)) - radius);
                 const Level level = band < 0.75f  ? Level::kBright
@@ -242,14 +241,14 @@ void Sparkle::tick(uint32_t now_ms, int speed, life::Rng& rng) {
             }
         }
         for (int i = 0; i < 24; ++i) {
-            age_[rng.below(life::kWidth * life::kHeight)] = 1;
+            age_[rng.below(life::kHeight) * life::kMaxWidth + rng.below(life::width())] = 1;
         }
     }
 }
 
 void Sparkle::beat(life::Rng& rng) {
     for (int i = 0; i < 160; ++i) {
-        age_[rng.below(life::kWidth * life::kHeight)] = 1;
+        age_[rng.below(life::kHeight) * life::kMaxWidth + rng.below(life::width())] = 1;
     }
 }
 
@@ -257,8 +256,8 @@ void Sparkle::render(frame::Image& image) const {
     constexpr Level kByAge[7] = {Level::kOff,    Level::kBright, Level::kBright, Level::kNormal,
                                  Level::kNormal, Level::kDim,    Level::kDim};
     for (int y = 0; y < life::kHeight; ++y) {
-        for (int x = 0; x < life::kWidth; ++x) {
-            image.set(x, y, kByAge[age_[y * life::kWidth + x]]);
+        for (int x = 0; x < life::width(); ++x) {
+            image.set(x, y, kByAge[age_[y * life::kMaxWidth + x]]);
         }
     }
 }
@@ -299,18 +298,16 @@ void Visualiser::tick(uint32_t now_ms, int speed) {
 
 void Visualiser::render(frame::Image& image) const {
     image.fill(Level::kOff);
-    for (int b = 0; b < kBands; ++b) {
+    // The bands spread over the width: 2 columns each on 64 columns.
+    for (int x = 0; x < life::width(); ++x) {
+        const int b = x * kBands / life::width();
         const int height = static_cast<int>(levels_[b] * life::kHeight + 0.5f);
         const int peak = static_cast<int>(peaks_[b] * life::kHeight + 0.5f);
-        for (int c = 0; c < 2; ++c) {
-            const int x = b * 2 + c;
-            for (int h = 0; h < height; ++h) {
-                image.set(x, life::kHeight - 1 - h,
-                          h == height - 1 ? Level::kBright : Level::kNormal);
-            }
-            if (peak > height && peak <= life::kHeight) {
-                image.set(x, life::kHeight - peak, Level::kDim);
-            }
+        for (int h = 0; h < height; ++h) {
+            image.set(x, life::kHeight - 1 - h, h == height - 1 ? Level::kBright : Level::kNormal);
+        }
+        if (peak > height && peak <= life::kHeight) {
+            image.set(x, life::kHeight - peak, Level::kDim);
         }
     }
 }

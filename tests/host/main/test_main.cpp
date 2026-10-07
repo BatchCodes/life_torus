@@ -19,5 +19,6 @@ int main() {
     run_beat_tests();
     run_debouncer_tests();
     run_spectrum_tests();
+    run_width_tests();
     return UNITY_END();
 }

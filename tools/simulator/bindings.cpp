@@ -20,7 +20,7 @@ namespace {
 game::Game g_game{game::GameConfig{}};
 display_modes::ModeManager g_modes{g_game, 12345};
 frame::Image g_image;
-uint8_t g_levels[life::kWidth * life::kHeight];
+uint8_t g_levels[life::kMaxWidth * life::kHeight];
 
 // Beat sync with the computer or phone microphone (Web Audio).
 constexpr int kAudioBuffer = 8192;
@@ -188,8 +188,8 @@ EMSCRIPTEN_KEEPALIVE int sim_display_mode() {
 EMSCRIPTEN_KEEPALIVE const uint8_t* sim_render(uint32_t now_ms) {
     g_modes.render(g_image, now_ms);
     for (int y = 0; y < life::kHeight; ++y) {
-        for (int x = 0; x < life::kWidth; ++x) {
-            g_levels[y * life::kWidth + x] = static_cast<uint8_t>(g_image.get(x, y));
+        for (int x = 0; x < life::width(); ++x) {
+            g_levels[y * life::width() + x] = static_cast<uint8_t>(g_image.get(x, y));
         }
     }
     return g_levels;

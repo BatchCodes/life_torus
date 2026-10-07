@@ -30,7 +30,7 @@ Grid placed(const Shape& shape, int centre_x, int centre_y) {
 Grid shifted(const Grid& grid, int dx, int dy) {
     Grid result;
     for (int y = 0; y < life::kHeight; ++y) {
-        for (int x = 0; x < life::kWidth; ++x) {
+        for (int x = 0; x < life::width(); ++x) {
             if (grid.get(x, y)) {
                 result.set(life::wrap_x(x + dx), life::wrap_y(y + dy), true);
             }

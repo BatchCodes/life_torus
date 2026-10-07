@@ -16,14 +16,14 @@ enum class Level : uint8_t { kOff = 0, kDim = 1, kNormal = 2, kBright = 3 };
 // One display image of 64 × 32 cells, before the conversion to the MAX7219 registers.
 class Image {
 public:
-    Level get(int x, int y) const { return cells_[y * life::kWidth + x]; }
-    void set(int x, int y, Level level) { cells_[y * life::kWidth + x] = level; }
+    Level get(int x, int y) const { return cells_[y * life::kMaxWidth + x]; }
+    void set(int x, int y, Level level) { cells_[y * life::kMaxWidth + x] = level; }
     void fill(Level level) { cells_.fill(level); }
 
     bool operator==(const Image& other) const { return cells_ == other.cells_; }
 
 private:
-    std::array<Level, life::kWidth * life::kHeight> cells_{};
+    std::array<Level, life::kMaxWidth * life::kHeight> cells_{};  // Index: y * kMaxWidth + x.
 };
 
 // Draws the Life layer. With levels, a born cell is bright, a surviving cell is normal and a

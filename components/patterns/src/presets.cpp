@@ -77,6 +77,23 @@ std::span<const Preset> presets() {
     return kPresets;
 }
 
+bool preset_fits(const Preset& preset) {
+    for (const Placement& placement : preset.placements) {
+        const int index = find_shape(placement.shape);
+        if (index < 0) {
+            return false;
+        }
+        Shape shape = load_shape(index);
+        for (int i = 0; i < placement.turns; ++i) {
+            shape = rotate(shape);
+        }
+        if (shape.width() > life::width()) {
+            return false;
+        }
+    }
+    return true;
+}
+
 EdgeMode build_preset(const Preset& preset, life::Grid& grid, life::Rng& rng,
                       EdgeMode default_edge_mode, int percent_alive) {
     grid.clear();
@@ -101,8 +118,9 @@ EdgeMode build_preset(const Preset& preset, life::Grid& grid, life::Rng& rng,
         if (placement.mirrored) {
             shape = mirror(shape);
         }
-        // stamp() takes the centre of the shape, so convert from the top-left cell.
-        stamp(grid, shape, placement.x + shape.width() / 2, placement.y + shape.height() / 2,
+        // The positions are for 64 columns. stamp() takes the centre of the shape.
+        const int x = placement.x * life::width() / 64;
+        stamp(grid, shape, x + shape.width() / 2, placement.y + shape.height() / 2,
               preset.edge_mode);
     }
     return preset.edge_mode;

@@ -199,7 +199,7 @@ void ModeManager::render(frame::Image& image, uint32_t now_ms) const {
         mode_ == ModeId::kText || mode_ == ModeId::kBarberPole || mode_ == ModeId::kVisualiser;
     if (flash_mode && beats_active(now_ms) && now_ms - last_beat_ms_ < kFlashMs) {
         for (int y = 0; y < life::kHeight; ++y) {
-            for (int x = 0; x < life::kWidth; ++x) {
+            for (int x = 0; x < life::width(); ++x) {
                 image.set(x, y, brighter(image.get(x, y)));
             }
         }

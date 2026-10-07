@@ -57,14 +57,16 @@ void Game::auto_load(uint32_t now_ms) {
     const auto all = patterns::presets();
     int candidates = 0;
     for (int i = 0; i < static_cast<int>(all.size()); ++i) {
-        if (i != preset_index_ && all[i].kind != patterns::PresetKind::kEmpty) {
+        if (i != preset_index_ && all[i].kind != patterns::PresetKind::kEmpty &&
+            patterns::preset_fits(all[i])) {
             ++candidates;
         }
     }
     int pick = static_cast<int>(rng_.below(static_cast<uint32_t>(candidates)));
     int index = 0;
     for (int i = 0; i < static_cast<int>(all.size()); ++i) {
-        if (i != preset_index_ && all[i].kind != patterns::PresetKind::kEmpty) {
+        if (i != preset_index_ && all[i].kind != patterns::PresetKind::kEmpty &&
+            patterns::preset_fits(all[i])) {
             if (pick == 0) {
                 index = i;
                 break;
@@ -184,7 +186,7 @@ void Game::press(Button button, uint32_t now_ms) {
 }
 
 void Game::tap_cell(int x, int y, uint32_t now_ms) {
-    if (mode_ == Mode::kKoCode || x < 0 || x >= life::kWidth || y < 0 || y >= life::kHeight) {
+    if (mode_ == Mode::kKoCode || x < 0 || x >= life::width() || y < 0 || y >= life::kHeight) {
         return;
     }
     last_input_ms_ = now_ms;
@@ -204,7 +206,8 @@ void Game::tap_cell(int x, int y, uint32_t now_ms) {
 
 void Game::select_preset(int index, uint32_t now_ms) {
     if (mode_ == Mode::kKoCode || index < 0 ||
-        index >= static_cast<int>(patterns::presets().size())) {
+        index >= static_cast<int>(patterns::presets().size()) ||
+        !patterns::preset_fits(patterns::presets()[index])) {
         return;
     }
     last_input_ms_ = now_ms;
@@ -240,20 +243,30 @@ void Game::handle_pause_button(Button button, uint32_t now_ms) {
             edit(false);
             break;
         case Button::kL:
-            set_shape((shape_index_ + shape_count - 1) % shape_count);
+        case Button::kR: {
+            // Step over the shapes that are wider than the grid. The single cell always fits.
+            const int step = button == Button::kL ? shape_count - 1 : 1;
+            int index = (shape_index_ + step) % shape_count;
+            while (!patterns::shape_fits(index)) {
+                index = (index + step) % shape_count;
+            }
+            set_shape(index);
             break;
-        case Button::kR:
-            set_shape((shape_index_ + 1) % shape_count);
-            break;
+        }
         case Button::kX:
             shape_ = patterns::rotate(shape_);
             break;
         case Button::kY:
             shape_ = patterns::mirror(shape_);
             break;
-        case Button::kSelect:
-            load_preset((preset_index_ + 1) % preset_count);
+        case Button::kSelect: {
+            int index = (preset_index_ + 1) % preset_count;
+            while (!patterns::preset_fits(patterns::presets()[index])) {
+                index = (index + 1) % preset_count;
+            }
+            load_preset(index);
             break;
+        }
         case Button::kStart:
             enter_run(now_ms);
             break;
@@ -315,8 +328,8 @@ void Game::render(frame::Image& image, uint32_t now_ms) const {
             const uint32_t elapsed = now_ms - transition_start_ms_;
             const int columns =
                 config_.transition_ms == 0
-                    ? life::kWidth
-                    : static_cast<int>(elapsed * life::kWidth / config_.transition_ms);
+                    ? life::width()
+                    : static_cast<int>(elapsed * life::width() / config_.transition_ms);
             frame::draw_wipe(image, transition_from_, next, columns);
             return;
         }

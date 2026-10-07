@@ -35,8 +35,6 @@ public:
     uint32_t generation() const { return generation_; }
 
     CellState state(int x, int y) const;
-    uint64_t born_row(int y) const { return current_.row(y) & ~previous_.row(y); }
-    uint64_t dies_next_row(int y) const { return current_.row(y) & ~next_.row(y); }
 
 private:
     Grid previous_;

@@ -82,7 +82,7 @@ void render(Board& board, Pattern pattern, uint32_t now_ms) {
     switch (pattern) {
         case Pattern::kChipWalk: {
             panel_map::Registers registers{};
-            const int chip = static_cast<int>((now_ms / 500) % panel_map::kChips);
+            const int chip = static_cast<int>((now_ms / 500) % panel_map::chips());
             for (auto& digit : registers) {
                 digit[chip] = 0xFF;
             }
@@ -90,7 +90,7 @@ void render(Board& board, Pattern pattern, uint32_t now_ms) {
             return;
         }
         case Pattern::kChipNumbers:
-            for (int bx = 0; bx < life::kWidth / 8; ++bx) {
+            for (int bx = 0; bx < life::width() / 8; ++bx) {
                 for (int by = 0; by < life::kHeight / 8; ++by) {
                     const int x0 = bx * 8;
                     const int y0 = by * 8;
@@ -101,7 +101,7 @@ void render(Board& board, Pattern pattern, uint32_t now_ms) {
             }
             break;
         case Pattern::kColumnSweep: {
-            const int x = static_cast<int>((now_ms / 100) % life::kWidth);
+            const int x = static_cast<int>((now_ms / 100) % life::width());
             for (int y = 0; y < life::kHeight; ++y) {
                 image.set(x, y, frame::Level::kBright);
             }
@@ -109,7 +109,7 @@ void render(Board& board, Pattern pattern, uint32_t now_ms) {
         }
         case Pattern::kRowSweep: {
             const int y = static_cast<int>((now_ms / 150) % life::kHeight);
-            for (int x = 0; x < life::kWidth; ++x) {
+            for (int x = 0; x < life::width(); ++x) {
                 image.set(x, y, frame::Level::kBright);
             }
             break;
@@ -125,7 +125,7 @@ void render(Board& board, Pattern pattern, uint32_t now_ms) {
                 if (y == 10 || y == 21) {
                     continue;
                 }
-                for (int x = 0; x < life::kWidth; ++x) {
+                for (int x = 0; x < life::width(); ++x) {
                     image.set(x, y, level);
                 }
             }

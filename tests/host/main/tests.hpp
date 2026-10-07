@@ -13,3 +13,4 @@ void run_phone_protocol_tests();
 void run_beat_tests();
 void run_debouncer_tests();
 void run_spectrum_tests();
+void run_width_tests();

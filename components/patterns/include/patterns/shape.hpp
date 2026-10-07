@@ -8,6 +8,9 @@
 
 namespace patterns {
 
+// The largest shape: one 64-bit word per row.
+constexpr int kMaxShapeWidth = 64;
+
 // A pattern of up to 64 × 32 cells. Bit x of row y is the cell at column x.
 class Shape {
 public:
@@ -26,7 +29,7 @@ private:
 
 // Parses the pattern part of a run-length encoded (RLE) pattern, for example "bo$2bo$3o!".
 // Lines that start with '#' or 'x' are header lines and are skipped. Returns false if the text
-// is not valid or the pattern is larger than 64 × 32.
+// is not valid or the pattern is larger than 64 × 32 (the shape size, not the grid width).
 bool parse_rle(const char* text, Shape& out);
 
 // Turns the shape 90 degrees clockwise. A shape that is wider than the grid is high turns

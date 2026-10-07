@@ -49,7 +49,7 @@ private:
     esp_err_t write_digit(uint8_t reg, const uint8_t* values);
 
     spi_device_handle_t device_ = nullptr;
-    uint8_t buffer_[panel_map::kChips * 2] = {};
+    uint8_t buffer_[panel_map::kMaxChips * 2] = {};
 };
 
 }  // namespace max7219_chain

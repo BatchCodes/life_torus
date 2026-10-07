@@ -47,9 +47,11 @@ bool parse_command(const char* data, size_t length, Command& out);
 const char* button_name(game::Button button);
 bool button_from_name(const char* name, size_t length, game::Button& out);
 
-// A display frame for the phone: one byte 'F', then 2 bits per cell (the brightness level),
-// 4 cells per byte, row by row, the first cell in the low bits.
-constexpr size_t kFrameSize = 1 + life::kWidth * life::kHeight / 4;
+// A display frame for the phone: 'F', the width and the height (one byte each), then 2 bits per
+// cell (the brightness level), 4 cells per byte, row by row, the first cell in the low bits.
+constexpr size_t kMaxFrameSize = 3 + life::kMaxWidth * life::kHeight / 4;
+size_t frame_size();
+// Writes frame_size() bytes.
 void pack_frame(const frame::Image& image, uint8_t* out);
 
 // Percent decoding ("a%20b" to "a b"). Returns false if the text is not valid or does not fit.
