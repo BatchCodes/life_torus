@@ -18,5 +18,6 @@ int main() {
     run_phone_protocol_tests();
     run_beat_tests();
     run_debouncer_tests();
+    run_spectrum_tests();
     return UNITY_END();
 }
