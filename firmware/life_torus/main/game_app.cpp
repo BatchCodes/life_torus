@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #include <cstdint>
 
+#include "app_settings.hpp"
 #include "board.hpp"
 #include "esp_log.h"
-#include "esp_random.h"
 #include "esp_timer.h"
 #include "freertos/FreeRTOS.h"
 #include "game/game.hpp"
@@ -17,37 +17,13 @@ constexpr const char* kTag = "game";
 constexpr uint32_t kTickMs = 10;
 constexpr uint32_t kRenderMs = 20;
 
-game::GameConfig config_from_kconfig(bool levels) {
-    game::GameConfig config;
-    config.step_ms = CONFIG_LIFE_STEP_MS;
-    config.brightness_levels = levels;
-    config.settled_limit = CONFIG_LIFE_SETTLED_LIMIT;
-    config.no_input_limit = CONFIG_LIFE_NO_INPUT_LIMIT;
-    config.repeat_limit = CONFIG_LIFE_REPEAT_LIMIT;
-    config.pause_timeout_ms = CONFIG_LIFE_PAUSE_TIMEOUT_MS;
-    config.transition_ms = CONFIG_LIFE_TRANSITION_MS;
-    config.cursor_blink_ms = CONFIG_LIFE_CURSOR_BLINK_MS;
-    config.repeat_delay_ms = CONFIG_LIFE_DPAD_REPEAT_DELAY_MS;
-    config.repeat_interval_ms = CONFIG_LIFE_DPAD_REPEAT_INTERVAL_MS;
-    config.ko_effect_ms = CONFIG_LIFE_KO_SCROLL_MS;
-    config.ko_gap_ms = CONFIG_LIFE_KO_GAP_MS;
-#if CONFIG_LIFE_EDGE_CYLINDER
-    config.default_edge_mode = life::EdgeMode::kCylinder;
-#else
-    config.default_edge_mode = life::EdgeMode::kTorus;
-#endif
-    config.random_percent = CONFIG_LIFE_RANDOM_PERCENT;
-    config.seed = esp_random();
-    return config;
-}
-
 uint32_t now_ms() {
     return static_cast<uint32_t>(esp_timer_get_time() / 1000);
 }
 
 }  // namespace
 
-void run_game(Board& board) {
+void run_game(Board& board, settings::Settings& s) {
     gamepad_input::UsbGamepad gamepad;
     gamepad_input::UsbGamepadConfig pad_config;
 #if CONFIG_LIFE_LOG_CONTROLLER_REPORTS
@@ -57,7 +33,7 @@ void run_game(Board& board) {
         ESP_LOGW(kTag, "USB host start failed. The display runs with no controller.");
     }
 
-    game::Game game(config_from_kconfig(board.levels()));
+    game::Game game(game_config(s));
     game.start(now_ms());
     ESP_LOGI(kTag, "started with preset \"%s\"", game.preset_name());
 

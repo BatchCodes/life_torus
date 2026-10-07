@@ -6,7 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Life Torus Flasher</title>
     <link rel="stylesheet" href="style.css" />
-    <script type="module" src="https://unpkg.com/esp-web-tools@10.4.0/dist/web/install-button.js?module"></script>
+    <script
+      type="module"
+      src="https://unpkg.com/esp-web-tools@10.4.0/dist/web/install-button.js?module"
+    ></script>
   </head>
   <body>
     <header>
@@ -23,12 +26,15 @@
         <h2>Before You Start</h2>
         <ol>
           <li>Use Chrome or Edge on a computer. Other browsers cannot use the serial port.</li>
-          <li>Connect the <strong>"UART"</strong> port of the ESP32-S3 board to your computer with a USB data cable.</li>
+          <li>
+            Connect the <strong>"UART"</strong> port of the ESP32-S3 board to your computer with a
+            USB data cable.
+          </li>
           <li>Click a button below and select the serial port of the board.</li>
         </ol>
         <p class="hint">
-          If the board does not connect, hold the BOOT button, press and release the RST button, then release BOOT.
-          Then try again.
+          If the board does not connect, hold the BOOT button, press and release the RST button,
+          then release BOOT. Then try again.
         </p>
       </section>
 
@@ -41,20 +47,24 @@
       <section class="side">
         <h2>Bring-Up</h2>
         <p>
-          Test patterns for a new display. Use this first, to check the wiring and to find the panel layout options.
-          Refer to
-          <a href="https://github.com/BatchCodes/life_torus/blob/main/docs/hardware/bring-up.md">Display Bring-Up</a>.
+          Test patterns for a new display. Use this first, to check the wiring and to find the panel
+          layout options. Refer to
+          <a href="https://github.com/BatchCodes/life_torus/blob/main/docs/hardware/bring-up.md"
+            >Display Bring-Up</a
+          >.
         </p>
         <esp-web-install-button manifest="firmware/manifest-bringup.json"></esp-web-install-button>
       </section>
 
       <section class="side">
-        <h2>Panel Layout</h2>
+        <h2>Saved Settings</h2>
         <p class="hint">
-          The web flasher installs the default panel layout. If the bring-up firmware shows that your boards need other
-          layout options, build the firmware with your options in <code>sdkconfig.local</code> and flash it with
-          <code>idf.py</code>. Refer to
-          <a href="https://github.com/BatchCodes/life_torus/blob/main/docs/software/flashing.md">Flashing</a>.
+          The bring-up firmware saves the panel layout and the intensity on the board. The game uses
+          them. To keep them, do not erase the board when you install the game after the bring-up
+          firmware. Refer to
+          <a href="https://github.com/BatchCodes/life_torus/blob/main/docs/software/flashing.md"
+            >Flashing</a
+          >.
         </p>
       </section>
     </main>

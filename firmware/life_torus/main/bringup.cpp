@@ -11,6 +11,7 @@
 #include "gamepad_input/usb_gamepad.hpp"
 #include "modes.hpp"
 #include "sdkconfig.h"
+#include "settings/nvs_store.hpp"
 
 namespace {
 
@@ -136,7 +137,7 @@ void render(Board& board, Pattern pattern, uint32_t now_ms) {
 
 }  // namespace
 
-void run_bringup(Board& board) {
+void run_bringup(Board& board, settings::Settings& s) {
     gamepad_input::UsbGamepad gamepad;
     gamepad_input::UsbGamepadConfig pad_config;
     pad_config.log_reports = true;
@@ -213,6 +214,14 @@ void run_bringup(Board& board) {
             }
             if (layout_changed) {
                 log_panel(p);
+            }
+            if (event.button != game::Button::kStart && event.button != game::Button::kSelect) {
+                // Save the layout and the intensity, so the game firmware uses them too.
+                s.panel = p;
+                s.intensity = board.intensity();
+                if (settings::save(s) == ESP_OK) {
+                    ESP_LOGI(kTag, "panel layout and intensity saved");
+                }
             }
         }
         if (auto_advance &&

@@ -119,6 +119,20 @@ merge_app() {
     merge-bin -o "${output}"
 }
 
+# Copies the separate images of an app build (bootloader at 0x0, partition table at 0x8000,
+# app at 0x10000) to dist/parts/NAME/. Flashing these keeps the saved settings in NVS.
+copy_parts() {
+  local variant="$1"
+  local name="$2"
+  local build_dir="${REPO_DIR}/firmware/life_torus/build_ci_${variant:-default}"
+  local parts_dir="${REPO_DIR}/dist/parts/${name}"
+
+  mkdir -p "${parts_dir}"
+  cp "${build_dir}/bootloader/bootloader.bin" "${parts_dir}/bootloader.bin"
+  cp "${build_dir}/partition_table/partition-table.bin" "${parts_dir}/partition-table.bin"
+  cp "${build_dir}/life_torus.bin" "${parts_dir}/life_torus.bin"
+}
+
 build_release() {
   local version="$1"
   local dist_dir="${REPO_DIR}/dist"
@@ -128,6 +142,8 @@ build_release() {
   build_app life_torus bringup
   merge_app life_torus "" "${dist_dir}/life_torus-${version}.bin"
   merge_app life_torus bringup "${dist_dir}/life_torus-bringup-${version}.bin"
+  copy_parts "" game
+  copy_parts bringup bringup
   (cd "${dist_dir}" && sha256sum ./*.bin >"SHA256SUMS-${version}.txt")
   printf 'Release images in %s\n' "${dist_dir}"
 }

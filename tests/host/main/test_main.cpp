@@ -14,5 +14,6 @@ int main() {
     run_panel_map_tests();
     run_gamepad_report_tests();
     run_display_modes_tests();
+    run_settings_tests();
     return UNITY_END();
 }

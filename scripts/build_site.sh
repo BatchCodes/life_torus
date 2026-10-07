@@ -17,15 +17,17 @@ usage() {
 Usage: scripts/build_site.sh VERSION
 
 Copies the simulator from tools/simulator/web, the flasher page from tools/site and the
-images dist/life_torus-VERSION.bin and dist/life_torus-bringup-VERSION.bin into site/.
+separate images in dist/parts/game and dist/parts/bringup into site/.
 USAGE
 }
 
+# The manifest flashes the three separate images, not the merged image. The merged image covers
+# the NVS partition, so it would erase the saved settings.
 write_manifest() {
   local path="$1"
   local name="$2"
   local version="$3"
-  local image="$4"
+  local folder="$4"
 
   cat >"${path}" <<MANIFEST
 {
@@ -35,7 +37,11 @@ write_manifest() {
   "builds": [
     {
       "chipFamily": "ESP32-S3",
-      "parts": [{ "path": "${image}", "offset": 0 }]
+      "parts": [
+        { "path": "${folder}/bootloader.bin", "offset": 0 },
+        { "path": "${folder}/partition-table.bin", "offset": 32768 },
+        { "path": "${folder}/life_torus.bin", "offset": 65536 }
+      ]
     }
   ]
 }
@@ -53,9 +59,9 @@ main() {
     printf 'error: the simulator is not built. Run scripts/ci.sh simulator first.\n' >&2
     return 1
   fi
-  if [[ ! -f "${DIST_DIR}/life_torus-${version}.bin" ]]; then
-    printf 'error: dist/life_torus-%s.bin not found. Run scripts/ci.sh release %s first.\n' \
-      "${version}" "${version}" >&2
+  if [[ ! -f "${DIST_DIR}/parts/game/life_torus.bin" ]]; then
+    printf 'error: dist/parts/game not found. Run scripts/ci.sh release %s first.\n' \
+      "${version}" >&2
     return 1
   fi
 
@@ -64,11 +70,10 @@ main() {
   cp "${SIMULATOR_DIR}/index.html" "${SIMULATOR_DIR}/app.js" "${SIMULATOR_DIR}/style.css" \
     "${SIMULATOR_DIR}/life_torus.js" "${SITE_DIR}/"
   sed "s/VERSION/${version}/" "${SITE_SOURCE_DIR}/flash.html" >"${SITE_DIR}/flash.html"
-  cp "${DIST_DIR}/life_torus-${version}.bin" "${SITE_DIR}/firmware/life_torus.bin"
-  cp "${DIST_DIR}/life_torus-bringup-${version}.bin" "${SITE_DIR}/firmware/life_torus-bringup.bin"
-  write_manifest "${SITE_DIR}/firmware/manifest.json" "Life Torus" "${version}" "life_torus.bin"
+  cp -r "${DIST_DIR}/parts/game" "${DIST_DIR}/parts/bringup" "${SITE_DIR}/firmware/"
+  write_manifest "${SITE_DIR}/firmware/manifest.json" "Life Torus" "${version}" "game"
   write_manifest "${SITE_DIR}/firmware/manifest-bringup.json" "Life Torus bring-up" "${version}" \
-    "life_torus-bringup.bin"
+    "bringup"
   printf 'Site in %s\n' "${SITE_DIR}"
 }
 

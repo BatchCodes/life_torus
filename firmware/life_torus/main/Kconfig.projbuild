@@ -71,7 +71,6 @@ menu "Life Torus"
             int "Sub-frame time (ms)"
             range 1 20
             default 3
-            depends on LIFE_BRIGHTNESS_LEVELS
             help
                 The time that each of the 3 sub-frames shows. 3 ms gives a full cycle of
                 9 ms (111 Hz).
@@ -206,6 +205,13 @@ menu "Life Torus"
             int "Random preset fill (%)"
             range 1 99
             default 30
+
+        config LIFE_WEB_PASSWORD
+            string "Phone app password"
+            default "life"
+            help
+                The password of the phone app. Set your own in sdkconfig.local, which git
+                ignores. The settings page of the app can change it too.
 
         config LIFE_LOG_CONTROLLER_REPORTS
             bool "Log raw controller reports"

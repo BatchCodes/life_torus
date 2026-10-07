@@ -10,26 +10,7 @@ constexpr const char* kTag = "board";
 
 }  // namespace
 
-esp_err_t Board::init() {
-#ifdef CONFIG_LIFE_PANEL_REVERSE_RING
-    panel_.reverse_ring = true;
-#endif
-#ifdef CONFIG_LIFE_PANEL_FLIP_BOARDS
-    panel_.flip_boards = true;
-#endif
-#ifdef CONFIG_LIFE_PANEL_ZIGZAG
-    panel_.zigzag = true;
-#endif
-#ifdef CONFIG_LIFE_PANEL_BLOCK_TRANSPOSE
-    panel_.block_transpose = true;
-#endif
-#ifdef CONFIG_LIFE_PANEL_BLOCK_FLIP_X
-    panel_.block_flip_x = true;
-#endif
-#ifdef CONFIG_LIFE_PANEL_BLOCK_FLIP_Y
-    panel_.block_flip_y = true;
-#endif
-
+esp_err_t Board::init(const settings::Settings& s) {
     max7219_chain::ChainConfig chain_config;
     chain_config.din_gpio = CONFIG_LIFE_PIN_DIN;
     chain_config.clk_gpio = CONFIG_LIFE_PIN_CLK;
@@ -37,31 +18,33 @@ esp_err_t Board::init() {
     chain_config.clock_hz = CONFIG_LIFE_SPI_CLOCK_KHZ * 1000;
     ESP_RETURN_ON_ERROR(chain_.init(chain_config), kTag, "display chain init failed");
 
+    // Always 3 sub-frames. With brightness levels off, all 3 are the same, so nothing flickers.
     max7219_chain::RefreshConfig refresh_config;
-#if CONFIG_LIFE_BRIGHTNESS_LEVELS
-    subframes_ = 3;
+    refresh_config.subframes = kSubframes;
     refresh_config.subframe_period_ms = CONFIG_LIFE_SUBFRAME_MS;
-#else
-    subframes_ = 1;
-    refresh_config.subframe_period_ms = 10;
-#endif
-    refresh_config.subframes = subframes_;
-    refresh_config.intensity = CONFIG_LIFE_INTENSITY;
+    refresh_config.intensity = static_cast<uint8_t>(s.intensity);
     refresh_config.reinit_period_ms = CONFIG_LIFE_REINIT_MS;
+    apply(s);
     ESP_RETURN_ON_ERROR(refresh_.start(chain_, refresh_config), kTag, "refresh start failed");
     return ESP_OK;
 }
 
+void Board::apply(const settings::Settings& s) {
+    panel_ = s.panel;
+    levels_ = s.brightness_levels;
+    refresh_.set_intensity(static_cast<uint8_t>(s.intensity));
+}
+
 void Board::show(const frame::Image& image) {
-    for (int s = 0; s < subframes_; ++s) {
-        panel_map::encode(panel_, image, s, subframes_, levels(), subframe_data_[s]);
+    for (int sub = 0; sub < kSubframes; ++sub) {
+        panel_map::encode(panel_, image, sub, kSubframes, levels_, subframe_data_[sub]);
     }
     refresh_.show(subframe_data_);
 }
 
 void Board::show_raw(const panel_map::Registers& registers) {
-    for (int s = 0; s < subframes_; ++s) {
-        subframe_data_[s] = registers;
+    for (int sub = 0; sub < kSubframes; ++sub) {
+        subframe_data_[sub] = registers;
     }
     refresh_.show(subframe_data_);
 }

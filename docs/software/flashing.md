@@ -14,7 +14,13 @@ The firmware has two modes: the game, and the bring-up test patterns for a new d
 
 Open the [Life Torus web flasher](https://batchcodes.github.io/life_torus/flash.html) in Chrome or Edge. Click "Connect" under "Game" or "Bring-Up" and select the serial port of the board. The flasher erases the board and writes the firmware.
 
-The web flasher writes the firmware with the default options. If your boards need other panel layout options, use one of the other methods.
+The web flasher writes the firmware with the default options. The bring-up firmware saves the panel layout and the intensity that you find on the board, in NVS, and the game uses them. So a first install goes like this:
+
+1. Install the bring-up firmware. Let the flasher erase the board.
+2. Find the panel layout with the bring-up checklist. The firmware saves it after each change.
+3. Install the game. Do not erase the board, so the saved layout stays.
+
+The phone app can change the same settings later.
 
 If the board does not connect, hold the BOOT button, press and release the RST button, then release BOOT. Then try again.
 
@@ -52,7 +58,7 @@ python3 -m esptool --chip esp32s3 write-flash @flash_args
 
 ## Release Images
 
-Each [GitHub release](https://github.com/BatchCodes/life_torus/releases) has one merged image of the game and one of the bring-up firmware, with the default options. Write a merged image at offset 0x0:
+Each [GitHub release](https://github.com/BatchCodes/life_torus/releases) has one merged image of the game and one of the bring-up firmware, with the default options. A merged image also covers the NVS partition, so it erases the saved settings. Write a merged image at offset 0x0:
 
 ```bash
 python3 -m esptool --chip esp32s3 write-flash 0x0 life_torus-v0.1.0.bin

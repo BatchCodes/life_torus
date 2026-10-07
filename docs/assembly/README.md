@@ -49,7 +49,7 @@ Put the eight boards in a row on the bench, all upright: IN header at the bottom
 4. Connect the four power branches to the IN headers of boards 1, 3, 5 and 7.
 5. Connect the power bank or charger to input 1. The bring-up firmware starts with the chip walk.
 6. Do the bring-up checklist in [Display Bring-Up](../hardware/bring-up.md): chain order, panel layout, current, brightness levels and controller.
-7. Copy the panel layout options from the log into `firmware/life_torus/sdkconfig.local`.
+7. The bring-up firmware saves the panel layout and the intensity on the board.
 
 Do not continue until the checklist passes. A wiring fault is much easier to find with the boards flat on the bench.
 
@@ -66,7 +66,7 @@ Leave space at the seam between board 8 and board 1, so that the ring stays a re
 
 ## Step 6: Flash the Game
 
-1. Flash the game firmware with your panel layout options in `sdkconfig.local`. Refer to the build and flash section in the [README](../../README.md).
+1. Flash the game firmware. Do not erase the board, so the saved panel layout stays. Refer to [Flashing](../software/flashing.md).
 2. Connect the power bank or charger. The display shows a wipe, then starts a random preset.
 3. Connect the controller. Press any button to pause. Move the cursor with the D-pad and press A to toggle a cell.
 
