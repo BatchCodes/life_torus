@@ -15,6 +15,8 @@ The suppliers and prices are examples from October 2026, in euros, with VAT. Equ
 | Game controller       | 1        | Rii USB classic controller (SNES layout, wired USB). Sold as a pack of 2.                                      | Amazon                                                                                                   | € 15 per pack |
 | Microphone (optional) | 1        | INMP441 I2S MEMS microphone breakout, 3.3 V, for beat sync of the display modes                                | any electronics supplier                                                                                 | € 3           |
 | USB OTG adapter       | 1        | USB-A socket to the connector of your ESP32-S3 board's "USB" port (micro-B or USB-C)                           | any electronics supplier                                                                                 | € 3           |
+| Mode button           | 1        | Momentary push button, normally open, 12 mm or 16 mm panel mount, for the display modes                        | any electronics supplier                                                                                 | € 1           |
+| Power switch          | 1        | Panel rocker or toggle switch, 1 pole, rated 10 A or more, in the 5 V bus                                      | any electronics supplier                                                                                 | € 2           |
 
 ## Power Wiring
 

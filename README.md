@@ -44,6 +44,8 @@ The display has two states: run and pause. It starts in run.
 | pause | Y      | mirror the cursor shape                                |
 | pause | Select | load the next [preset board](docs/software/presets.md) |
 
+The display also has a mode button and a power switch. The mode button moves to the next display mode at each press: Game of Life, scrolling text, rain, barber pole, ripples and sparkle. The power switch turns everything on and off. At power on, the display always starts with Game of Life.
+
 When nobody uses it, the display looks after itself. It loads a new preset when the board is empty or stops moving, when it only repeats, or after a long time with no button press. A USB controller is optional: with no controller, the display runs by itself. After 30 s in pause with no button press, it starts to run again.
 
 ## Supported Hardware

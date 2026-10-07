@@ -13,6 +13,7 @@ The page shows the display two times: as a ring, the way it stands on the table,
 | `L` `R`         | L, R              |
 | `S`             | Select            |
 | Space           | Start             |
+| `M`             | mode button       |
 
 The [README](../../README.md) describes what each button does.
 

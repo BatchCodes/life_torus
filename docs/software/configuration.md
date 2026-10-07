@@ -65,6 +65,8 @@ The bring-up firmware finds the panel layout options for your boards.
 | `CONFIG_LIFE_WIFI`                    | y          | Make an open Wi-Fi network for the phone app. Refer to [Phone Control](phone-control.md).              |
 | `CONFIG_LIFE_WIFI_SSID`               | LIFE-TORUS | Name of the Wi-Fi network.                                                                             |
 | `CONFIG_LIFE_WEB_PASSWORD`            | life       | Default password of the phone app.                                                                     |
+| `CONFIG_LIFE_MODE_BUTTON`             | y          | A push button that moves to the next display mode.                                                     |
+| `CONFIG_LIFE_PIN_MODE_BUTTON`         | 7          | Mode button GPIO. The button connects it to GND.                                                       |
 | `CONFIG_LIFE_MIC`                     | y          | Look for an INMP441 microphone at start-up, for beat sync. Refer to [Phone Control](phone-control.md). |
 | `CONFIG_LIFE_PIN_MIC_SCK`             | 4          | Microphone SCK GPIO.                                                                                   |
 | `CONFIG_LIFE_PIN_MIC_WS`              | 5          | Microphone WS GPIO.                                                                                    |

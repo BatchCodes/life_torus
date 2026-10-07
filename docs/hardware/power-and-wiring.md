@@ -41,6 +41,10 @@ The INMP441 microphone is optional. With it, the display modes (not Game of Life
 
 The microphone takes 3.3 V, not 5 V. Mount it where the sound can reach it, for example behind a small hole in the base, and away from the 5 V power wires. The firmware finds it at start-up. With no microphone, the data line stays low and the firmware turns beat sync off.
 
+## Mode Button
+
+The mode button moves to the next display mode at each press: Game of Life, scrolling text, rain, barber pole, ripples, sparkle, then Game of Life again. Connect a normally open push button from `GPIO7` to a `G` pin of the ESP32-S3 board. The firmware uses the internal pull-up of the GPIO and removes the contact bounce, so you need no resistor or capacitor. You can change the GPIO in the firmware options.
+
 ## Board to Board
 
 Each board stands upright in the ring, with its IN header at the bottom and its OUT header at the top. Connect the OUT header of each board to the IN header of the next board with female-to-female jumper wires:
@@ -78,6 +82,14 @@ Connect each input to the 5 V lever connector through its own SB560 Schottky dio
 With two inputs, the source with the higher voltage supplies most of the current. When it reaches its limit, its voltage drops and the other source supplies the rest. You can use two ports of one power bank, or a power bank and a charger.
 
 Some power banks turn off when the current is very low. The display always uses at least approximately 0.3 A, so a power bank stays on.
+
+## Power Switch
+
+The power switch turns the whole Life Torus on and off: the LED boards, the ESP32-S3 and the microphone. Put it in the 5 V wire after the two SB560 diodes, between the point where the two inputs join and the 5 V lever connector. Leave the GND wire without a switch.
+
+Use a switch rated for at least 10 A, so it stays cool with two 3 A inputs. A switch rated for mains voltage (for example 10 A, 250 V AC) is good for 5 V DC too.
+
+Some power banks turn off by themselves when nothing draws current. After a long time with the switch off, you can have to press the button on the power bank before the display starts again.
 
 ## Power Distribution
 
