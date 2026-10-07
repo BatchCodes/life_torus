@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Espressif ESP32-S3-DevKitC-1-N8R8: 8 MB flash, 8 MB octal PSRAM.
+CONFIG_IDF_TARGET="esp32s3"
+CONFIG_ESPTOOLPY_FLASHSIZE_8MB=y
+CONFIG_COMPILER_CXX_EXCEPTIONS=n
+CONFIG_COMPILER_CXX_RTTI=n
+
+# 1 ms ticks for the display refresh timing.
+CONFIG_FREERTOS_HZ=1000
+
+# The log goes to the "UART" port. The "USB" port is the USB host for the controller.
+CONFIG_ESP_CONSOLE_UART_DEFAULT=y

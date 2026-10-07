@@ -1,0 +1,129 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+menu "Life Torus"
+
+    choice LIFE_MODE
+        prompt "Firmware mode"
+        default LIFE_MODE_GAME
+        help
+            Game: the normal Game of Life display.
+
+            Bring-up: test patterns for a new display. Use it to check the wiring, to find
+            the panel layout options and to measure the current. Refer to
+            docs/hardware/bring-up.md.
+
+        config LIFE_MODE_GAME
+            bool "Game"
+        config LIFE_MODE_BRINGUP
+            bool "Bring-up"
+    endchoice
+
+    menu "Display hardware"
+
+        config LIFE_PIN_DIN
+            int "DIN GPIO"
+            range 0 48
+            default 11
+            help
+                GPIO for the DIN (data) line of the first board, through the 74AHCT125.
+
+        config LIFE_PIN_CLK
+            int "CLK GPIO"
+            range 0 48
+            default 12
+            help
+                GPIO for the CLK (clock) line of all boards, through the 74AHCT125.
+
+        config LIFE_PIN_CS
+            int "CS (LOAD) GPIO"
+            range 0 48
+            default 10
+            help
+                GPIO for the CS (LOAD) line of all boards, through the 74AHCT125.
+
+        config LIFE_SPI_CLOCK_KHZ
+            int "SPI clock (kHz)"
+            range 100 10000
+            default 2000
+            help
+                The MAX7219 accepts up to 10 MHz. The CLK and CS wires go to all eight
+                boards, so a lower clock is more reliable. Reduce it if cells flicker at
+                random.
+
+        config LIFE_INTENSITY
+            int "MAX7219 intensity (0 to 15)"
+            range 0 15
+            default 4
+            help
+                The brightness of all LEDs. A higher value uses more current. The bring-up
+                firmware shows the current at each value.
+
+        config LIFE_BRIGHTNESS_LEVELS
+            bool "Variable brightness"
+            default y
+            help
+                Born cells bright, surviving cells normal, cells that die in the next
+                generation dim. The firmware shows 3 sub-frames in a loop to make the
+                levels. Turn it off if the display flickers. Then each live cell has the
+                same brightness.
+
+        config LIFE_SUBFRAME_MS
+            int "Sub-frame time (ms)"
+            range 1 20
+            default 3
+            depends on LIFE_BRIGHTNESS_LEVELS
+            help
+                The time that each of the 3 sub-frames shows. 3 ms gives a full cycle of
+                9 ms (111 Hz).
+
+        config LIFE_REINIT_MS
+            int "Display re-init period (ms)"
+            range 0 60000
+            default 5000
+            help
+                Write the MAX7219 start-up registers again at this period, to recover from
+                a glitch on the supply or the wires. 0: never.
+
+        menu "Panel layout"
+
+            config LIFE_PANEL_REVERSE_RING
+                bool "Chain goes right to left around the ring"
+                default n
+
+            config LIFE_PANEL_FLIP_BOARDS
+                bool "All boards upside down (input connector at the top)"
+                default n
+
+            config LIFE_PANEL_ZIGZAG
+                bool "Every second board turned by 180 degrees"
+                default n
+
+            config LIFE_PANEL_BLOCK_TRANSPOSE
+                bool "8x8 block: swap rows and columns"
+                default n
+
+            config LIFE_PANEL_BLOCK_FLIP_X
+                bool "8x8 block: mirror left to right"
+                default n
+
+            config LIFE_PANEL_BLOCK_FLIP_Y
+                bool "8x8 block: mirror top to bottom"
+                default n
+
+        endmenu
+
+    endmenu
+
+    menu "Bring-up"
+        depends on LIFE_MODE_BRINGUP
+
+        config LIFE_BRINGUP_AUTO_ADVANCE_S
+            int "Next test pattern after (s)"
+            range 0 600
+            default 8
+            help
+                With no controller, the bring-up firmware shows each test pattern for this
+                time. The first button press stops the automatic change. 0: never.
+
+    endmenu
+
+endmenu

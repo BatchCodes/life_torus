@@ -32,6 +32,9 @@ public:
     esp_err_t start(Max7219Chain& chain, const RefreshConfig& config);
     // Copies a new set of sub-frames. The refresh task shows them from its next loop.
     void show(const std::array<panel_map::Registers, kMaxSubframes>& subframes);
+    // Changes the intensity of all chips (0 to 15). The refresh task writes it.
+    void set_intensity(uint8_t intensity) { intensity_ = intensity; }
+    uint8_t intensity() const { return intensity_; }
 
 private:
     static void task_entry(void* arg);
@@ -43,6 +46,7 @@ private:
     std::array<panel_map::Registers, kMaxSubframes> pending_{};
     std::array<panel_map::Registers, kMaxSubframes> active_{};
     std::atomic<bool> has_pending_{false};
+    std::atomic<uint8_t> intensity_{4};
 };
 
 }  // namespace max7219_chain

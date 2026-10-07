@@ -1,0 +1,3 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# CI variant: the bring-up firmware.
+CONFIG_LIFE_MODE_BRINGUP=y

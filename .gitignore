@@ -1,6 +1,7 @@
 # ESP-IDF build output
 build/
 build_ci_*/
+build_bringup/
 sdkconfig
 sdkconfig.old
 managed_components/

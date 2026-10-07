@@ -21,6 +21,7 @@ esp_err_t Refresh::start(Max7219Chain& chain, const RefreshConfig& config) {
     if (config_.subframes > kMaxSubframes) {
         config_.subframes = kMaxSubframes;
     }
+    intensity_ = config_.intensity;
     lock_ = xSemaphoreCreateMutex();
     ESP_RETURN_ON_FALSE(lock_ != nullptr, ESP_ERR_NO_MEM, kTag, "mutex create failed");
     ESP_RETURN_ON_ERROR(chain_->configure(config_.intensity), kTag, "chain configure failed");
@@ -48,7 +49,15 @@ void Refresh::run() {
                                   : 1;
     TickType_t last_reinit = wake;
     int subframe = 0;
+    uint8_t written_intensity = intensity_;
     while (true) {
+        if (intensity_ != written_intensity) {
+            written_intensity = intensity_;
+            config_.intensity = written_intensity;
+            if (chain_->set_intensity(written_intensity) != ESP_OK) {
+                ESP_LOGW(kTag, "intensity write failed");
+            }
+        }
         if (subframe == 0 && has_pending_) {
             xSemaphoreTake(lock_, portMAX_DELAY);
             active_ = pending_;

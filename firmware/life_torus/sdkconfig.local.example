@@ -1,0 +1,17 @@
+# Local settings for your display. Copy this file to sdkconfig.local (git ignores it),
+# edit it, then delete sdkconfig and build:
+#   cp sdkconfig.local.example sdkconfig.local
+#   rm -f sdkconfig && idf.py build
+# Any option from idf.py menuconfig can go here.
+
+# Build the bring-up firmware instead of the game.
+# CONFIG_LIFE_MODE_BRINGUP=y
+
+# The panel layout that the bring-up firmware logs for your boards.
+# CONFIG_LIFE_PANEL_ZIGZAG=y
+# CONFIG_LIFE_PANEL_BLOCK_TRANSPOSE=y
+
+# Other GPIO pins for the display chain.
+# CONFIG_LIFE_PIN_DIN=11
+# CONFIG_LIFE_PIN_CLK=12
+# CONFIG_LIFE_PIN_CS=10
