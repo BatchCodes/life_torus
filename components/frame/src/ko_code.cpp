@@ -38,7 +38,7 @@ void draw_ko_code(Image& image, int offset) {
     for (int y = 0; y < life::kHeight; ++y) {
         for (int x = 0; x < life::width(); ++x) {
             const int sx = ((x + offset) % kStripWidth + kStripWidth) % kStripWidth;
-            image.set(x, y, strip_cell(sx, y - kTop) ? Level::kBright : Level::kOff);
+            image.set(x, y, strip_cell(sx, y - kTop) ? Level::kHighlight : Level::kOff);
         }
     }
 }

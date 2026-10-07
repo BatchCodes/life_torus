@@ -71,7 +71,7 @@ void test_cursor_blinks_on_live_cell() {
     Image image;
     image.set(5, 5, Level::kNormal);
     frame::draw_cursor(image, cell, 5, 5, life::EdgeMode::kTorus, true);
-    TEST_ASSERT_EQUAL(static_cast<int>(Level::kBright), static_cast<int>(image.get(5, 5)));
+    TEST_ASSERT_EQUAL(static_cast<int>(Level::kHighlight), static_cast<int>(image.get(5, 5)));
     frame::draw_cursor(image, cell, 5, 5, life::EdgeMode::kTorus, false);
     TEST_ASSERT_EQUAL(static_cast<int>(Level::kOff), static_cast<int>(image.get(5, 5)));
 }
@@ -94,7 +94,7 @@ void test_ko_effect_moves_around_the_ring() {
     Image b;
     frame::draw_ko_code(a, 0);
     frame::draw_ko_code(b, 1);
-    TEST_ASSERT_TRUE(count(a, Level::kBright) > 100);
+    TEST_ASSERT_TRUE(count(a, Level::kHighlight) > 100);
     // Rows outside the text band stay dark.
     for (int x = 0; x < life::width(); ++x) {
         TEST_ASSERT_EQUAL(static_cast<int>(Level::kOff), static_cast<int>(a.get(x, 0)));
@@ -111,7 +111,7 @@ void test_ko_effect_moves_around_the_ring() {
     for (int offset = 0; offset < 200 && !crossed; ++offset) {
         frame::draw_ko_code(a, offset);
         for (int y = 0; y < life::kHeight; ++y) {
-            if (a.get(63, y) == Level::kBright && a.get(0, y) == Level::kBright) {
+            if (a.get(63, y) == Level::kHighlight && a.get(0, y) == Level::kHighlight) {
                 crossed = true;
             }
         }
@@ -119,9 +119,16 @@ void test_ko_effect_moves_around_the_ring() {
     TEST_ASSERT_TRUE(crossed);
 }
 
+void test_highlight_counts_as_bright() {
+    TEST_ASSERT_EQUAL(3, frame::brightness(Level::kHighlight));
+    TEST_ASSERT_EQUAL(3, frame::brightness(Level::kBright));
+    TEST_ASSERT_EQUAL(1, frame::brightness(Level::kDim));
+}
+
 }  // namespace
 
 void run_frame_tests() {
+    RUN_TEST(test_highlight_counts_as_bright);
     RUN_TEST(test_life_levels);
     RUN_TEST(test_life_without_levels);
     RUN_TEST(test_cursor_blinks_on_live_cell);

@@ -48,7 +48,7 @@ bool cell_on(frame::Level level, int subframe, int subframes, bool levels) {
         return true;
     }
     // Number of sub-frames that this level is on, rounded up: 1/3, 2/3 or 3/3.
-    const int duty = (subframes * static_cast<int>(level) + 2) / 3;
+    const int duty = (subframes * frame::brightness(level) + 2) / 3;
     return subframe < duty;
 }
 

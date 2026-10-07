@@ -21,5 +21,6 @@ int main() {
     run_spectrum_tests();
     run_width_tests();
     run_pixel_map_tests();
+    run_colour_tests();
     return UNITY_END();
 }

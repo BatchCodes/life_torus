@@ -27,7 +27,7 @@ void draw_life(Image& image, const life::Simulation& simulation, bool levels) {
 
 void draw_cursor(Image& image, const patterns::Shape& shape, int x, int y, life::EdgeMode edge_mode,
                  bool lit) {
-    const Level level = lit ? Level::kBright : Level::kOff;
+    const Level level = lit ? Level::kHighlight : Level::kOff;
     patterns::for_each_cell(shape, x, y, edge_mode,
                             [&image, level](int cx, int cy) { image.set(cx, cy, level); });
 }

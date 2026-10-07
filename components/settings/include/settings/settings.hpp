@@ -31,6 +31,11 @@ struct Settings {
     bool brightness_levels = true;
     panel_map::PanelConfig panel;   // MAX7219 layout.
     pixel_map::PixelConfig pixels;  // WS2812B layout. The data lines come from Kconfig.
+    // WS2812B colours and power.
+    bool single_colour = false;      // One colour instead of the colour schemes.
+    uint32_t colour = 0xFF3C14;      // The single colour, 0xRRGGBB.
+    uint32_t brightness = 25;        // Percent, 1 to 100.
+    uint32_t led_current_ma = 4500;  // Largest estimated LED current, 500 to 20000.
     // Beat sync of the display modes, with a microphone.
     bool beat_sync = true;
     uint32_t beat_sensitivity = 5;  // 1 to 10.

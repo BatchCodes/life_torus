@@ -201,7 +201,8 @@ EMSCRIPTEN_KEEPALIVE const uint8_t* sim_render(uint32_t now_ms) {
     g_modes.render(g_image, now_ms);
     for (int y = 0; y < life::kHeight; ++y) {
         for (int x = 0; x < life::width(); ++x) {
-            g_levels[y * life::width() + x] = static_cast<uint8_t>(g_image.get(x, y));
+            g_levels[y * life::width() + x] =
+                static_cast<uint8_t>(frame::brightness(g_image.get(x, y)));
         }
     }
     return g_levels;

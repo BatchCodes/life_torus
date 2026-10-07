@@ -73,6 +73,8 @@ frame::Level brighter(frame::Level level) {
         case frame::Level::kNormal:
         case frame::Level::kBright:
             return frame::Level::kBright;
+        case frame::Level::kHighlight:
+            return frame::Level::kHighlight;
         case frame::Level::kOff:
             break;
     }

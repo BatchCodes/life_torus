@@ -185,9 +185,9 @@ void pack_frame(const frame::Image& image, uint8_t* out) {
         uint8_t byte = 0;
         for (int k = 0; k < 4; ++k) {
             const int cell = i * 4 + k;
-            byte |= static_cast<uint8_t>(
-                static_cast<uint8_t>(image.get(cell % life::width(), cell / life::width()))
-                << (k * 2));
+            byte |= static_cast<uint8_t>(static_cast<uint8_t>(frame::brightness(
+                                             image.get(cell % life::width(), cell / life::width())))
+                                         << (k * 2));
         }
         out[3 + i] = byte;
     }

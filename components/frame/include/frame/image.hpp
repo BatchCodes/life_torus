@@ -10,8 +10,14 @@
 
 namespace frame {
 
-// The brightness of one cell on the display. Off is dark.
-enum class Level : uint8_t { kOff = 0, kDim = 1, kNormal = 2, kBright = 3 };
+// The brightness of one cell on the display. Off is dark. Highlight is as bright as bright, and
+// marks the cursor and the ko code effect, which an RGB display shows in white.
+enum class Level : uint8_t { kOff = 0, kDim = 1, kNormal = 2, kBright = 3, kHighlight = 4 };
+
+// The brightness level 0 to 3, with highlight as bright. For displays with no highlight colour.
+inline int brightness(Level level) {
+    return level == Level::kHighlight ? 3 : static_cast<int>(level);
+}
 
 // One display image of 64 × 32 cells, before the conversion to the MAX7219 registers.
 class Image {
