@@ -129,6 +129,7 @@ async function main() {
     nextMode: module.cwrap("sim_next_mode", null, ["number"]),
     displayMode: module.cwrap("sim_display_mode", "number", []),
     listening: module.cwrap("sim_listening", "number", []),
+    audioLevel: module.cwrap("sim_audio_level", "number", []),
   };
 
   const flat = document.getElementById("flat").getContext("2d");
@@ -173,20 +174,45 @@ async function main() {
     modes.elements.mode.blur();
   });
   modes.elements.text.addEventListener("input", () => api.setText(modes.elements.text.value));
+  // Show the message: set it and change to the scrolling text mode.
+  const showMessage = () => {
+    api.setText(modes.elements.text.value);
+    api.setMode(1, now());
+    modes.elements.mode.value = "1";
+    modes.elements.text.blur();
+  };
+  document.getElementById("show-message").addEventListener("click", showMessage);
+  modes.elements.text.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      showMessage();
+    }
+  });
   modes.elements.speed.addEventListener("input", () =>
     api.setSpeed(Number(modes.elements.speed.value)),
   );
   modes.elements.speed.addEventListener("change", () => modes.elements.speed.blur());
   modes.addEventListener("submit", (event) => event.preventDefault());
   const beatLine = document.getElementById("beat");
-  document.getElementById("listen").addEventListener("click", async (event) => {
-    event.target.disabled = true;
+  const levelBar = document.getElementById("level");
+  const listenButton = document.getElementById("listen");
+  listenButton.addEventListener("click", async () => {
+    listenButton.disabled = true;
+    beatLine.textContent = "Asking for the microphone…";
     try {
       await startListening(module);
+      listenButton.textContent = "● Listening";
+      listenButton.classList.add("listening");
+      // Game of Life ignores music, so show the visualiser.
+      if (api.displayMode() === 0) {
+        api.setMode(6, now());
+        modes.elements.mode.value = "6";
+      }
     } catch (error) {
-      beatLine.textContent = "Beat sync: no microphone (" + error.message + ").";
-      event.target.disabled = false;
+      beatLine.textContent = "No microphone: " + error.message;
+      listenButton.disabled = false;
     }
+    listenButton.blur();
   });
 
   form.addEventListener("submit", (event) => {
@@ -200,6 +226,9 @@ async function main() {
   const held = new Set();
   window.addEventListener("keydown", (event) => {
     // Let the keys through, except while a person types in a text or number field.
+    if (event.ctrlKey || event.metaKey || event.altKey) {
+      return;
+    }
     const target = event.target;
     if (
       target instanceof HTMLInputElement &&
@@ -268,8 +297,14 @@ async function main() {
     status.shape.textContent = api.shapeName();
     if (api.listening()) {
       const bpm = api.bpm();
+      const level = api.audioLevel();
+      levelBar.style.width = level + "%";
       beatLine.textContent =
-        bpm > 0 ? `Beat sync: ${bpm} BPM.` : "Beat sync: listening, no steady beat yet.";
+        level < 5
+          ? "Listening, but the sound is very quiet. Check the microphone."
+          : bpm > 0
+            ? `Listening: ${bpm} BPM. The display modes move with the beat.`
+            : "Listening: no steady beat yet. Play music with a clear beat.";
     }
     requestAnimationFrame(frame);
   }

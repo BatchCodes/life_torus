@@ -4,6 +4,7 @@
 // performance.now() in milliseconds.
 #include <emscripten/emscripten.h>
 
+#include <cmath>
 #include <cstdint>
 
 #include "beat/beat_detector.hpp"
@@ -30,6 +31,7 @@ uint32_t g_spectrum_seen = 0;
 bool g_listening = false;
 bool g_beat_sync = true;
 uint32_t g_last_audio_ms = 0;
+float g_audio_level = 0;  // RMS of the last audio block.
 
 }  // namespace
 
@@ -96,6 +98,11 @@ EMSCRIPTEN_KEEPALIVE void sim_audio_process(int count, uint32_t now_ms) {
     if (count > 0 && count <= kAudioBuffer) {
         g_beat.process(g_audio, static_cast<size_t>(count));
         g_spectrum.process(g_audio, static_cast<size_t>(count));
+        float sum = 0;
+        for (int i = 0; i < count; ++i) {
+            sum += g_audio[i] * g_audio[i];
+        }
+        g_audio_level = std::sqrt(sum / static_cast<float>(count));
         g_last_audio_ms = now_ms;
     }
 }
@@ -107,6 +114,13 @@ EMSCRIPTEN_KEEPALIVE void sim_set_beat(int beat_sync, int sensitivity) {
 
 EMSCRIPTEN_KEEPALIVE int sim_bpm() {
     return g_listening && g_beat.stable() ? static_cast<int>(g_beat.bpm() + 0.5f) : 0;
+}
+
+// The input level, 0 to 100, on a dB scale from -60 dBFS to 0 dBFS.
+EMSCRIPTEN_KEEPALIVE int sim_audio_level() {
+    const float db = 20.0f * std::log10(g_audio_level + 1e-9f);
+    const float level = (db + 60.0f) / 60.0f * 100.0f;
+    return level < 0 ? 0 : (level > 100 ? 100 : static_cast<int>(level));
 }
 
 EMSCRIPTEN_KEEPALIVE int sim_listening() {

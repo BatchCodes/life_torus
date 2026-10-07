@@ -57,13 +57,26 @@
           >Mode
           <select id="mode"></select
         ></label>
-        <label>Text <input id="text" type="text" maxlength="120" /></label>
+        <label
+          >Message to scroll
+          <input
+            id="text"
+            type="text"
+            maxlength="120"
+            placeholder="Type a message"
+            enterkeyhint="send"
+        /></label>
+        <button id="show-message" type="button">Show message</button>
         <label>Speed <input id="speed" type="range" min="1" max="10" /></label>
         <label
           >Preset
           <select id="preset"></select
         ></label>
-        <button id="listen" type="button" hidden>Listen for a beat (simulator)</button>
+        <div id="listen-panel" hidden>
+          <button id="listen" type="button">Listen to music (simulator)</button>
+          <div class="meter" aria-label="Microphone level"><div id="level"></div></div>
+          <p id="listen-status" class="status">Uses the microphone of this phone or computer.</p>
+        </div>
       </section>
 
       <details class="panel">

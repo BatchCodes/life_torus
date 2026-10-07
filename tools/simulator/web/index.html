@@ -64,12 +64,24 @@
               <option value="6">Visualiser</option>
             </select></label
           >
-          <label>Text <input name="text" type="text" maxlength="120" value="Life Torus" /></label>
+          <label
+            >Message to scroll
+            <input
+              name="text"
+              type="text"
+              maxlength="120"
+              value="Life Torus"
+              placeholder="Type a message"
+          /></label>
+          <button id="show-message" type="button">Show message</button>
           <label
             >Speed (1 to 10) <input name="speed" type="range" min="1" max="10" value="5"
           /></label>
-          <button id="listen" type="button">Listen for a beat</button>
-          <p id="beat" class="hint">Beat sync: not listening.</p>
+          <button id="listen" type="button">Listen to music</button>
+          <div class="meter" aria-label="Microphone level"><div id="level"></div></div>
+          <p id="beat" class="hint">
+            Microphone off. Press "Listen to music" and allow the microphone.
+          </p>
         </form>
 
         <h2>Keys</h2>

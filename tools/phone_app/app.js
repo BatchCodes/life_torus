@@ -137,6 +137,7 @@ class SimulatorTransport {
       tapCell: c("sim_tap_cell", null, ["number", "number", "number"]),
       bpm: c("sim_bpm", "number", []),
       listening: c("sim_listening", "number", []),
+      audioLevel: c("sim_audio_level", "number", []),
       setBeat: c("sim_set_beat", null, ["number", "number"]),
       selectPreset: c("sim_select_preset", null, ["number", "number"]),
     };
@@ -396,6 +397,20 @@ function main() {
   textInput.addEventListener("change", () =>
     transport.send("text " + encodeURIComponent(textInput.value)),
   );
+  // Show the message: send it and change to the scrolling text mode.
+  const showMessage = () => {
+    transport.send("text " + encodeURIComponent(textInput.value));
+    transport.send("mode 1");
+    modeSelect.value = "1";
+    textInput.blur();
+  };
+  document.getElementById("show-message").addEventListener("click", showMessage);
+  textInput.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      showMessage();
+    }
+  });
 
   settingsForm.addEventListener("submit", (event) => {
     event.preventDefault();
@@ -432,15 +447,35 @@ function main() {
 
   if (!onDevice) {
     document.getElementById("password").placeholder = "Simulator password: life";
+    document.getElementById("listen-panel").hidden = false;
     const listen = document.getElementById("listen");
-    listen.hidden = false;
+    const levelBar = document.getElementById("level");
+    const listenStatus = document.getElementById("listen-status");
     listen.addEventListener("click", async () => {
       listen.disabled = true;
+      listenStatus.textContent = "Asking for the microphone…";
       try {
         await startListening(transport.module);
-        listen.textContent = "Listening…";
+        listen.textContent = "● Listening";
+        listen.classList.add("listening");
+        // Game of Life ignores music, so show the visualiser.
+        if (modeSelect.value === "0") {
+          transport.send("mode 6");
+          modeSelect.value = "6";
+        }
+        setInterval(() => {
+          const level = transport.api.audioLevel();
+          const bpm = transport.api.bpm();
+          levelBar.style.width = level + "%";
+          listenStatus.textContent =
+            level < 5
+              ? "Listening, but the sound is very quiet."
+              : bpm > 0
+                ? `Listening: ${bpm} BPM.`
+                : "Listening: no steady beat yet.";
+        }, 100);
       } catch (error) {
-        listen.textContent = "No microphone: " + error.message;
+        listenStatus.textContent = "No microphone: " + error.message;
         listen.disabled = false;
       }
     });

@@ -160,3 +160,23 @@ button {
 code {
   font-size: 0.9em;
 }
+
+.meter {
+  height: 8px;
+  margin: 8px 0 0;
+  background: #2a2020;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.meter div {
+  width: 0;
+  height: 100%;
+  background: var(--accent);
+  transition: width 80ms linear;
+}
+
+button.listening {
+  background: #b3261e;
+  color: #fff;
+}

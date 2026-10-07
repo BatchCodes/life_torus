@@ -48,6 +48,15 @@ write_manifest() {
 MANIFEST
 }
 
+# Adds ?v=VERSION to the script and stylesheet addresses, so a browser loads the new files after
+# each deploy and not old files from its cache.
+add_version() {
+  local page="$1"
+  local version="$2"
+
+  sed -i -E "s/(src|href)=\"([^\":]+\.(js|css))\"/\1=\"\2?v=${version}\"/g" "${page}"
+}
+
 main() {
   local version="${1:-}"
 
@@ -75,6 +84,9 @@ main() {
   write_manifest "${SITE_DIR}/firmware/manifest.json" "Life Torus" "${version}" "game"
   write_manifest "${SITE_DIR}/firmware/manifest-bringup.json" "Life Torus bring-up" "${version}" \
     "bringup"
+  add_version "${SITE_DIR}/index.html" "${version}"
+  add_version "${SITE_DIR}/phone/index.html" "${version}"
+  sed -i "s#\.\./life_torus\.js\"#../life_torus.js?v=${version}\"#" "${SITE_DIR}/phone/app.js"
   printf 'Site in %s\n' "${SITE_DIR}"
 }
 

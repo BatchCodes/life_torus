@@ -194,3 +194,23 @@ form button[type="submit"] {
 .face button {
   border-radius: 50%;
 }
+
+.meter {
+  height: 8px;
+  margin: 8px 0 0;
+  background: var(--button);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.meter div {
+  width: 0;
+  height: 100%;
+  background: var(--accent);
+  transition: width 80ms linear;
+}
+
+button.listening {
+  background: #b3261e;
+  color: #fff;
+}
