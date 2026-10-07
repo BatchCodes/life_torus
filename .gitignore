@@ -8,8 +8,8 @@ managed_components/
 dependencies.lock
 
 # Release images and the GitHub Pages site
-dist/
-site/
+/dist/
+/site/
 
 # Browser simulator build output
 tools/simulator/web/life_torus.js
