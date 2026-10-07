@@ -14,18 +14,22 @@
     "clangd",
     "devcontainer",
     "dialout",
+    "DigiKey",
     "Emscripten",
     "emsdk",
     "Espressif",
     "idf",
     "Kconfig",
     "menuconfig",
+    "OpenELAB",
     "Otronic",
     "PSRAM",
+    "Reichelt",
     "sdkconfig",
     "SNES",
     "SRCS",
     "UART",
+    "WAGO",
     "WROOM"
   ]
 }

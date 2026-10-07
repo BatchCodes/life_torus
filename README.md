@@ -32,6 +32,8 @@ USB game controller --USB--> ESP32-S3 --3.3 V SPI--> 74AHCT125 --5 V SPI--> boar
 | Espressif ESP32-S3-DevKitC-1-N8R8                    | Target | The controller board. It has a USB host port.            |
 | Rii USB classic controller (SNES layout)             | Target | Other generic USB SNES controllers can work. Not tested. |
 
+Refer to the [Bill of Materials](docs/hardware/bill-of-materials.md) for the full parts list, suppliers and prices.
+
 ## Required Tools
 
 - A Linux computer. The install script supports Debian and Ubuntu. Other systems can install the tools manually or use Docker.
@@ -92,4 +94,5 @@ Life Torus is free software under the GNU General Public License, version 3 or l
 
 ## See Also
 
+- [Bill of Materials](docs/hardware/bill-of-materials.md): parts, suppliers and prices.
 - [CONTRIBUTING.md](CONTRIBUTING.md): repository layout, build, test and code style.
