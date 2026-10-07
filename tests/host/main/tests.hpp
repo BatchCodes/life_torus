@@ -11,3 +11,4 @@ void run_display_modes_tests();
 void run_settings_tests();
 void run_phone_protocol_tests();
 void run_beat_tests();
+void run_debouncer_tests();

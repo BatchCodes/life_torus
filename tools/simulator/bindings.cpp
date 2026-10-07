@@ -110,6 +110,10 @@ EMSCRIPTEN_KEEPALIVE void sim_set_mode(int mode, uint32_t now_ms) {
     }
 }
 
+EMSCRIPTEN_KEEPALIVE void sim_next_mode(uint32_t now_ms) {
+    g_modes.next_mode(now_ms);
+}
+
 EMSCRIPTEN_KEEPALIVE void sim_set_text(const char* text) {
     g_modes.set_text(text);
 }

@@ -17,5 +17,6 @@ int main() {
     run_settings_tests();
     run_phone_protocol_tests();
     run_beat_tests();
+    run_debouncer_tests();
     return UNITY_END();
 }

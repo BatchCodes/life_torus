@@ -126,6 +126,8 @@ async function main() {
     setText: module.cwrap("sim_set_text", null, ["string"]),
     setSpeed: module.cwrap("sim_set_speed", null, ["number"]),
     bpm: module.cwrap("sim_bpm", "number", []),
+    nextMode: module.cwrap("sim_next_mode", null, ["number"]),
+    displayMode: module.cwrap("sim_display_mode", "number", []),
     listening: module.cwrap("sim_listening", "number", []),
   };
 
@@ -195,6 +197,12 @@ async function main() {
   const held = new Set();
   window.addEventListener("keydown", (event) => {
     if (event.target instanceof HTMLInputElement || event.target instanceof HTMLSelectElement) {
+      return;
+    }
+    if (event.key.toLowerCase() === "m" && !event.repeat) {
+      // The mode button of the display.
+      api.nextMode(now());
+      modes.elements.mode.value = String(api.displayMode());
       return;
     }
     const button = keyButton(event);

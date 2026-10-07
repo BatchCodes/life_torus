@@ -30,6 +30,8 @@ public:
     ModeManager(game::Game& game, uint32_t seed);
 
     void set_mode(ModeId mode, uint32_t now_ms);
+    // The mode button: Game of Life, text, rain, barber pole, ripples, sparkle, then again.
+    void next_mode(uint32_t now_ms);
     ModeId mode() const { return mode_; }
     void set_text(const char* text) { text_.set_text(text); }
     const char* text() const { return text_.text(); }

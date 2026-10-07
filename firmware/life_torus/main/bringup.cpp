@@ -9,6 +9,7 @@
 #include "esp_timer.h"
 #include "freertos/FreeRTOS.h"
 #include "gamepad_input/usb_gamepad.hpp"
+#include "mode_button/mode_button.hpp"
 #include "modes.hpp"
 #include "sdkconfig.h"
 #include "settings/nvs_store.hpp"
@@ -145,6 +146,11 @@ void run_bringup(Board& board, settings::Settings& s) {
         ESP_LOGW(kTag, "USB host start failed. The test patterns change automatically.");
     }
 
+    mode_button::ModeButton button;
+#if CONFIG_LIFE_MODE_BUTTON
+    button.start(CONFIG_LIFE_PIN_MODE_BUTTON);
+#endif
+
     Pattern pattern = Pattern::kChipWalk;
     bool auto_advance = CONFIG_LIFE_BRINGUP_AUTO_ADVANCE_S > 0;
     uint32_t pattern_start_ms = 0;
@@ -223,6 +229,9 @@ void run_bringup(Board& board, settings::Settings& s) {
                     ESP_LOGI(kTag, "panel layout and intensity saved");
                 }
             }
+        }
+        if (button.poll(now_ms)) {
+            ESP_LOGI(kTag, "mode button pressed");
         }
         if (auto_advance &&
             now_ms - pattern_start_ms >= CONFIG_LIFE_BRINGUP_AUTO_ADVANCE_S * 1000u) {

@@ -104,6 +104,10 @@ void ModeManager::beat(uint32_t now_ms) {
     }
 }
 
+void ModeManager::next_mode(uint32_t now_ms) {
+    set_mode(static_cast<ModeId>((static_cast<int>(mode_) + 1) % kModeCount), now_ms);
+}
+
 void ModeManager::press(game::Button button, uint32_t now_ms) {
     if (mode_ == ModeId::kGameOfLife) {
         game_.press(button, now_ms);

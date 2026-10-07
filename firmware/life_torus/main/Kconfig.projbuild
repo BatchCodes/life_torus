@@ -233,6 +233,20 @@ menu "Life Torus"
 
     endmenu
 
+    config LIFE_MODE_BUTTON
+        bool "Mode button"
+        default y
+        help
+            A push button from a GPIO to GND. Each press moves to the next display mode.
+            With no button connected, the internal pull-up keeps the GPIO high, so nothing
+            happens.
+
+    config LIFE_PIN_MODE_BUTTON
+        int "Mode button GPIO"
+        range 0 48
+        default 7
+        depends on LIFE_MODE_BUTTON
+
     menu "Microphone (beat sync)"
 
         config LIFE_MIC

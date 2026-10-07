@@ -13,6 +13,7 @@
 #include "game/game.hpp"
 #include "gamepad_input/usb_gamepad.hpp"
 #include "microphone/microphone.hpp"
+#include "mode_button/mode_button.hpp"
 #include "modes.hpp"
 #include "patterns/library.hpp"
 #include "patterns/presets.hpp"
@@ -111,6 +112,11 @@ void run_game(Board& board, settings::Settings& s) {
     display_modes::ModeManager modes(game, esp_random());
     game.start(now_ms());
     ESP_LOGI(kTag, "started with preset \"%s\"", game.preset_name());
+
+    mode_button::ModeButton button;
+#if CONFIG_LIFE_MODE_BUTTON
+    button.start(CONFIG_LIFE_PIN_MODE_BUTTON);
+#endif
 
     microphone::Microphone mic;
 #if CONFIG_LIFE_MIC
@@ -213,6 +219,10 @@ void run_game(Board& board, settings::Settings& s) {
         }
 
         const uint32_t now = now_ms();
+        if (button.poll(now)) {
+            modes.next_mode(now);
+            ESP_LOGI(kTag, "display mode \"%s\" (button)", display_modes::mode_name(modes.mode()));
+        }
         // The microphone beat goes to the display modes. Game of Life ignores it.
         if (mic.take_beat(now) && s.beat_sync) {
             modes.beat(now);

@@ -236,9 +236,18 @@ void test_game_of_life_ignores_beats() {
     TEST_ASSERT_EQUAL_UINT32(generation, rig.game.simulation().generation());
 }
 
+void test_next_mode_cycles() {
+    Rig rig;
+    for (int i = 1; i <= display_modes::kModeCount; ++i) {
+        rig.modes.next_mode(rig.now);
+        TEST_ASSERT_EQUAL(i % display_modes::kModeCount, static_cast<int>(rig.modes.mode()));
+    }
+}
+
 }  // namespace
 
 void run_display_modes_tests() {
+    RUN_TEST(test_next_mode_cycles);
     RUN_TEST(test_beats_add_activity);
     RUN_TEST(test_beats_active_only_while_beats_come);
     RUN_TEST(test_flash_on_beat);
