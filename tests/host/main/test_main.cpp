@@ -7,5 +7,6 @@ extern "C" void tearDown() {}
 
 int main() {
     UNITY_BEGIN();
+    run_life_tests();
     return UNITY_END();
 }
