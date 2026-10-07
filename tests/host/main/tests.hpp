@@ -3,3 +3,5 @@
 
 void run_life_tests();
 void run_patterns_tests();
+void run_frame_tests();
+void run_game_tests();

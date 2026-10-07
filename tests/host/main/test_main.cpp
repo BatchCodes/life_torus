@@ -9,5 +9,7 @@ int main() {
     UNITY_BEGIN();
     run_life_tests();
     run_patterns_tests();
+    run_frame_tests();
+    run_game_tests();
     return UNITY_END();
 }
