@@ -82,6 +82,8 @@ Each MAX7219 multiplexes its 64 LEDs: only one row of 8 LEDs is on at a time. Th
 | a typical Life board (25 % lit) | approximately 1 A     | approximately 1.6 A | approximately 3 A      |
 | all LEDs off                    | approximately 0.3 A   | approximately 0.3 A | approximately 0.3 A    |
 
+The Wi-Fi of the phone app adds approximately 100 mA to each value.
+
 A Life board is rarely more than 30 % lit, so one 3 A input is enough at the default intensity. The "all on" test pattern of the bring-up firmware is the worst case. At intensity 4 it uses the full 3 A of one input, so test it with two inputs, or keep the test short. If a source reaches its limit, its voltage drops and the display flickers or the ESP32-S3 restarts. Then lower the intensity or connect the second input.
 
 At 5 V 1 A, a 10,000 mAh power bank (approximately 37 Wh) runs the display for approximately 6 hours. The bring-up checklist measures the real current. Its results replace these estimates.

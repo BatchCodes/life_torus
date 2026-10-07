@@ -37,6 +37,7 @@
     "menuconfig",
     "methuselah",
     "methuselahs",
+    "netif",
     "OpenELAB",
     "Otronic",
     "pentadecathlon",
@@ -52,6 +53,7 @@
     "UART",
     "VBUS",
     "WAGO",
+    "wifi",
     "WROOM"
   ]
 }

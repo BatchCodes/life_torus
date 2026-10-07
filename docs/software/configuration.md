@@ -46,23 +46,30 @@ The bring-up firmware finds the panel layout options for your boards.
 
 ## Game
 
-| Option                                | Default | Effect                                                                                |
-| ------------------------------------- | ------- | ------------------------------------------------------------------------------------- |
-| `CONFIG_LIFE_STEP_MS`                 | 100     | Time between two generations in run (10 generations per second).                      |
-| `CONFIG_LIFE_SETTLED_LIMIT`           | 30      | Generations with a settled board (empty, still, or period 2) before a new preset.     |
-| `CONFIG_LIFE_NO_INPUT_LIMIT`          | 10000   | Generations with no button press before a new preset (approximately 17 minutes).      |
-| `CONFIG_LIFE_REPEAT_LIMIT`            | 300     | Generations of a repeat with period 3 to 32 before a new preset. 0: off.              |
-| `CONFIG_LIFE_PAUSE_TIMEOUT_MS`        | 30000   | Pause with no button press for this time changes to run.                              |
-| `CONFIG_LIFE_TRANSITION_MS`           | 800     | Time of the wipe from the old board to a new preset.                                  |
-| `CONFIG_LIFE_CURSOR_BLINK_MS`         | 250     | Half period of the cursor blink.                                                      |
-| `CONFIG_LIFE_DPAD_REPEAT_DELAY_MS`    | 300     | A held D-pad button moves the cursor again after this time.                           |
-| `CONFIG_LIFE_DPAD_REPEAT_INTERVAL_MS` | 80      | Time between moves while a D-pad button is held.                                      |
-| `CONFIG_LIFE_KO_SCROLL_MS`            | 10000   | Ko code effect duration.                                                              |
-| `CONFIG_LIFE_KO_GAP_MS`               | 2000    | Ko code button gap.                                                                   |
-| `CONFIG_LIFE_EDGE_TORUS`              | y       | Edges of the empty and random presets: torus. The other presets have their own edges. |
-| `CONFIG_LIFE_EDGE_CYLINDER`           | n       | Edges of the empty and random presets: cylinder (no wrap from the top to the bottom). |
-| `CONFIG_LIFE_RANDOM_PERCENT`          | 30      | Live cells in the random preset.                                                      |
-| `CONFIG_LIFE_LOG_CONTROLLER_REPORTS`  | n       | Log each raw controller report as hex.                                                |
+| Option                                | Default    | Effect                                                                                    |
+| ------------------------------------- | ---------- | ----------------------------------------------------------------------------------------- |
+| `CONFIG_LIFE_STEP_MS`                 | 100        | Time between two generations in run (10 generations per second).                          |
+| `CONFIG_LIFE_SETTLED_LIMIT`           | 30         | Generations with a settled board (empty, still, or period 2) before a new preset.         |
+| `CONFIG_LIFE_NO_INPUT_LIMIT`          | 10000      | Generations with no button press before a new preset (approximately 17 minutes).          |
+| `CONFIG_LIFE_REPEAT_LIMIT`            | 300        | Generations of a repeat with period 3 to 32 before a new preset. 0: off.                  |
+| `CONFIG_LIFE_PAUSE_TIMEOUT_MS`        | 30000      | Pause with no button press for this time changes to run.                                  |
+| `CONFIG_LIFE_TRANSITION_MS`           | 800        | Time of the wipe from the old board to a new preset.                                      |
+| `CONFIG_LIFE_CURSOR_BLINK_MS`         | 250        | Half period of the cursor blink.                                                          |
+| `CONFIG_LIFE_DPAD_REPEAT_DELAY_MS`    | 300        | A held D-pad button moves the cursor again after this time.                               |
+| `CONFIG_LIFE_DPAD_REPEAT_INTERVAL_MS` | 80         | Time between moves while a D-pad button is held.                                          |
+| `CONFIG_LIFE_KO_SCROLL_MS`            | 10000      | Ko code effect duration.                                                                  |
+| `CONFIG_LIFE_KO_GAP_MS`               | 2000       | Ko code button gap.                                                                       |
+| `CONFIG_LIFE_EDGE_TORUS`              | y          | Edges of the empty and random presets: torus. The other presets have their own edges.     |
+| `CONFIG_LIFE_EDGE_CYLINDER`           | n          | Edges of the empty and random presets: cylinder (no wrap from the top to the bottom).     |
+| `CONFIG_LIFE_RANDOM_PERCENT`          | 30         | Live cells in the random preset.                                                          |
+| `CONFIG_LIFE_WIFI`                    | y          | Make an open Wi-Fi network for the phone app. Refer to [Phone Control](phone-control.md). |
+| `CONFIG_LIFE_WIFI_SSID`               | LIFE-TORUS | Name of the Wi-Fi network.                                                                |
+| `CONFIG_LIFE_WEB_PASSWORD`            | life       | Default password of the phone app.                                                        |
+| `CONFIG_LIFE_LOG_CONTROLLER_REPORTS`  | n          | Log each raw controller report as hex.                                                    |
+
+## Settings from the Phone App
+
+The phone app can change these options at run time: the step time, the settled, no-input and repeat limits, the pause timeout, the random preset fill, the edges of the empty and random presets, the intensity, the brightness levels, the panel layout and the password. The display saves them in NVS. A saved value replaces the Kconfig default. The bring-up firmware saves the panel layout and the intensity in the same place. To go back to the Kconfig defaults, erase the board and flash it again.
 
 ## Unattended Play
 

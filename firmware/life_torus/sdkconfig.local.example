@@ -4,6 +4,9 @@
 #   rm -f sdkconfig && idf.py build
 # Any option from idf.py menuconfig can go here.
 
+# Your own password for the phone app.
+# CONFIG_LIFE_WEB_PASSWORD="your password"
+
 # Build the bring-up firmware instead of the game.
 # CONFIG_LIFE_MODE_BRINGUP=y
 

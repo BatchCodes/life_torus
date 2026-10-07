@@ -6,7 +6,7 @@ Life Torus is a physical display for Conway's Game of Life. Eight red LED matrix
 
 This repository contains everything that you need to build one: the firmware, a bill of materials, the wiring and assembly documents, and three ways to flash the ESP32-S3. A [browser simulator](tools/simulator/README.md) lets you try the game before you buy the parts.
 
-**[Play Life Torus in your browser](https://batchcodes.github.io/life_torus/)** · **[Flash a display from your browser](https://batchcodes.github.io/life_torus/flash.html)**
+**[Play Life Torus in your browser](https://batchcodes.github.io/life_torus/)** · **[Try the phone app](https://batchcodes.github.io/life_torus/phone/)** · **[Flash a display from your browser](https://batchcodes.github.io/life_torus/flash.html)**
 
 The source code is at [github.com/BatchCodes/life_torus](https://github.com/BatchCodes/life_torus). Report problems and ideas as GitHub issues.
 
@@ -24,7 +24,8 @@ USB game controller --USB--> ESP32-S3 --3.3 V SPI--> 74AHCT125 --5 V SPI--> boar
 - Each board is an 8 × 32 LED matrix with four MAX7219 driver chips. The eight boards make one chain of 32 chips.
 - The ESP32-S3 sends the image over three wires (`DIN`, `CLK` and `CS`). A 74AHCT125 buffer changes the 3.3 V signals to 5 V.
 - A USB-C power bank or a USB-C wall charger at 5 V feeds the boards at several points. A second USB-C input is optional, for more brightness. The ESP32-S3 uses the same 5 V bus.
-- The game controller connects to the USB port of the ESP32-S3.
+- The game controller connects to the USB port of the ESP32-S3. It is optional.
+- The ESP32-S3 makes an open Wi-Fi network. A phone joins it and opens the [phone app](docs/software/phone-control.md): a live copy of the display, the controls, display modes (scrolling text, rain, barber pole, ripples, sparkle) and the settings.
 
 ## Controls
 
@@ -142,6 +143,7 @@ Life Torus is free software under the GNU General Public License, version 3 or l
 - [Assembly Guide](docs/assembly/README.md): build the ring step by step.
 - [Power and Wiring](docs/hardware/power-and-wiring.md): signal chain, USB-C power and power distribution.
 - [Display Bring-Up](docs/hardware/bring-up.md): test patterns and checks for a new display.
+- [Phone Control](docs/software/phone-control.md): Wi-Fi, the phone app, display modes and the password.
 - [Firmware Configuration](docs/software/configuration.md): all options and defaults.
 - [Flashing](docs/software/flashing.md): web flasher, local ESP-IDF, Docker and release images.
 - [Preset Boards](docs/software/presets.md): the preset list and how long each preset runs.

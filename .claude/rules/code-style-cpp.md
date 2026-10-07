@@ -14,7 +14,7 @@ The firmware is C++ on ESP-IDF, at the version in `scripts/esp_idf_version.txt`.
 - Format C++ with `clang-format` and the project file `.clang-format`.
 - Start each source file with `// SPDX-License-Identifier: GPL-3.0-or-later`. In `CMakeLists.txt` and `Kconfig` files, use `#`.
 - Naming: PascalCase for types, snake_case for functions and variables, `kPascalCase` for constants, a trailing underscore for private members (`config_`), and one namespace per component that matches the component name.
-- Keep `life`, `patterns`, `game`, `frame` and `panel_map` free of ESP-IDF headers. The host tests in `tests/host/` build them on the ESP-IDF `linux` target. Put hardware access in separate components, such as `max7219_chain` and `gamepad_input`. The browser simulator in `tools/simulator/` also compiles the pure components, with Emscripten.
+- Keep `life`, `patterns`, `game`, `frame`, `panel_map` and `display_modes`, and the pure files of `gamepad_input`, `settings` and `phone_link` (`report.cpp`, `settings.cpp`, `protocol.cpp`), free of ESP-IDF headers. The host tests in `tests/host/` build them on the ESP-IDF `linux` target. Put hardware access in separate components, such as `max7219_chain` and `gamepad_input`. The browser simulator in `tools/simulator/` also compiles the pure components, with Emscripten.
 - Add a host test in `tests/host/main/` for each change to a pure component. Run `./scripts/run_host_tests.sh` before you commit.
 - Build each app in `firmware/` that a change touches. The build must have no warnings from this repo's code. ESP-IDF builds with `-Werror`.
 - Put device and timing values in Kconfig options with documented defaults. Do not hard-code them. Put board pins in the board app, not in shared components.

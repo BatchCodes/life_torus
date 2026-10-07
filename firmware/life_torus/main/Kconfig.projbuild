@@ -206,6 +206,18 @@ menu "Life Torus"
             range 1 99
             default 30
 
+        config LIFE_WIFI
+            bool "Wi-Fi and phone app"
+            default y
+            help
+                Make an open Wi-Fi network for the phone app. Wi-Fi uses approximately
+                100 mA more.
+
+        config LIFE_WIFI_SSID
+            string "Wi-Fi network name"
+            default "LIFE-TORUS"
+            depends on LIFE_WIFI
+
         config LIFE_WEB_PASSWORD
             string "Phone app password"
             default "life"
