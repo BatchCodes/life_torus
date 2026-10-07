@@ -192,11 +192,46 @@ void test_empty_board_loads_new_preset() {
     Game game{GameConfig{}};
     start_paused_at(game, "Empty board");
     tap(game, Button::kStart);
-    wait(game, 9 * 100 + 50);
+    wait(game, 29 * 100 + 50);
     TEST_ASSERT_EQUAL(static_cast<int>(Mode::kRun), static_cast<int>(game.mode()));
     wait(game, 100);
     TEST_ASSERT_EQUAL(static_cast<int>(Mode::kTransition), static_cast<int>(game.mode()));
     TEST_ASSERT_NOT_EQUAL(preset_named("Empty board"), game.preset_index());
+}
+
+// Draws a shape from the library at the cursor on the empty board, then runs.
+void run_with_shape(Game& game, const char* shape) {
+    start_paused_at(game, "Empty board");
+    while (std::strcmp(game.shape_name(), shape) != 0) {
+        tap(game, Button::kR);
+    }
+    tap(game, Button::kA);
+    tap(game, Button::kStart);
+}
+
+void test_still_board_loads_new_preset() {
+    Game game{GameConfig{}};
+    run_with_shape(game, "Block");
+    wait(game, 29 * 100 + 50);
+    TEST_ASSERT_EQUAL(preset_named("Empty board"), game.preset_index());
+    wait(game, 100);
+    TEST_ASSERT_NOT_EQUAL(preset_named("Empty board"), game.preset_index());
+}
+
+void test_period_two_board_loads_new_preset() {
+    Game game{GameConfig{}};
+    run_with_shape(game, "Blinker");
+    wait(game, 29 * 100 + 50);
+    TEST_ASSERT_EQUAL(preset_named("Empty board"), game.preset_index());
+    wait(game, 200);
+    TEST_ASSERT_NOT_EQUAL(preset_named("Empty board"), game.preset_index());
+}
+
+void test_moving_board_is_not_settled() {
+    Game game{GameConfig{}};
+    run_with_shape(game, "Glider");
+    wait(game, 200 * 100);
+    TEST_ASSERT_EQUAL(preset_named("Empty board"), game.preset_index());
 }
 
 void test_repeat_loads_new_preset() {
@@ -311,6 +346,9 @@ void run_game_tests() {
     RUN_TEST(test_shapes_stamp_rotate_and_mirror);
     RUN_TEST(test_select_cycles_presets);
     RUN_TEST(test_empty_board_loads_new_preset);
+    RUN_TEST(test_still_board_loads_new_preset);
+    RUN_TEST(test_period_two_board_loads_new_preset);
+    RUN_TEST(test_moving_board_is_not_settled);
     RUN_TEST(test_repeat_loads_new_preset);
     RUN_TEST(test_repeat_rule_can_be_off);
     RUN_TEST(test_no_input_limit_loads_new_preset);

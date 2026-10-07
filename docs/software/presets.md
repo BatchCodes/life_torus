@@ -8,25 +8,25 @@ The pattern data comes from the [LifeWiki](https://conwaylife.com/wiki/). The pr
 
 The survey tool runs each preset on the 64 × 32 grid and finds when the board settles: the generation where it becomes empty or starts to repeat. "On display" is the number of generations until an unattended-play rule loads a new preset, with the default limits:
 
-- empty for 10 generations
-- a repeat with a period of 32 generations or less, for 300 generations
+- settled for 30 generations: empty, nothing moves, or a repeat with period 2
+- a repeat with a period of 3 to 32 generations, for 300 generations
 - 10,000 generations with no button press
 
 At the default step time of 100 ms, 10 generations take 1 second.
 
 | Preset            | Edges              | Cells | Settles at | End state           | On display |
 | ----------------- | ------------------ | ----- | ---------- | ------------------- | ---------- |
-| Glider gun        | torus              | 36    | 662        | period 2            | 964        |
-| R-pentomino       | torus              | 5     | 1199       | period 2            | 1501       |
-| Spaceship fleet   | torus              | 53    | 159        | period 2            | 461        |
-| Acorn             | torus              | 7     | 340        | period 2            | 642        |
+| Glider gun        | torus              | 36    | 662        | period 2            | 693        |
+| R-pentomino       | torus              | 5     | 1199       | period 2            | 1230       |
+| Spaceship fleet   | torus              | 53    | 159        | period 2            | 190        |
+| Acorn             | torus              | 7     | 340        | period 2            | 371        |
 | Oscillator garden | torus              | 106   | 0          | period 30           | 330        |
-| Glider swarm      | torus              | 40    | 293        | period 2            | 595        |
-| Diehard           | torus              | 7     | 130        | empty               | 140        |
-| Pi-heptomino      | torus              | 7     | 173        | period 2            | 475        |
+| Glider swarm      | torus              | 40    | 293        | period 2            | 324        |
+| Diehard           | torus              | 7     | 130        | empty               | 160        |
+| Pi-heptomino      | torus              | 7     | 173        | period 2            | 204        |
 | Simkin gun        | cylinder           | 36    | 469        | period 6            | 775        |
-| Random soup       | configured (torus) | 632   | 3313       | period 2            | 3615       |
-| Empty board       | configured (torus) | 0     | 0          | empty (for drawing) | 10         |
+| Random soup       | configured (torus) | 632   | 3313       | period 2            | 3344       |
+| Empty board       | configured (torus) | 0     | 0          | empty (for drawing) | 30         |
 
 The random soup uses the random generator seed 1 and 30 % live cells. On the device the seed changes at each start, so its results are different each time. The empty board is for drawing in pause. The unattended-play rules never load it.
 

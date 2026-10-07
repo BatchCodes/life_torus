@@ -45,7 +45,8 @@ void Game::load_preset(int index) {
         patterns::presets()[index], grid, rng_, config_.default_edge_mode, config_.random_percent);
     simulation_.load(grid, edge_mode);
     generations_since_input_ = 0;
-    empty_generations_ = 0;
+    settled_generations_ = 0;
+    history_ = 0;
     repeat_generations_ = 0;
     recent_count_ = 0;
     recent_next_ = 0;
@@ -87,14 +88,19 @@ void Game::enter_run(uint32_t now_ms) {
 }
 
 void Game::advance(uint32_t now_ms) {
+    const life::Grid before = simulation_.current();
     simulation_.advance();
     ++generations_since_input_;
 
+    // Settled: nothing moves (this includes an empty board), or the board flips between two
+    // states. Compare with the boards one and two generations ago.
     const life::Grid& grid = simulation_.current();
-    if (grid.empty()) {
-        ++empty_generations_;
-    } else {
-        empty_generations_ = 0;
+    const bool still = grid == before;
+    const bool period_two = history_ >= 1 && grid == two_back_;
+    settled_generations_ = (still || period_two) ? settled_generations_ + 1 : 0;
+    two_back_ = before;
+    if (history_ < 2) {
+        ++history_;
     }
 
     const uint32_t hash = grid.hash();
@@ -112,7 +118,7 @@ void Game::advance(uint32_t now_ms) {
         ++recent_count_;
     }
 
-    if (empty_generations_ >= config_.empty_limit ||
+    if (settled_generations_ >= config_.settled_limit ||
         generations_since_input_ >= config_.no_input_limit ||
         (config_.repeat_limit > 0 && !grid.empty() &&
          repeat_generations_ >= config_.repeat_limit)) {
@@ -262,6 +268,8 @@ void Game::edit(bool stamp) {
         patterns::erase(grid, shape_, cursor_x_, cursor_y_, edge_mode);
     }
     simulation_.edit(grid);
+    settled_generations_ = 0;
+    history_ = 0;
 }
 
 void Game::render(frame::Image& image, uint32_t now_ms) const {

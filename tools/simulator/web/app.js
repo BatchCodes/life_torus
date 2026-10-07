@@ -96,7 +96,7 @@ function readSettings(form) {
   return {
     step_ms: n("step_ms"),
     brightness_levels: form.elements.brightness_levels.checked ? 1 : 0,
-    empty_limit: n("empty_limit"),
+    settled_limit: n("settled_limit"),
     no_input_limit: n("no_input_limit"),
     repeat_limit: n("repeat_limit"),
     pause_timeout_ms: n("pause_timeout_ms"),
@@ -147,7 +147,7 @@ async function main() {
     api.configure(
       s.step_ms,
       s.brightness_levels,
-      s.empty_limit,
+      s.settled_limit,
       s.no_input_limit,
       s.repeat_limit,
       s.pause_timeout_ms,

@@ -21,14 +21,14 @@ uint8_t g_levels[life::kWidth * life::kHeight];
 extern "C" {
 
 EMSCRIPTEN_KEEPALIVE void sim_configure(uint32_t step_ms, int brightness_levels,
-                                        uint32_t empty_limit, uint32_t no_input_limit,
+                                        uint32_t settled_limit, uint32_t no_input_limit,
                                         uint32_t repeat_limit, uint32_t pause_timeout_ms,
                                         uint32_t ko_effect_ms, int cylinder, int random_percent,
                                         uint32_t seed) {
     game::GameConfig config;
     config.step_ms = step_ms;
     config.brightness_levels = brightness_levels != 0;
-    config.empty_limit = empty_limit;
+    config.settled_limit = settled_limit;
     config.no_input_limit = no_input_limit;
     config.repeat_limit = repeat_limit;
     config.pause_timeout_ms = pause_timeout_ms;

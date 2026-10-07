@@ -49,9 +49,9 @@ The bring-up firmware finds the panel layout options for your boards.
 | Option                                | Default | Effect                                                                                |
 | ------------------------------------- | ------- | ------------------------------------------------------------------------------------- |
 | `CONFIG_LIFE_STEP_MS`                 | 100     | Time between two generations in run (10 generations per second).                      |
-| `CONFIG_LIFE_EMPTY_LIMIT`             | 10      | Generations with an empty board before a new preset.                                  |
+| `CONFIG_LIFE_SETTLED_LIMIT`           | 30      | Generations with a settled board (empty, still, or period 2) before a new preset.     |
 | `CONFIG_LIFE_NO_INPUT_LIMIT`          | 10000   | Generations with no button press before a new preset (approximately 17 minutes).      |
-| `CONFIG_LIFE_REPEAT_LIMIT`            | 300     | Generations of a short repeat (period 32 or less) before a new preset. 0: off.        |
+| `CONFIG_LIFE_REPEAT_LIMIT`            | 300     | Generations of a repeat with period 3 to 32 before a new preset. 0: off.              |
 | `CONFIG_LIFE_PAUSE_TIMEOUT_MS`        | 30000   | Pause with no button press for this time changes to run.                              |
 | `CONFIG_LIFE_TRANSITION_MS`           | 800     | Time of the wipe from the old board to a new preset.                                  |
 | `CONFIG_LIFE_CURSOR_BLINK_MS`         | 250     | Half period of the cursor blink.                                                      |
@@ -69,8 +69,8 @@ The bring-up firmware finds the panel layout options for your boards.
 The defaults keep the display interesting when nobody uses it, and after a person uses it and walks away:
 
 - The display starts in run with a random preset.
-- An empty board loads a new preset after 10 generations.
-- A board that only repeats loads a new preset after 300 generations.
+- A settled board loads a new preset after 30 generations (3 s). Settled means empty, nothing moves, or the board flips between two states.
+- A board that repeats with a longer period (3 to 32 generations) loads a new preset after 300 generations.
 - 10,000 generations with no button press load a new preset.
 - Pause with no button press for 30 s changes to run.
 

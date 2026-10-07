@@ -42,7 +42,7 @@ The display has two states: run and pause. It starts in run.
 | pause | Y      | mirror the cursor shape                                |
 | pause | Select | load the next [preset board](docs/software/presets.md) |
 
-When nobody uses it, the display looks after itself. It loads a new preset when the board is empty, when the board only repeats, or after a long time with no button press. After 30 s in pause with no button press, it starts to run again.
+When nobody uses it, the display looks after itself. It loads a new preset when the board is empty or stops moving, when it only repeats, or after a long time with no button press. A USB controller is optional: with no controller, the display runs by itself. After 30 s in pause with no button press, it starts to run again.
 
 ## Supported Hardware
 

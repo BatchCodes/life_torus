@@ -11,7 +11,7 @@
 namespace {
 
 constexpr int kMaxGenerations = 20000;
-constexpr int kEmptyLimit = 10;
+constexpr int kSettledLimit = 30;
 constexpr int kRepeatWindow = 32;
 constexpr int kRepeatLimit = 300;
 constexpr int kNoInputLimit = 10000;
@@ -50,8 +50,9 @@ Result survey(const patterns::Preset& preset) {
         grid = life::step(grid, mode);
     }
 
-    if (result.empty) {
-        result.on_display = result.end_generation + kEmptyLimit;
+    if (result.empty || result.period == 1 || result.period == 2) {
+        const int period = result.empty ? 1 : result.period;
+        result.on_display = result.end_generation + period + kSettledLimit - 1;
     } else if (result.period > 0 && result.period <= kRepeatWindow) {
         result.on_display = result.end_generation + result.period + kRepeatLimit;
     } else {

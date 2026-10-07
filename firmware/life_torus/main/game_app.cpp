@@ -21,7 +21,7 @@ game::GameConfig config_from_kconfig(bool levels) {
     game::GameConfig config;
     config.step_ms = CONFIG_LIFE_STEP_MS;
     config.brightness_levels = levels;
-    config.empty_limit = CONFIG_LIFE_EMPTY_LIMIT;
+    config.settled_limit = CONFIG_LIFE_SETTLED_LIMIT;
     config.no_input_limit = CONFIG_LIFE_NO_INPUT_LIMIT;
     config.repeat_limit = CONFIG_LIFE_REPEAT_LIMIT;
     config.pause_timeout_ms = CONFIG_LIFE_PAUSE_TIMEOUT_MS;

@@ -124,12 +124,14 @@ menu "Life Torus"
             help
                 The time between two generations. 100 ms gives 10 generations per second.
 
-        config LIFE_EMPTY_LIMIT
-            int "Empty board limit (generations)"
+        config LIFE_SETTLED_LIMIT
+            int "Settled board limit (generations)"
             range 1 100000
-            default 10
+            default 30
             help
-                In run, an empty board for this number of generations loads a new preset.
+                In run, a settled board for this number of generations loads a new preset.
+                Settled: empty, nothing moves, or the board flips between two states
+                (period 2).
 
         config LIFE_NO_INPUT_LIMIT
             int "No-input limit (generations)"
@@ -143,9 +145,9 @@ menu "Life Torus"
             range 0 100000
             default 300
             help
-                In run, a board that repeats with a period of 32 generations or less (for
-                example only still lifes and blinkers) for this number of generations loads a
-                new preset. 0: off.
+                In run, a board that repeats with a period of 3 to 32 generations (for
+                example only pulsars) for this number of generations loads a new preset.
+                Shorter periods are the settled board limit. 0: off.
 
         config LIFE_PAUSE_TIMEOUT_MS
             int "Pause timeout (ms)"

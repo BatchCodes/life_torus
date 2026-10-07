@@ -10,9 +10,10 @@ namespace game {
 // All timings and limits of the game. The defaults are the firmware defaults. The firmware
 // fills this struct from Kconfig, and the simulator from its settings panel.
 struct GameConfig {
-    uint32_t step_ms = 100;           // Time between generations in run.
-    bool brightness_levels = true;    // Born cells bright, dying cells dim.
-    uint32_t empty_limit = 10;        // Generations with an empty board before a new preset.
+    uint32_t step_ms = 100;         // Time between generations in run.
+    bool brightness_levels = true;  // Born cells bright, dying cells dim.
+    // Generations with a settled board (empty, still, or period 2) before a new preset.
+    uint32_t settled_limit = 30;
     uint32_t no_input_limit = 10000;  // Generations with no button press before a new preset.
     uint32_t repeat_limit = 300;      // Generations of a short repeat before a new preset. 0: off.
     uint32_t pause_timeout_ms = 30000;  // Pause with no button press, then run.

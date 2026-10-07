@@ -88,7 +88,9 @@ private:
     uint32_t last_step_ms_ = 0;
     uint32_t last_input_ms_ = 0;
     uint32_t generations_since_input_ = 0;
-    uint32_t empty_generations_ = 0;
+    uint32_t settled_generations_ = 0;
+    life::Grid two_back_;  // The board two generations ago, for the period 2 check.
+    int history_ = 0;      // Generations since the last load or edit, up to 2.
     uint32_t repeat_generations_ = 0;
     std::array<uint32_t, kRepeatWindow> recent_hashes_{};
     int recent_count_ = 0;
