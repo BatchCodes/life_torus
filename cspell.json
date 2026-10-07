@@ -36,6 +36,7 @@
     "LOGE",
     "LOGI",
     "LOGW",
+    "MEMS",
     "menuconfig",
     "methuselah",
     "methuselahs",
