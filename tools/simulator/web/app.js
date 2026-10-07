@@ -167,13 +167,16 @@ async function main() {
   }
 
   const modes = document.getElementById("modes");
-  modes.elements.mode.addEventListener("change", () =>
-    api.setMode(Number(modes.elements.mode.value), now()),
-  );
+  modes.elements.mode.addEventListener("change", () => {
+    api.setMode(Number(modes.elements.mode.value), now());
+    // Give the keyboard back to the game.
+    modes.elements.mode.blur();
+  });
   modes.elements.text.addEventListener("input", () => api.setText(modes.elements.text.value));
   modes.elements.speed.addEventListener("input", () =>
     api.setSpeed(Number(modes.elements.speed.value)),
   );
+  modes.elements.speed.addEventListener("change", () => modes.elements.speed.blur());
   modes.addEventListener("submit", (event) => event.preventDefault());
   const beatLine = document.getElementById("beat");
   document.getElementById("listen").addEventListener("click", async (event) => {
@@ -196,7 +199,12 @@ async function main() {
 
   const held = new Set();
   window.addEventListener("keydown", (event) => {
-    if (event.target instanceof HTMLInputElement || event.target instanceof HTMLSelectElement) {
+    // Let the keys through, except while a person types in a text or number field.
+    const target = event.target;
+    if (
+      target instanceof HTMLInputElement &&
+      ["text", "number", "password"].includes(target.type)
+    ) {
       return;
     }
     if (event.key.toLowerCase() === "m" && !event.repeat) {
